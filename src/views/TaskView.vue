@@ -4,30 +4,33 @@
     <table class="table w-4/6 mt-6">
       <thead>
         <tr>
-          <td>Id</td>
           <td>Title</td>
           <td>Assignees</td>
           <td>Status</td>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="task in taskList" :key="task.id" class="hover:scale-105" @click="getTaskDetail(task.id)">
-          <td v-text="task.id"></td>
+        <tr
+          v-for="task in taskList"
+          :key="task.id"
+          class="hover:scale-105"
+          @click="router.push(`/task/${task.id}`)"
+        >
           <td v-text="task.title"></td>
           <td v-text="task.assignees"></td>
           <td v-text="task.status"></td>
         </tr>
       </tbody>
     </table>
-    <TaskDetail :taskDetail="taskDetail" v-if="taskDetail" class="w-4/6"/>
   </div>
-  
+  <router-view></router-view>
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 import { getTask } from '../lib/fetchAPI'
 import TaskDetail from './TaskDetail.vue'
+import router from '@/router/router';
 const taskList = ref([])
 
 onMounted(async () => {
@@ -40,18 +43,9 @@ onMounted(async () => {
   }
 })
 
-const taskDetail = ref({})
-async function getTaskDetail(id) {
-  try {
-    const taskDetailRes = await getTask(`tasks/${id}`)
-    taskDetail.value = taskDetailRes.data
-    // console.log(taskDetail.value)
-  } catch (error) {
-    throw error
-  }
-}
-
 // console.log(taskDetail.value.data);
 </script>
 
-<style></style>
+<style>
+
+</style>
