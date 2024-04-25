@@ -11,7 +11,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="task in taskList" :key="task.id" class="hover:scale-105" @click="selectTask(task.id)">
+        <tr v-for="task in taskList" :key="task.id" class="hover:scale-105" @click="getTaskDetail(task.id)">
           <td v-text="task.id"></td>
           <td v-text="task.title"></td>
           <td v-text="task.assignees"></td>
@@ -19,10 +19,8 @@
         </tr>
       </tbody>
     </table>
-    <p v-text="selectedTaskId"></p>
-    <TaskDetail :taskId="selectedTaskId" v-if="selectedTaskId" class="w-4/6"/>
+    <TaskDetail :taskDetail="taskDetail" v-if="taskDetail" class="w-4/6"/>
   </div>
-
   
 </template>
 
@@ -36,17 +34,24 @@ onMounted(async () => {
   try {
     const taskRes = await getTask('tasks')
     taskList.value = taskRes.data
-    console.log(taskList.value)
+    // console.log(taskList.value)
   } catch (error) {
     console.error('Error fetching tasks:', error.message)
   }
 })
 
-const selectedTaskId = ref(0)
-function selectTask(id) {
-    selectedTaskId.value = id
-    console.log(selectedTaskId.value)
+const taskDetail = ref({})
+async function getTaskDetail(id) {
+  try {
+    const taskDetailRes = await getTask(`tasks/${id}`)
+    taskDetail.value = taskDetailRes.data
+    // console.log(taskDetail.value)
+  } catch (error) {
+    throw error
+  }
 }
+
+// console.log(taskDetail.value.data);
 </script>
 
 <style></style>
