@@ -1,47 +1,12 @@
-<template>
-  <div class="fixed top-0 left-0 w-full h-full flex justify-center items-center">
-    <div
-      name="backdrop"
-      class="w-lvw h-lvh bg-black bg-opacity-50  itbkk-button backdrop-blur-sm"
-      @click="router.push(`/task`)"
-    ></div>
-    <div name="detail" class="fixed w-3/5 h-3/5 border p-8 bg-sky-200 flex flex-col indicator">
-      <!-- rotate-in-center -->
-      <p>title : <span v-text="taskDetail.title" class="itbkk-title"></span></p>
-      <p>
-        desc :
-        <span class="itbkk-description" :class="{ 'italic grey': !taskDetail.description }">{{
-          !taskDetail.description ? 'No Description Provided' : taskDetail.description
-        }}</span>
-      </p>
-      <p>
-        assignees :
-        <span class="itbkk-assignees" :class="{ 'italic grey': !taskDetail.assignees}"
-          >{{ !taskDetail.assignees ? 'Unassigned' : taskDetail.assignees }}</span
-        >
-      </p>
-      <p>
-        status :
-        <span
-          class="itbkk-status"
-          :class="{ 'italic grey': !taskDetail.status }"
-          >{{ !taskDetail.status ? 'No Status' : taskDetail.status }}</span
-        >
-      </p>
-      <p>timezone : <span v-text="timezone" class="itbkk-timezone"></span></p>
-      <p>createOn : <span v-text="createDate" class="itbkk-created-on"></span></p>
-      <p>updateOn : <span v-text="updateDate" class="itbkk-updated-on"></span></p>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { onMounted } from 'vue'
 import { getTask } from '@/lib/fetchAPI'
 import { ref } from 'vue'
 import router from '@/router/router'
-import { formatStatus } from '@/lib/util'
+import { formatStatus, colorStatus } from '@/lib/util'
+import { useRoute } from 'vue-router'
 
+const route = useRoute()
 const taskDetail = ref({})
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 const createDate = ref(null)
@@ -51,7 +16,6 @@ onMounted(async () => {
   try {
     const taskRes = await getTask(`tasks/${id}`)
     taskDetail.value = taskRes.data
-    taskDetail.value.status = formatStatus(taskDetail.value.status)
     createDate.value = formatToLocalTime(taskDetail.value.createdOn)
     updateDate.value = formatToLocalTime(taskDetail.value.updatedOn)
   } catch (error) {
@@ -61,14 +25,82 @@ onMounted(async () => {
 
 function formatToLocalTime(timeStr) {
   const inputTime = new Date(timeStr)
-  const formattedTime = inputTime
-    .toLocaleString("en-GB")
-    .replace('T', ' ')
+  const formattedTime = inputTime.toLocaleString('en-GB').replace('T', ' ')
   return formattedTime
 }
 
-
+const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
+
+<template>
+  <div
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900"
+  >
+    <div
+      name="backdrop"
+      class="w-lvw h-lvh bg-black bg-opacity-40 itbkk-button"
+      @click="router.push(`/task`)"
+    ></div>
+
+    <div
+      name="detail"
+      class="fixed w-[640px] h-4/5 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
+    >
+      <div class="w-auto flex flex-row justify-between m-12 mb-0">
+        <div class="text-sm breadcrumbs">
+          <ul>
+            <li
+              class="hover:underline hover:cursor-pointer text-[#9c9c9c]"
+              @click="router.push(`/task`)"
+            >
+              Task
+            </li>
+            <li>{{ route.params.id }}</li>
+          </ul>
+        </div>
+        <div></div>
+      </div>
+      <div class="overflow-y-auto h-full m-12 my-0 mb-4">
+        <span
+          v-text="taskDetail.title"
+          class="itbkk-title w-full h-auto text-2xl font-bold mb-4 break-words inline-block"
+        ></span>
+
+        <div class="grid grid-cols-4 gap-y-4 text-md items-center">
+          <span :class="header"> Status </span>
+          <div class="col-span-3">
+            <p
+              class="itbkk-status rounded-md px-[8px] py-[2px] w-fit"
+              :class="colorStatus(taskDetail.status)"
+            >
+              {{ formatStatus(taskDetail.status) }}
+            </p>
+          </div>
+          <span :class="header" class="col-span-1"> Assignees </span>
+          <div class="itbkk-assignees col-span-3" :class="{ 'italic grey': !taskDetail.assignees }">
+            {{ !taskDetail.assignees ? 'Unassigned' : taskDetail.assignees }}
+          </div>
+          <span :class="header" class="col-span-1"> Timezone </span>
+          <div v-text="timezone" class="itbkk-timezone col-span-3"></div>
+          <span :class="header" class="col-span-1">CreateOn</span>
+          <div v-text="createDate" class="itbkk-created-on col-span-3"></div>
+          <span :class="header" class="col-span-1">UpdateOn</span>
+          <div v-text="updateDate" class="itbkk-updated-on col-span-3"></div>
+        </div>
+        <div class="w-full flex flex-col gap-2">
+          <span :class="header" class="w-full divider divider-start">Description</span>
+          <p
+            class="itbkk-description w-full break-words inline-block"
+            :class="{ 'italic grey': !taskDetail.description }"
+          >
+            {{ !taskDetail.description ? 'No Description Provided' : taskDetail.description }}
+          </p>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
 
 <style>
 .rotate-in-center {
@@ -96,6 +128,48 @@ function formatToLocalTime(timeStr) {
   100% {
     -webkit-transform: rotate(0);
     transform: rotate(0);
+    opacity: 1;
+  }
+}
+
+.slide-in-fwd-center {
+  -webkit-animation: slide-in-fwd-center 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation: slide-in-fwd-center 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+/* ----------------------------------------------
+ * Generated by Animista on 2024-4-27 20:16:57
+ * Licensed under FreeBSD License.
+ * See http://animista.net/license for more info. 
+ * w: http://animista.net, t: @cssanimista
+ * ---------------------------------------------- */
+
+/**
+ * ----------------------------------------
+ * animation slide-in-fwd-center
+ * ----------------------------------------
+ */
+@-webkit-keyframes slide-in-fwd-center {
+  0% {
+    -webkit-transform: translateZ(-1400px);
+    transform: translateZ(-1400px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+    opacity: 1;
+  }
+}
+@keyframes slide-in-fwd-center {
+  0% {
+    -webkit-transform: translateZ(-1400px);
+    transform: translateZ(-1400px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
     opacity: 1;
   }
 }

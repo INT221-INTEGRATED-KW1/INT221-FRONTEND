@@ -7,5 +7,4 @@ import routers from './router/router.js'
 const app = createApp(App)
 
 app.use(routers)
-
 app.mount('#app')
