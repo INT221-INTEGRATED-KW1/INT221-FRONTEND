@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, onUnmounted, ref , watch} from 'vue'
 import { getTask } from '../lib/fetchAPI'
 import router from '@/router/router'
 import { formatStatus } from '@/lib/util'
@@ -8,14 +8,17 @@ import { ClipboardDocumentListIcon, FireIcon, UserCircleIcon } from '@heroicons/
 import { colorStatus } from '@/lib/util'
 const route = useRoute()
 const taskList = ref([])
-onMounted(async () => {
+const fetchTasks = async () => {
   try {
     const taskRes = await getTask('tasks')
     taskList.value = taskRes.data
   } catch (error) {
     console.error('Error fetching tasks:', error.message)
   }
-})
+}
+onMounted(fetchTasks)
+const fetchInterval = setInterval(fetchTasks , 10000)
+onUnmounted(() => clearInterval(fetchInterval))
 
 const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
@@ -75,6 +78,12 @@ const thead = ref(
                 {{ formatStatus(task.status) }}
               </div>
             </td>
+          </tr>
+
+          <tr v-if="taskList.length == 0">
+            <td></td>
+            <td class="text-center font-momo italic font-semibold text-opacity-70">No task</td>
+            <td></td>
           </tr>
         </tbody>
       </table>

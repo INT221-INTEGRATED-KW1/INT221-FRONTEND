@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import TaskView from '@/views/TaskView.vue'
-import AboutView from '@/views/AboutView.vue'
 import TaskDetail from '@/views/TaskDetail.vue'
 
 const routes = [
@@ -21,9 +20,8 @@ const routes = [
     ]
   },
   {
-    path: '/about',
-    name: 'about',
-    component: AboutView
+    path: '/:pathMatch(.*)*',
+    redirect: '/task'
   }
 ]
 //import.meta.env.BASE_URL
