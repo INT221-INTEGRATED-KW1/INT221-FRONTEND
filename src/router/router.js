@@ -1,6 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import TaskView from '@/views/TaskView.vue'
 import TaskDetail from '@/views/TaskDetail.vue'
+import TaskEdit from '@/views/TaskEdit.vue'
+import TaskCreate from '@/views/TaskCreate.vue'
 
 const routes = [
   {
@@ -15,8 +17,18 @@ const routes = [
     children: [
       {
         path: ':id',
-        component: TaskDetail
-      }
+        component: TaskDetail,
+      },
+      {
+        path: 'add',
+        name: 'add',
+        component: TaskCreate
+      },
+      {
+        path: ':id/edit',
+        name: 'edit',
+        component: TaskEdit,
+      },
     ]
   },
   {
