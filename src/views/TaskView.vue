@@ -93,7 +93,7 @@ const thead = ref(
     </div>
 
     <div class="w-full h-auto flex justify-end">
-      <button @click="router.push('/task/add')" class="itbkk-button-add btn bg-sky-400">
+      <button @click="router.push('/task/add')" class="itbkk-button-add btn px-6 bg-slate-200">
         Add
       </button>
     </div>

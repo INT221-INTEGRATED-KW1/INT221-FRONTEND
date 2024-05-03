@@ -56,8 +56,8 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       name="detail"
       class="fixed w-[640px] h-5/6 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
     >
-      <div class="w-auto flex flex-row justify-between m-12 mb-0">
-        <div>Create New Task .</div>
+      <div class="w-auto flex flex-row justify-between m-12 mb-0 font-bold">
+        <div>Create New Task</div>
       </div>
       <div v-if="isInValid" class="kbd kbd-md mx-12 bg-red-300">invalid title required!!!!</div>
       <div class="overflow-y-auto h-full m-12 my-0 mb-4">
