@@ -32,11 +32,12 @@ async function onMountSetup() {
     // console.log(taskDetail.value);
     return taskDetail.value
   } catch (error) {
+    router.push('/task')
     setTimeout(() => {
       window.alert('No task Id : ' + id)
     }, 500)
     throw error
-    router.push('/task')
+    // router.push('/task')
   }
 }
 

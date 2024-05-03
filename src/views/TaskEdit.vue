@@ -3,7 +3,7 @@ import { updateTask } from '@/lib/fetchAPI'
 import { formatStatusReverse, onMountSetup } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
-import { computed, onMounted, ref } from 'vue'
+import { compile, computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 // console.log('EDITTTT===================')
 const route = useRoute()
@@ -32,10 +32,9 @@ const isSameDetail = computed(() => {
 })
 
 async function editTask() {
+  store.resStatus = ""
   isInValid.value = false
-  // console.log(isSameDetail.value);
   if (isSameDetail.value) {
-    // console.log('same')
     return router.push('/task')
   }
   if (!updateDetail.value.title) {
@@ -50,11 +49,11 @@ async function editTask() {
     // let addtask function and send out info into the main page :D
     try {
       const result = await updateTask(taskDetail.id, updateDetail.value)
-      // console.log(result.resCode)
-      // console.log(result.data)
       Object.assign(store.taskList[store.findTaskIndexById(result.data.id)], result.data)
+      store.resStatus = "editDone"
       router.push('/task')
     } catch (error) {
+      store.resStatus = "updateError"
       throw error
     }
     router.push('/task')
@@ -70,13 +69,13 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
   >
     <div
       name="backdrop"
-      class="w-lvw h-lvh bg-black bg-opacity-40 itbkk-button"
+      class="w-lvw h-lvh bg-black bg-opacity-40"
       @click="router.push(`/task`)"
     ></div>
 
     <div
       name="updateDetail"
-      class="fixed w-[640px] h-4/6 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
+      class="fixed w-[640px] h-5/6 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
     >
       <div class="w-auto flex flex-row justify-between m-12 mb-0">
         <div class="text-sm breadcrumbs">
@@ -97,6 +96,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       <div class="overflow-y-auto h-full m-12 my-0 mb-4">
         <input
           type="text"
+          maxlength="100"
           placeholder="Untitled"
           v-model="updateDetail.title"
           class="itbkk-title w-full h-auto text-2xl font-bold mb-4 break-words inline-block border border-none"
@@ -104,7 +104,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         <div class="grid grid-cols-4 gap-y-2 text-md items-center">
           <span :class="header"> Status </span>
           <select
-            class="select select-bordered select-md w-full text-base p-0"
+            class="itbkk-status select select-bordered select-md w-full text-base p-0"
             :class="inputField"
             v-model="updateDetail.status"
           >
@@ -118,8 +118,10 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           <span :class="header" class="col-span-1"> Assignees </span>
           <input
             type="test"
+            maxlength="30"
             v-model="updateDetail.assignees"
             placeholder="Empty"
+            class="itbkk-assignees"
             :class="inputField"
             :autofocus="
               !updateDetail.assignees
@@ -138,8 +140,9 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           <span :class="header" class="w-full divider divider-start">Description</span>
           <textarea
             placeholder="Hi"
+            maxlength="500"
             v-model="updateDetail.description"
-            class="w-full"
+            class="itbkk-description w-full h-28"
             :autofocus="
               !updateDetail.description
                 ? ''
@@ -149,8 +152,8 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         </div>
       </div>
       <div class="right-0 m-12 mt-0 flex justify-center gap-4">
-        <button @click="editTask()" v-if="!isSameDetail" class="btn bg-green-400">Save</button>
-        <button @click="router.push('/task')" class="btn bg-grey-400">Cancel</button>
+        <button @click="editTask()" v-if="!isSameDetail" class="itbkk-button-confirm btn bg-green-400">Save</button>
+        <button @click="router.push('/task')" class="itbkk-button-cancel btn bg-grey-400">Cancel</button>
       </div>
     </div>
   </div>
