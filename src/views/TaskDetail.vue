@@ -6,12 +6,15 @@ import router from '@/router/router'
 import { formatStatus, colorStatus, onMountSetup } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import { formatToLocalTime } from '@/lib/util'
+import { useTaskStore } from '@/store/store'
 
+const store = useTaskStore()
 const route = useRoute()
 const taskDetail = ref({})
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 onMounted(async () => {
   try {
+    store.requestMode = "preview"
     taskDetail.value = await onMountSetup()
   } catch (error) {
     throw error

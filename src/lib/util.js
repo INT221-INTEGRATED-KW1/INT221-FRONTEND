@@ -34,7 +34,7 @@ async function onMountSetup() {
   } catch (error) {
     router.push('/task')
     setTimeout(() => {
-      window.alert('No task Id : ' + id)
+      window.alert('The requested task does not exist : ' + id)
     }, 500)
     throw error
     // router.push('/task')

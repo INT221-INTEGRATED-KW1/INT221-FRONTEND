@@ -4,7 +4,7 @@ async function getTask(path) {
   try {
     const response = await fetch(`${url}${path}`)
     if (!response.ok) {
-      throw new Error('Failed to get task list ;-;')
+      throw new Error('Failed to get task')
     }
     const data = await response.json()
     // console.log(response.status);

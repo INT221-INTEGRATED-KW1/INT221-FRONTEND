@@ -31,10 +31,10 @@ fetchTasks()
 const isDeleting = ref(false)
 const isComplete = ref(false)
 const currentId = ref(0)
-const currentTitle = ref('')
+const currentTask = ref('')
 function showDeleteModal(id) {
   currentId.value = id
-  currentTitle.value = taskList[store.findTaskIndexById(id)].title
+  currentTask.value = taskList[store.findTaskIndexById(id)]
   isDeleting.value = true
 }
 async function delTask(id) {
@@ -43,11 +43,15 @@ async function delTask(id) {
   if (result.resCode == '200') {
     store.resStatus = 'deleteDone'
     taskList.splice(store.findTaskIndexById(id), 1)
-  }else if(result.resCode == '400') {
+  } else if (result.resCode == '400') {
     store.resStatus = 'deleteError'
   }
   isDeleting.value = false
 }
+
+// watch(store.resStatus , () => {
+//   setTimeout(() => {store.resStatus = ""}, 5000)
+// })
 
 const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
@@ -66,7 +70,11 @@ const thead = ref(
       <span class="itbkk-message">The task has been successfully added</span>
       <XMarkIcon class="size-8 hover:scale-x-125" @click="store.resStatus = ''"></XMarkIcon>
     </div>
-    <div role="alert" class="alert alert-success border-sky-500 bg-sky-200" v-if="store.resStatus == 'editDone'">
+    <div
+      role="alert"
+      class="alert alert-success border-sky-500 bg-sky-200"
+      v-if="store.resStatus == 'editDone'"
+    >
       <CheckCircleIcon class="size-8"></CheckCircleIcon>
       <span class="itbkk-message">The task has been updated</span>
       <XMarkIcon class="size-8 hover:scale-125" @click="store.resStatus = ''"></XMarkIcon>
@@ -80,7 +88,7 @@ const thead = ref(
       <span class="itbkk-message">The task has been deleted</span>
       <XMarkIcon class="size-8 hover:scale-125" @click="store.resStatus = ''"></XMarkIcon>
     </div>
-    
+
     <div role="alert" class="alert alert-error bg-red-200" v-if="store.resStatus == 'deleteError'">
       <CheckCircleIcon class="size-8"></CheckCircleIcon>
       <span class="itbkk-message">An error has occurred, the task does not exist.</span>
@@ -97,7 +105,7 @@ const thead = ref(
         Add
       </button>
     </div>
-    
+
     <div name="data" class="w-full flex flex-col justify-center items-center px-6">
       <table class="table">
         <thead class="border-b-[1px] border-opacity-10">
@@ -134,7 +142,10 @@ const thead = ref(
               @click="router.push(`/task/${task.id}`)"
             ></td>
             <td
-              :class="{ 'italic grey': !task.assignees, 'itbkk-assignees': !route.params.id }"
+              :class="{
+                'italic text-gray-500': !task.assignees,
+                'itbkk-assignees': !route.params.id
+              }"
               class="border-r-[1px]"
             >
               {{ !task.assignees ? 'Unassigned' : task.assignees }}
@@ -186,13 +197,20 @@ const thead = ref(
 
     <div
       name="detail"
-      class="fixed w-[640px] h-auto p-8  bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center justify-center"
+      class="fixed w-[640px] h-auto p-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center justify-center"
     >
       <h1 class="w-full text-center font-semibold text-xl">Deleting</h1>
-      <p class="itbkk-message w-full text-center  text-lg break-words inline-block">Are you sure to delete task "{{ currentTitle }}" ?</p>
+      <p class="itbkk-message w-full text-center text-lg break-words inline-block">
+        Do you want to delete the task number <span v-text="currentTask.id"></span
+        >  <span v-text="currentTask.title"></span> ?
+      </p>
       <div class="w-full flex flex-row gap-4 justify-center items-center mt-4">
-        <button class="itbkk-button-confirm btn bg-green-400" @click="delTask(currentId)">Confirm</button>
-        <button class="itbkk-button-cancel btn bg-slate-300" @click="isDeleting = false">Cancel</button>
+        <button class="itbkk-button-confirm btn bg-green-400" @click="delTask(currentId)">
+          Confirm
+        </button>
+        <button class="itbkk-button-cancel btn bg-slate-300" @click="isDeleting = false">
+          Cancel
+        </button>
       </div>
     </div>
   </div>

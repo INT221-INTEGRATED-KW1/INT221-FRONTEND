@@ -5,12 +5,10 @@ import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { compile, computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-// console.log('EDITTTT===================')
+
 const route = useRoute()
 const store = useTaskStore()
 const id = router.currentRoute.value.params.id
-// const updateDetail = store.taskList[store.findTaskIndexById(id)]
-// console.log(updateDetail);
 
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
@@ -19,6 +17,7 @@ let taskDetail = {}
 let oldDetail = {}
 const updateDetail = ref({})
 onMounted(async () => {
+  store.requestMode = "edit"
   taskDetail = await onMountSetup()
   oldDetail =  JSON.parse(JSON.stringify(taskDetail))
   updateDetail.value = taskDetail
@@ -27,7 +26,6 @@ onMounted(async () => {
 const isInValid = ref(false)
 
 const isSameDetail = computed(() => {
-
   return JSON.stringify(oldDetail) === JSON.stringify(updateDetail.value)
 })
 
