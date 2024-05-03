@@ -1,33 +1,23 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onBeforeMount, onBeforeUnmount, onMounted, onUnmounted } from 'vue'
 import { getTask } from '@/lib/fetchAPI'
 import { ref } from 'vue'
 import router from '@/router/router'
-import { formatStatus, colorStatus } from '@/lib/util'
+import { formatStatus, colorStatus, onMountSetup } from '@/lib/util'
 import { useRoute } from 'vue-router'
+import { formatToLocalTime } from '@/lib/util'
 
 const route = useRoute()
 const taskDetail = ref({})
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
-const createDate = ref(null)
-const updateDate = ref(null)
 onMounted(async () => {
-  const id = router.currentRoute.value.params.id
   try {
-    const taskRes = await getTask(`tasks/${id}`)
-    taskDetail.value = taskRes.data
-    createDate.value = formatToLocalTime(taskDetail.value.createdOn)
-    updateDate.value = formatToLocalTime(taskDetail.value.updatedOn)
+    taskDetail.value = await onMountSetup()
   } catch (error) {
-    router.push('/task')
+    throw error
   }
+  // console.log(taskDetail.value)
 })
-
-function formatToLocalTime(timeStr) {
-  const inputTime = new Date(timeStr)
-  const formattedTime = inputTime.toLocaleString('en-GB').replace('T', ' ')
-  return formattedTime
-}
 
 const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
@@ -83,19 +73,18 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           <span :class="header" class="col-span-1"> Timezone </span>
           <div v-text="timezone" class="itbkk-timezone col-span-3"></div>
           <span :class="header" class="col-span-1">CreateOn</span>
-          <div v-text="createDate" class="itbkk-created-on col-span-3"></div>
+          <div v-text="taskDetail.createdOn" class="itbkk-created-on col-span-3"></div>
           <span :class="header" class="col-span-1">UpdateOn</span>
-          <div v-text="updateDate" class="itbkk-updated-on col-span-3"></div>
+          <div v-text="taskDetail.updatedOn" class="itbkk-updated-on col-span-3"></div>
         </div>
         <div class="w-full flex flex-col gap-2">
           <span :class="header" class="w-full divider divider-start">Description</span>
           <p
-            class="itbkk-description w-full break-words inline-block"
-            :class="{ 'italic grey': !taskDetail.description }"
+            class="itbkk-description w-full text-g break-words inline-block"
+            :class="{ 'italic text-grey-300': !taskDetail.description }"
           >
             {{ !taskDetail.description ? 'No Description Provided' : taskDetail.description }}
           </p>
-          
         </div>
       </div>
     </div>
