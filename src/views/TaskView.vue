@@ -14,12 +14,15 @@ import {
 } from '@heroicons/vue/24/outline'
 import { colorStatus } from '@/lib/util'
 import { useTaskStore } from '@/store/store'
+import ErrorModal from '@/views/ErrorModal.vue'
 
 const store = useTaskStore()
 const taskList = store.taskList
 const route = useRoute()
 const fetchTasks = async () => {
   try {
+    store.errorRes = 'done'
+    store.resStatus
     const taskRes = await getTask('tasks')
     store.taskList.push(...taskRes.data)
   } catch (error) {
@@ -36,35 +39,46 @@ function showDeleteModal(id) {
   currentId.value = id
   currentTask.value = taskList[store.findTaskIndexById(id)]
   isDeleting.value = true
+  store.errorRes = 'Done'
 }
 async function delTask(id) {
   isComplete.value = false
-  const result = await deleteTask(id)
-  if (result.resCode == '200') {
+  try {
+    const result = await deleteTask(id)
     store.resStatus = 'deleteDone'
-    taskList.splice(store.findTaskIndexById(id), 1)
-  } else if (result.resCode == '400') {
+  } catch (error) {
     store.resStatus = 'deleteError'
+    store.errorRes = 'delete'
+    console.log(store.errorRes)
   }
   isDeleting.value = false
+  taskList.splice(store.findTaskIndexById(id), 1)
 }
-
-// watch(store.resStatus , () => {
-//   setTimeout(() => {store.resStatus = ""}, 5000)
-// })
 
 const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
 )
+
+watch(
+  () => store.resStatus,
+  (newStatus) => {
+    if (newStatus) {
+      setTimeout(() => {
+        store.resStatus = ''
+      }, 10000)
+    }
+  }
+)
 </script>
 
 <template>
-  <div class="w-full h-screen p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white">
+  <div class="w-full h-auto p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white">
     <div class="w-full h-28 font-bold text-4xl flex flex-col justify-center gap-1">
       <h1>IT-Bangmod Kradan Kanban</h1>
       <h2 class="text-3xl"></h2>
       <p class="text-base font-medium text-slate-700">Do something better than do nothing .</p>
     </div>
+
     <div role="alert" class="alert alert-success bg-green-200" v-if="store.resStatus == 'addDone'">
       <CheckCircleIcon class="size-8"></CheckCircleIcon>
       <span class="itbkk-message">The task has been successfully added</span>
@@ -91,7 +105,7 @@ const thead = ref(
 
     <div role="alert" class="alert alert-error bg-red-200" v-if="store.resStatus == 'deleteError'">
       <CheckCircleIcon class="size-8"></CheckCircleIcon>
-      <span class="itbkk-message">An error has occurred, the task does not exist.</span>
+      <span class="">An error has occurred, the task does not exist.</span>
       <XMarkIcon class="size-8 hover:scale-125" @click="store.resStatus = ''"></XMarkIcon>
     </div>
     <div role="alert" class="alert alert-error bg-red-200" v-if="store.resStatus == 'updateError'">
@@ -186,7 +200,7 @@ const thead = ref(
     </div>
   </div>
   <div
-    v-if="isDeleting"
+    v-if="isDeleting && store.errorRes == 'Done'"
     class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900"
   >
     <div
@@ -201,8 +215,8 @@ const thead = ref(
     >
       <h1 class="w-full text-center font-semibold text-xl">Deleting</h1>
       <p class="itbkk-message w-full text-center text-lg break-words inline-block">
-        Do you want to delete the task number <span v-text="currentTask.id"></span
-        >  <span v-text="currentTask.title"></span> ?
+        Do you want to delete the task number <span v-text="currentTask.id"></span>
+        <span v-text="currentTask.title"></span> ?
       </p>
       <div class="w-full flex flex-row gap-4 justify-center items-center mt-4">
         <button class="itbkk-button-confirm btn bg-green-400" @click="delTask(currentId)">
@@ -214,6 +228,7 @@ const thead = ref(
       </div>
     </div>
   </div>
+  <ErrorModal v-if="store.errorRes != 'done'"></ErrorModal>
   <router-view></router-view>
 </template>
 

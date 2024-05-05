@@ -25,10 +25,10 @@ async function addNewTask() {
     return (isInValid.value = true)
   } else {
     Object.assign(TaskDetail.value, {
-      title: TaskDetail.value.title.trimEnd(),
-      assignees: !TaskDetail.value.assignees ? null : TaskDetail.value.assignees.trimEnd(),
+      title: TaskDetail.value.title.trim(),
+      assignees: !TaskDetail.value.assignees ? null : TaskDetail.value.assignees.trim(),
       status: TaskDetail.value.status,
-      description: !TaskDetail.value.description ? null : TaskDetail.value.description.trimEnd()
+      description: !TaskDetail.value.description ? null : TaskDetail.value.description.trim()
     })
     // let addtask function and send out info into the main page :D
     const result = await addTask(TaskDetail.value)
@@ -90,9 +90,6 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             placeholder="Empty"
             class="itbkk-assignees"
             :class="inputField"
-            :autofocus="
-              !TaskDetail.assignees ? '' : (TaskDetail.assignees = TaskDetail.assignees.trimStart())
-            "
           />
         </div>
         <div class="w-full flex flex-col gap-2">
@@ -102,11 +99,6 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             placeholder="Hi"
             v-model="TaskDetail.description"
             class="itbkk-description w-full h-28"
-            :autofocus="
-              !TaskDetail.description
-                ? ''
-                : (TaskDetail.description = TaskDetail.description.trimStart())
-            "
           ></textarea>
         </div>
       </div>
