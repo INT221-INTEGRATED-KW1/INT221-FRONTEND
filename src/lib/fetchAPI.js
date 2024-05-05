@@ -7,7 +7,6 @@ async function getTask(path) {
       throw new Error('Failed to get task')
     }
     const data = await response.json()
-    // console.log(response.status);
     return { resCode: response.status, data: data }
   } catch (error) {
     throw error

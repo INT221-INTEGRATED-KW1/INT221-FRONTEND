@@ -5,6 +5,7 @@ import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { compile, computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import ErrorModal from '@/views/ErrorModal.vue'
 
 const route = useRoute()
 const store = useTaskStore()
@@ -13,14 +14,15 @@ const id = router.currentRoute.value.params.id
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
 
-let taskDetail = {}
+const taskDetail = ref({})
 let oldDetail = {}
 const updateDetail = ref({})
 onMounted(async () => {
-  store.requestMode = "edit"
-  taskDetail = await onMountSetup()
-  oldDetail =  JSON.parse(JSON.stringify(taskDetail))
-  updateDetail.value = taskDetail
+  taskDetail.value = await onMountSetup()
+  store.errorRes = (await taskDetail.value.getMode) ?? 'done'
+  // console.log(store.errorRes)  
+  oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
+  updateDetail.value = taskDetail.value
 })
 
 const isInValid = ref(false)
@@ -30,7 +32,7 @@ const isSameDetail = computed(() => {
 })
 
 async function editTask() {
-  store.resStatus = ""
+  store.resStatus = ''
   isInValid.value = false
   if (isSameDetail.value) {
     return router.push('/task')
@@ -39,19 +41,19 @@ async function editTask() {
     return (isInValid.value = true)
   } else {
     updateDetail.value = {
-      title: updateDetail.value.title.trimEnd(),
-      assignees: !updateDetail.value.assignees ? null : updateDetail.value.assignees.trimEnd(),
+      title: updateDetail.value.title.trim(),
+      assignees: !updateDetail.value.assignees ? null : updateDetail.value.assignees.trim(),
       status: updateDetail.value.status,
-      description: !updateDetail.value.description ? null : updateDetail.value.description.trimEnd()
+      description: !updateDetail.value.description ? null : updateDetail.value.description.trim()
     }
     // let addtask function and send out info into the main page :D
     try {
-      const result = await updateTask(taskDetail.id, updateDetail.value)
+      const result = await updateTask(taskDetail.value.id, updateDetail.value)
       Object.assign(store.taskList[store.findTaskIndexById(result.data.id)], result.data)
-      store.resStatus = "editDone"
+      store.resStatus = 'editDone'
       router.push('/task')
     } catch (error) {
-      store.resStatus = "updateError"
+      store.resStatus = 'updateError'
       throw error
     }
     router.push('/task')
@@ -63,6 +65,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
 <template>
   <div
+    v-if="store.errorRes == 'done'"
     class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900"
   >
     <div
@@ -106,7 +109,6 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             :class="inputField"
             v-model="updateDetail.status"
           >
-            
             <option value="NO_STATUS">No Status</option>
             <option value="TODO">To Do</option>
             <option value="DOING">Doing</option>
@@ -121,11 +123,6 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             placeholder="Empty"
             class="itbkk-assignees"
             :class="inputField"
-            :autofocus="
-              !updateDetail.assignees
-                ? ''
-                : (updateDetail.assignees = updateDetail.assignees.trimStart())
-            "
           />
           <span :class="header" class="col-span-1"> Timezone </span>
           <div v-text="timezone" class="itbkk-timezone col-span-3 p-2"></div>
@@ -141,19 +138,23 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             maxlength="500"
             v-model="updateDetail.description"
             class="itbkk-description w-full h-28"
-            :autofocus="
-              !updateDetail.description
-                ? ''
-                : (updateDetail.description = updateDetail.description.trimStart())
-            "
           ></textarea>
         </div>
       </div>
       <div class="right-0 m-12 mt-0 flex justify-center gap-4">
-        <button @click="editTask()" v-if="!isSameDetail" class="itbkk-button-confirm btn bg-green-400">Save</button>
-        <button @click="router.push('/task')" class="itbkk-button-cancel btn bg-grey-400">Cancel</button>
+        <button
+          @click="editTask()"
+          v-if="!isSameDetail"
+          class="itbkk-button-confirm btn bg-green-400"
+        >
+          Save
+        </button>
+        <button @click="router.push('/task')" class="itbkk-button-cancel btn bg-grey-400">
+          Cancel
+        </button>
       </div>
     </div>
   </div>
+  <!-- <ErrorModal v-if="store.errorRes != 'done'"></ErrorModal> -->
 </template>
 <style></style>

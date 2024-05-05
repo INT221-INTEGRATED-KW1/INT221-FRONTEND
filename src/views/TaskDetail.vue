@@ -1,32 +1,30 @@
 <script setup>
 import { onBeforeMount, onBeforeUnmount, onMounted, onUnmounted } from 'vue'
-import { getTask } from '@/lib/fetchAPI'
 import { ref } from 'vue'
 import router from '@/router/router'
 import { formatStatus, colorStatus, onMountSetup } from '@/lib/util'
 import { useRoute } from 'vue-router'
-import { formatToLocalTime } from '@/lib/util'
 import { useTaskStore } from '@/store/store'
-
+import ErrorModal from '@/views/ErrorModal.vue'
 const store = useTaskStore()
 const route = useRoute()
 const taskDetail = ref({})
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 onMounted(async () => {
   try {
-    store.requestMode = "preview"
     taskDetail.value = await onMountSetup()
+    store.errorRes = await taskDetail.value.getMode ?? 'done'
+    console.log(store.errorRes);
   } catch (error) {
     throw error
   }
-  // console.log(taskDetail.value)
 })
 
 const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
 
 <template>
-  <div
+  <div v-if="store.errorRes == 'done'"
     class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900"
   >
     <div
@@ -92,6 +90,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       </div>
     </div>
   </div>
+  <!-- <ErrorModal v-if="store.errorRes != 'done'"></ErrorModal> -->
 </template>
 
 <style>

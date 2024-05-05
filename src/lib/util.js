@@ -22,6 +22,8 @@ const statusColors = {
 
 const taskDetail = ref({})
 async function onMountSetup() {
+  const mode = router.currentRoute.value.name ?? "detail"
+  // console.log(mode);
   const id = router.currentRoute.value.params.id
   try {
     const taskRes = await getTask(`tasks/${id}`)
@@ -32,11 +34,7 @@ async function onMountSetup() {
     // console.log(taskDetail.value);
     return taskDetail.value
   } catch (error) {
-    router.push('/task')
-    setTimeout(() => {
-      window.alert('The requested task does not exist : ' + id)
-    }, 500)
-    throw error
+    return {getMode: mode ,error: error}
     // router.push('/task')
   }
 }
