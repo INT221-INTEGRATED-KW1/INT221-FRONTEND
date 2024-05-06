@@ -2,20 +2,19 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { deleteTask, getTask } from '../lib/fetchAPI'
 import router from '@/router/router'
-import { formatStatus } from '@/lib/util'
+import { formatStatus, colorStatus } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import {
   CheckCircleIcon,
   ClipboardDocumentListIcon,
   EllipsisVerticalIcon,
   FireIcon,
+  PlusIcon,
   UserCircleIcon,
   XMarkIcon
 } from '@heroicons/vue/24/outline'
-import { colorStatus } from '@/lib/util'
 import { useTaskStore } from '@/store/store'
 import ErrorModal from '@/views/ErrorModal.vue'
-
 const store = useTaskStore()
 const taskList = store.taskList
 const route = useRoute()
@@ -59,13 +58,47 @@ const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
 )
 
+function alertMessage(status) {
+  const alertmsg = {
+    addDone: {
+      message: 'The task has been successfully added',
+      css: 'alert alert-success bg-green-200'
+    },
+    editDone: {
+      message: 'The task has been updated',
+      css: 'alert alert-success border-sky-500 bg-sky-200'
+    },
+    deleteDone: {
+      message: 'The task has been deleted',
+      css: 'alert alert-success bg-green-200'
+    },
+    updateError: {
+      message: 'The update was unsuccessful',
+      css: 'alert alert-error bg-red-200'
+    },
+    deleteError: {
+      message: 'An error has occurred, the task does not exist.',
+      css: 'alert alert-error bg-red-200'
+    }
+  }
+  if (alertmsg.hasOwnProperty(status)) {
+    const obj = alertmsg[status]
+    return { message: obj.message, css: obj.css }
+  } else {
+    return false
+  }
+}
+
+const msg = ref({})
 watch(
   () => store.resStatus,
   (newStatus) => {
+    msg.value = alertMessage(newStatus)
     if (newStatus) {
       setTimeout(() => {
         store.resStatus = ''
-      }, 10000)
+        msg.value = {}
+      }, 5000)
     }
   }
 )
@@ -79,47 +112,15 @@ watch(
       <p class="text-base font-medium text-slate-700">Do something better than do nothing .</p>
     </div>
 
-    <div role="alert" class="alert alert-success bg-green-200" v-if="store.resStatus == 'addDone'">
-      <CheckCircleIcon class="size-8"></CheckCircleIcon>
-      <span class="itbkk-message">The task has been successfully added</span>
-      <XMarkIcon class="size-8 hover:scale-x-125" @click="store.resStatus = ''"></XMarkIcon>
-    </div>
-    <div
-      role="alert"
-      class="alert alert-success border-sky-500 bg-sky-200"
-      v-if="store.resStatus == 'editDone'"
-    >
-      <CheckCircleIcon class="size-8"></CheckCircleIcon>
-      <span class="itbkk-message">The task has been updated</span>
-      <XMarkIcon class="size-8 hover:scale-125" @click="store.resStatus = ''"></XMarkIcon>
-    </div>
-    <div
-      role="alert"
-      class="alert alert-success bg-green-200"
-      v-if="store.resStatus == 'deleteDone'"
-    >
-      <CheckCircleIcon class="size-8"></CheckCircleIcon>
-      <span class="itbkk-message">The task has been deleted</span>
-      <XMarkIcon class="size-8 hover:scale-125" @click="store.resStatus = ''"></XMarkIcon>
-    </div>
-
-    <div role="alert" class="alert alert-error bg-red-200" v-if="store.resStatus == 'deleteError'">
-      <CheckCircleIcon class="size-8"></CheckCircleIcon>
-      <span class="">An error has occurred, the task does not exist.</span>
-      <XMarkIcon class="size-8 hover:scale-125" @click="store.resStatus = ''"></XMarkIcon>
-    </div>
-    <div role="alert" class="alert alert-error bg-red-200" v-if="store.resStatus == 'updateError'">
-      <CheckCircleIcon class="size-8"></CheckCircleIcon>
-      <span class="itbkk-message">The update was unsuccessful</span>
-      <XMarkIcon class="size-8 hover:scale-125" @click="store.resStatus = ''"></XMarkIcon>
-    </div>
-
     <div class="w-full h-auto flex justify-end">
-      <button @click="router.push('/task/add')" class="itbkk-button-add btn px-6 bg-slate-200">
+      <button
+        @click="router.push('/task/add')"
+        class="itbkk-button-add btn px-4 h-9 min-h-9 bg-sky-300 hover:bg-sky-400 hover:border-sky-400"
+      >
+        <PlusIcon class="size-6"></PlusIcon>
         Add
       </button>
     </div>
-
     <div name="data" class="w-full flex flex-col justify-center items-center px-6">
       <table class="table">
         <thead class="border-b-[1px] border-opacity-10">
@@ -199,6 +200,18 @@ watch(
       </table>
     </div>
   </div>
+
+  <!-- SOME THING HAPPEn -->
+  <transition name="alert">
+    <div class="fixed top-4 w-full" v-if="store.resStatus != ''">
+      <div role="alert" class="w-fit mx-auto" :class="msg.css">
+        <CheckCircleIcon class="size-8"></CheckCircleIcon>
+        <span class="itbkk-message">{{ msg.message }}</span>
+        <!-- <XMarkIcon class="size-8 hover:scale-125" @click="store.resStatus = ''"></XMarkIcon> -->
+      </div>
+    </div>
+  </transition>
+
   <div
     v-if="isDeleting && store.errorRes == 'Done'"
     class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900"
@@ -208,28 +221,33 @@ watch(
       class="w-lvw h-lvh bg-black bg-opacity-40 itbkk-button"
       @click="isDeleting = false"
     ></div>
-
-    <div
-      name="detail"
-      class="fixed w-[640px] h-auto p-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center justify-center"
-    >
-      <h1 class="w-full text-center font-semibold text-xl">Deleting</h1>
-      <p class="itbkk-message w-full text-center text-lg break-words inline-block">
-        Do you want to delete the task number <span v-text="currentTask.id"></span>
-        <span v-text="currentTask.title"></span> ?
-      </p>
-      <div class="w-full flex flex-row gap-4 justify-center items-center mt-4">
-        <button class="itbkk-button-confirm btn bg-green-400" @click="delTask(currentId)">
-          Confirm
-        </button>
-        <button class="itbkk-button-cancel btn bg-slate-300" @click="isDeleting = false">
-          Cancel
-        </button>
+    <transition>
+      <div
+        name="detail"
+        class="fixed w-[640px] h-auto p-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center justify-center"
+      >
+        <h1 class="w-full text-center font-semibold text-xl">Deleting</h1>
+        <p class="itbkk-message w-full text-center text-lg break-words inline-block">
+          Do you want to delete the task number <span v-text="currentTask.id"></span>
+          <span v-text="currentTask.title"></span> ?
+        </p>
+        <div class="w-full flex flex-row gap-4 justify-center items-center mt-4">
+          <button class="itbkk-button-confirm btn bg-green-400" @click="delTask(currentId)">
+            Confirm
+          </button>
+          <button class="itbkk-button-cancel btn bg-slate-300" @click="isDeleting = false">
+            Cancel
+          </button>
+        </div>
       </div>
-    </div>
+    </transition>
   </div>
   <ErrorModal v-if="store.errorRes != 'done'"></ErrorModal>
-  <router-view></router-view>
+  <router-view v-slot="{ Component }">
+    <transition>
+      <component :is="Component" />
+    </transition>
+  </router-view>
 </template>
 
 <style>
@@ -241,5 +259,37 @@ watch(
 .v-enter-from,
 .v-leave-to {
   opacity: 0;
+}
+
+.slide-bottom {
+  animation: slide-bottom 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+}
+
+.alert-enter-active,
+.alert-leave-active {
+  animation: slide-bottom 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+}
+
+.alert-enter,
+.alert-leave-to {
+  animation: slide-top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) both;
+}
+
+@keyframes slide-bottom {
+  0% {
+    transform: translateY(-100px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+@keyframes slide-top {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100px);
+  }
 }
 </style>
