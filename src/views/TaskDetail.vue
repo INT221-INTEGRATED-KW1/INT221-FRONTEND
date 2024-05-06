@@ -5,16 +5,16 @@ import router from '@/router/router'
 import { formatStatus, colorStatus, onMountSetup } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import { useTaskStore } from '@/store/store'
-import ErrorModal from '@/views/ErrorModal.vue'
+
 const store = useTaskStore()
 const route = useRoute()
 const taskDetail = ref({})
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
+
 onMounted(async () => {
   try {
     taskDetail.value = await onMountSetup()
     store.errorRes = await taskDetail.value.getMode ?? 'done'
-    console.log(store.errorRes);
   } catch (error) {
     throw error
   }
@@ -35,13 +35,13 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 
     <div
       name="detail"
-      class="fixed w-[640px] h-4/5 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
+      class="fixed w-[640px] h-4/5 bg-white flex flex-col gap-4 rounded-xl "
     >
       <div class="w-auto flex flex-row justify-between m-12 mb-0">
         <div class="text-sm breadcrumbs">
           <ul>
             <li
-              class="hover:underline hover:cursor-pointer text-[#9c9c9c]"
+              class="hover:underline hover:cursor-pointer text-[#9c9c9c] rotate-in-center"
               @click="router.push(`/task`)"
             >
               Task
@@ -81,8 +81,8 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         <div class="w-full flex flex-col gap-2">
           <span :class="header" class="w-full divider divider-start">Description</span>
           <p
-            class="itbkk-description w-full text-g break-words inline-block"
-            :class="{ 'italic text-grey-300': !taskDetail.description }"
+            class="itbkk-description w-full text-g break-words inline-block "
+            :class="{ 'italic text-gray-500': !taskDetail.description }"
           >
             {{ !taskDetail.description ? 'No Description Provided' : taskDetail.description }}
           </p>
@@ -90,7 +90,6 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       </div>
     </div>
   </div>
-  <!-- <ErrorModal v-if="store.errorRes != 'done'"></ErrorModal> -->
 </template>
 
 <style>

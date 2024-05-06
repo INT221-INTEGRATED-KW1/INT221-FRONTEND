@@ -48,7 +48,7 @@ function goBack() {
     <div
       name="backdrop"
       class="w-lvw h-lvh bg-black bg-opacity-40 itbkk-button"
-      @click="router.push('/task')"
+      @click="goBack()"
     ></div>
     <div
       name="detail"

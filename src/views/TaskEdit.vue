@@ -17,10 +17,10 @@ const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
 const taskDetail = ref({})
 let oldDetail = {}
 const updateDetail = ref({})
+
 onMounted(async () => {
   taskDetail.value = await onMountSetup()
   store.errorRes = (await taskDetail.value.getMode) ?? 'done'
-  // console.log(store.errorRes)  
   oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
   updateDetail.value = taskDetail.value
 })
@@ -74,10 +74,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       @click="router.push(`/task`)"
     ></div>
 
-    <div
-      name="updateDetail"
-      class="fixed w-[640px] h-5/6 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
-    >
+    <div name="updateDetail" class="fixed w-[640px] h-5/6 bg-white flex flex-col gap-4 rounded-xl">
       <div class="w-auto flex flex-row justify-between m-12 mb-0">
         <div class="text-sm breadcrumbs">
           <ul>
@@ -137,7 +134,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             placeholder="Hi"
             maxlength="500"
             v-model="updateDetail.description"
-            class="itbkk-description w-full h-28"
+            class="itbkk-description w-full h-36"
           ></textarea>
         </div>
       </div>
