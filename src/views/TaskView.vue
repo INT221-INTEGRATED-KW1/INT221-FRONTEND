@@ -105,7 +105,7 @@ watch(
 </script>
 
 <template>
-  <div class="w-full h-auto p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white">
+  <div class="w-full h-auto min-h-screen p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white">
     <div class="w-full h-28 font-bold text-4xl flex flex-col justify-center gap-1">
       <h1>IT-Bangmod Kradan Kanban</h1>
       <h2 class="text-3xl"></h2>
