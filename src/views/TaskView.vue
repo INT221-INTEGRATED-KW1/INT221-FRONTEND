@@ -233,6 +233,7 @@ watch(
         name="detail"
         class="fixed w-[640px] h-auto p-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center justify-center"
       >
+        <img src="/public/folder.png" alt="" class="size-24 mx-auto" />
         <h1 class="w-full text-center font-semibold text-xl">Deleting</h1>
         <p class="itbkk-message w-full text-center text-lg break-words inline-block">
           Do you want to delete the task number {{ currentTask.id }}
