@@ -38,7 +38,7 @@ async function addNewTask() {
     // setInterval(store.resStatus = "", 5000)
   }
 }
-
+// console.log(TaskDetail.value);
 const inputField = 'p-2 col-span-3 hover:bg-slate-400 hover:bg-opacity-20 duration-150 rounded-md'
 const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
@@ -77,7 +77,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             v-model="TaskDetail.status"
           >
             <option value="NO_STATUS" selected>No Status</option>
-            <option value="TODO">To Do</option>
+            <option value="TO_DO">To Do</option>
             <option value="DOING">Doing</option>
             <option value="DONE">Done</option>
           </select>
@@ -103,7 +103,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         </div>
       </div>
       <div class="right-0 m-12 mt-0 flex justify-center gap-4">
-        <button @click="addNewTask()" class="itbkk-button-confirm btn bg-green-400">Save</button>
+        <button @click="addNewTask()" class="itbkk-button-confirm btn bg-green-400 " :disabled="!TaskDetail.title">Save</button>
         <button @click="router.push('/task')" class="itbkk-button-cancel btn bg-grey-400">Cancel</button>
       </div>
     </div>

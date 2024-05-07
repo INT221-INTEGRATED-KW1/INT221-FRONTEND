@@ -3,7 +3,7 @@ import { ref, toHandlerKey } from 'vue'
 import { getTask } from './fetchAPI'
 const statusMap = {
   NO_STATUS: 'No Status',
-  TODO: 'To Do',
+  TO_DO: 'To Do',
   DOING: 'Doing',
   DONE: 'Done'
 }
@@ -15,7 +15,7 @@ for (const key in statusMap) {
 
 const statusColors = {
   NO_STATUS: 'bg-slate-200 text-gray-500 italic',
-  TODO: 'bg-orange-200 text-orange-800',
+  TO_DO: 'bg-orange-200 text-orange-800',
   DOING: 'bg-blue-200 text-blue-800',
   DONE: 'bg-emerald-200 text-emerald-800'
 }
