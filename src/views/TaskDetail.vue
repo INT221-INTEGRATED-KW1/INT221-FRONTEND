@@ -9,13 +9,16 @@ import { useTaskStore } from '@/store/store'
 const store = useTaskStore()
 const route = useRoute()
 const taskDetail = ref({})
+// console.log(taskDetail.value)
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 
+// console.log(taskDetail.value , store.errorRes);
 onMounted(async () => {
   try {
     taskDetail.value = await onMountSetup()
-    store.errorRes = await taskDetail.value.getMode ?? 'done'
+    store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
   } catch (error) {
+    taskDetail.value = {}
     throw error
   }
 })
@@ -24,7 +27,8 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
 
 <template>
-  <div v-if="store.errorRes == 'done'"
+  <div
+    v-if="Object.keys(taskDetail).length !== 0 && store.errorRes == 'Done'"
     class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900"
   >
     <div
@@ -33,10 +37,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       @click="router.push(`/task`)"
     ></div>
 
-    <div
-      name="detail"
-      class="fixed w-[640px] h-4/5 bg-white flex flex-col gap-4 rounded-xl "
-    >
+    <div name="detail" class="fixed w-[640px] h-4/5 bg-white flex flex-col gap-4 rounded-xl">
       <div class="w-auto flex flex-row justify-between m-12 mb-0">
         <div class="text-sm breadcrumbs">
           <ul>
@@ -81,7 +82,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         <div class="w-full flex flex-col gap-2">
           <span :class="header" class="w-full divider divider-start">Description</span>
           <p
-            class="itbkk-description w-full text-g break-words inline-block "
+            class="itbkk-description w-full text-g break-words inline-block"
             :class="{ 'italic text-gray-500': !taskDetail.description }"
           >
             {{ !taskDetail.description ? 'No Description Provided' : taskDetail.description }}

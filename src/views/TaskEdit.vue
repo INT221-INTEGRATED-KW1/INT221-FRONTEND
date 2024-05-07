@@ -5,7 +5,6 @@ import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { compile, computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import ErrorModal from '@/views/ErrorModal.vue'
 
 const route = useRoute()
 const store = useTaskStore()
@@ -15,14 +14,23 @@ const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
 
 const taskDetail = ref({})
+console.log("edit")
 let oldDetail = {}
 const updateDetail = ref({})
 
 onMounted(async () => {
-  taskDetail.value = await onMountSetup()
-  store.errorRes = (await taskDetail.value.getMode) ?? 'done'
-  oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
-  updateDetail.value = taskDetail.value
+  try {
+    taskDetail.value = await onMountSetup()
+    store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
+    oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
+    updateDetail.value = taskDetail.value
+    console.log(taskDetail.value);
+    console.log(store.errorRes);
+    // console.log('done');
+  } catch (error) {
+    taskDetail.value = {}
+    throw error
+  }
 })
 
 const isInValid = ref(false)
@@ -65,7 +73,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
 <template>
   <div
-    v-if="store.errorRes == 'done'"
+    v-if="Object.keys(taskDetail).length !== 0 && store.errorRes == 'Done'"
     class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900"
   >
     <div
@@ -107,7 +115,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             v-model="updateDetail.status"
           >
             <option value="NO_STATUS">No Status</option>
-            <option value="TODO">To Do</option>
+            <option value="TO_DO">To Do</option>
             <option value="DOING">Doing</option>
             <option value="DONE">Done</option>
           </select>

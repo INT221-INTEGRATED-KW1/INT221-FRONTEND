@@ -20,10 +20,10 @@ const taskList = store.taskList
 const route = useRoute()
 const fetchTasks = async () => {
   try {
-    store.errorRes = 'done'
     store.resStatus
     const taskRes = await getTask('tasks')
     store.taskList.push(...taskRes.data)
+    // console.log(store.taskList);
   } catch (error) {
     console.error('Error fetching tasks:', error.message)
   }
@@ -44,11 +44,13 @@ async function delTask(id) {
   isComplete.value = false
   try {
     const result = await deleteTask(id)
+    // console.log(result.resCode)
     store.resStatus = 'deleteDone'
+    // console.log(store.errorRes)
   } catch (error) {
     store.resStatus = 'deleteError'
     store.errorRes = 'delete'
-    console.log(store.errorRes)
+    // console.log(store.errorRes)
   }
   isDeleting.value = false
   taskList.splice(store.findTaskIndexById(id), 1)
@@ -105,7 +107,9 @@ watch(
 </script>
 
 <template>
-  <div class="w-full h-auto min-h-screen p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white">
+  <div
+    class="w-full h-auto min-h-screen p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white"
+  >
     <div class="w-full h-28 font-bold text-4xl flex flex-col justify-center gap-1">
       <h1>IT-Bangmod Kradan Kanban</h1>
       <h2 class="text-3xl"></h2>
@@ -154,6 +158,9 @@ watch(
             <td
               v-text="task.title"
               class="itbkk-title border-r-[1px] border-opacity-10"
+              :class="{
+                'itbkk-title': !route.params.id
+              }"
               @click="router.push(`/task/${task.id}`)"
             ></td>
             <td
@@ -168,7 +175,7 @@ watch(
             <td>
               <div
                 class="rounded-md px-[8px] py-[2px] w-fit itbkk-status"
-                :class="colorStatus(task.status)"
+                :class="[colorStatus(task.status), { 'itbkk-assignees': !route.params.id }]"
               >
                 {{ formatStatus(task.status) }}
               </div>
@@ -186,7 +193,7 @@ watch(
                     >Edit</a
                   >
                 </li>
-                <li class="text-red-500 hover:bg-red-300 rounded-lg">
+                <li class="text-red-500 hover:bg-red-300 bg-red-300 rounded-lg">
                   <a @click="showDeleteModal(task.id)" class="itbkk-button-delete">Delete</a>
                 </li>
               </ul>
@@ -228,7 +235,7 @@ watch(
       >
         <h1 class="w-full text-center font-semibold text-xl">Deleting</h1>
         <p class="itbkk-message w-full text-center text-lg break-words inline-block">
-          Do you want to delete the task number <span v-text="currentTask.id"></span>
+          Do you want to delete the task number {{ currentTask.id }}
           <span v-text="currentTask.title"></span> ?
         </p>
         <div class="w-full flex flex-row gap-4 justify-center items-center mt-4">
@@ -242,7 +249,7 @@ watch(
       </div>
     </transition>
   </div>
-  <ErrorModal v-if="store.errorRes != 'done'"></ErrorModal>
+  <ErrorModal v-if="store.errorRes != 'Done'"></ErrorModal>
   <router-view v-slot="{ Component }">
     <transition>
       <component :is="Component" />

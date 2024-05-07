@@ -2,7 +2,7 @@
 import { useTaskStore } from "@/store/store";
 import { computed, ref, watch } from "vue";
 import router from "@/router/router";
-
+// console.log("hi");
 const store = useTaskStore()
 const errorData = {
     detail:{
@@ -22,7 +22,7 @@ function findMessage() {
         const obj = errorData[store.errorRes]
         return obj.message || "Message not found";
     } else {
-        return "Status Done";
+        return "status done";
     }
 }
 
