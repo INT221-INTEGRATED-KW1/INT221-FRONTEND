@@ -111,23 +111,34 @@ watch(
     class="w-full h-auto min-h-screen p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white"
   >
     <div class="w-full h-28 font-bold text-4xl flex flex-col justify-center gap-1">
-      <h1>IT-Bangmod Kradan Kanban</h1>
+      <h1 class="">IT-Bangmod Kradan Kanban</h1>
       <h2 class="text-3xl"></h2>
-      <p class="text-base font-medium text-slate-700">Do something better than do nothing .</p>
+      <p class="text-base font-medium">Do something better than do nothing .</p>
     </div>
-
-    <div class="w-full h-auto flex justify-end">
+   <div class="css-selector w-full h-1"></div>
+    <div class="w-full h-auto flex justify-end gap-4">
       <button
         @click="router.push('/task/add')"
-        class="itbkk-button-add btn px-4 h-9 min-h-9 bg-sky-300 hover:bg-sky-400 hover:border-sky-400"
+        class="itbkk-button-add btn px-4 h-9 min-h-9 bg-sky-300 hover:bg-sky-400 hover:border-sky-400 border-none"
       >
         <PlusIcon class="size-6"></PlusIcon>
         Add
       </button>
+
+      <button
+        @click="router.push('/task/add')"
+        class="itbkk-button-add btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
+      >
+        <PlusIcon class="size-6"></PlusIcon>
+        Status M.
+      </button>
     </div>
-    <div name="data" class="w-full flex flex-col justify-center items-center px-6">
-      <table class="table">
-        <thead class="border-b-[1px] border-opacity-10">
+    <div
+      name="data"
+      class="w-full flex flex-col justify-center items-center px-6 bg-white rounded-2xl"
+    >
+      <table class="table rounded-3xl">
+        <thead class="border-b-[1px] border-opacity-10 bg-gray-600 bg-opacity-20">
           <tr>
             <td class="w-3/5 border-r-[1px] border-opacity-10">
               <span :class="thead"
@@ -147,6 +158,7 @@ watch(
                 <p>Status</p></span
               >
             </td>
+            <td></td>
           </tr>
         </thead>
         <tbody>
@@ -298,6 +310,57 @@ watch(
   }
   100% {
     transform: translateY(-100px);
+  }
+}
+
+.css-selector {
+  background: linear-gradient(
+    180deg,
+    #b90000,
+    #ff3535,
+    #fffb35,
+    #6cff35,
+    #35ffc2,
+    #35a4ff,
+    #4b35ff
+  );
+  background-size: 1400% 1400%;
+  -webkit-animation: AnimationName 30s ease infinite;
+  -moz-animation: AnimationName 30s ease infinite;
+  animation: AnimationName 10s ease infinite;
+}
+
+@-webkit-keyframes AnimationName {
+  0% {
+    background-position: 50% 0%;
+  }
+  50% {
+    background-position: 51% 100%;
+  }
+  100% {
+    background-position: 50% 0%;
+  }
+}
+@-moz-keyframes AnimationName {
+  0% {
+    background-position: 50% 0%;
+  }
+  50% {
+    background-position: 51% 100%;
+  }
+  100% {
+    background-position: 50% 0%;
+  }
+}
+@keyframes AnimationName {
+  0% {
+    background-position: 50% 0%;
+  }
+  50% {
+    background-position: 51% 100%;
+  }
+  100% {
+    background-position: 50% 0%;
   }
 }
 </style>
