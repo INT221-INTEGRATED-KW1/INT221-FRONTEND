@@ -3,6 +3,9 @@ import TaskView from '@/views/TaskView.vue'
 import TaskDetail from '@/views/TaskDetail.vue'
 import TaskEdit from '@/views/TaskEdit.vue'
 import TaskCreate from '@/views/TaskCreate.vue'
+import StatusManager from '@/views/StatusManager.vue'
+import StatusAdd from '@/views/StatusAdd.vue'
+import StatusEdit from '@/views/StatusEdit.vue'
 
 const routes = [
   {
@@ -27,7 +30,28 @@ const routes = [
       {
         path: ':id/edit',
         name: 'edit',
-        component: TaskEdit,
+        component: TaskEdit
+      },
+    ]
+  },
+  {
+    path: '/status',
+    name: 'status',
+    children: [
+      {
+        path: 'manage',
+        name: 'manage',
+        component: StatusManager
+      },
+      {
+        path: 'add',
+        name: 'add',
+        component: StatusAdd
+      },
+      {
+        path: 'edit',
+        name: 'edit',
+        component: StatusEdit
       },
     ]
   },

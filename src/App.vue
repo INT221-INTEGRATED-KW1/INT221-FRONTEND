@@ -20,10 +20,10 @@ import { useTaskStore } from './store/store'
 const store = useTaskStore()
 
 onMounted(async () => {
-  store.isLoading = true
-  setTimeout(() => {
-    store.isLoading = false
-  }, 3000)
+  // store.isLoading = true
+  // setTimeout(() => {
+  //   store.isLoading = false
+  // }, 3000)
 })
 </script>
 

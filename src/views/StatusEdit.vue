@@ -13,22 +13,22 @@ const id = router.currentRoute.value.params.id
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
 
-const taskDetail = ref({})
+const statusDetail = ref({})
 console.log("edit")
 let oldDetail = {}
 const updateDetail = ref({})
 
 onMounted(async () => {
   try {
-    taskDetail.value = await onMountSetup("tasks")
-    store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
-    oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
-    updateDetail.value = taskDetail.value
-    console.log(taskDetail.value);
+    statusDetail.value = await onMountSetup("statuses")
+    store.errorRes = (await statusDetail.value.getMode) ?? 'Done'
+    oldDetail = JSON.parse(JSON.stringify(statusDetail.value))
+    updateDetail.value = statusDetail.value
+    console.log(statusDetail.value);
     console.log(store.errorRes);
     // console.log('done');
   } catch (error) {
-    taskDetail.value = {}
+    statusDetail.value = {}
     throw error
   }
 })
@@ -43,7 +43,7 @@ async function editTask() {
   store.resStatus = ''
   isInValid.value = false
   if (isSameDetail.value) {
-    return router.push('/task')
+    return router.push('/status/manage')
   }
   if (!updateDetail.value.title) {
     return (isInValid.value = true)
@@ -56,15 +56,15 @@ async function editTask() {
     }
     // let addtask function and send out info into the main page :D
     try {
-      const result = await updateMethod(taskDetail.value.id, "tasks", updateDetail.value)
+      const result = await updateMethod(statusDetail.value.id, "statuses", updateDetail.value)
       Object.assign(store.taskList[store.findTaskIndexById(result.data.id)], result.data)
       store.resStatus = 'editDone'
-      router.push('/task')
+      router.push('/status/manage')
     } catch (error) {
       store.resStatus = 'updateError'
       throw error
     }
-    router.push('/task')
+    router.push('/status/manage')
   }
 }
 
@@ -73,7 +73,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
 <template>
   <div
-    v-if="Object.keys(taskDetail).length !== 0 && store.errorRes == 'Done'"
+    v-if="Object.keys(statusDetail).length !== 0 && store.errorRes == 'Done'"
     class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900"
   >
     <div

@@ -15,7 +15,7 @@ const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 // console.log(taskDetail.value , store.errorRes);
 onMounted(async () => {
   try {
-    taskDetail.value = await onMountSetup()
+    taskDetail.value = await onMountSetup("tasks")
     store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
   } catch (error) {
     taskDetail.value = {}

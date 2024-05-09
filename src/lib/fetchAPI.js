@@ -1,10 +1,10 @@
 const url = import.meta.env.VITE_BASE_URL
 
-async function getTask(path) {
+async function getMethod(path) {
   try {
     const response = await fetch(`${url}${path}`)
     if (!response.ok) {
-      throw new Error('Failed to get task')
+      throw new Error(`Failed to get method ${path}`)
     }
     const data = await response.json()
     return { resCode: response.status, data: data }
@@ -13,17 +13,17 @@ async function getTask(path) {
   }
 }
 
-async function addTask(taskDetail) {
+async function addMethod(detail, database) {
   try {
-    const response = await fetch(`${url}tasks`, {
+    const response = await fetch(`${url}${database}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(taskDetail)
+      body: JSON.stringify(detail)
     })
     if (!response.ok) {
-      throw new Error('Fail to add new task.')
+      throw new Error(`Fail to add new ${database}.`)
     }
     const data = await response.json()
     return { resCode: response.status, data: data }
@@ -32,9 +32,9 @@ async function addTask(taskDetail) {
   }
 }
 
-async function deleteTask(taskId) {
+async function deleteMethod(taskId, database) {
   try {
-    const response = await fetch(`${url}tasks/${taskId}`, {
+    const response = await fetch(`${url}${database}/${taskId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
@@ -50,9 +50,9 @@ async function deleteTask(taskId) {
   }
 }
 
-async function updateTask(taskId, taskDetail) {
+async function updateMethod(taskId, database, taskDetail) {
   try {
-    const response = await fetch(`${url}tasks/${taskId}`, {
+    const response = await fetch(`${url}${database}/${taskId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
@@ -60,7 +60,7 @@ async function updateTask(taskId, taskDetail) {
       body: JSON.stringify(taskDetail)
     })
     if (!response.ok) {
-      throw new Error('Failed to update task id : ', taskId)
+      throw new Error(`Failed to update ${database} id : `, taskId)
     }
     const data = await response.json()
     return { resCode: response.status, data: data }
@@ -69,4 +69,4 @@ async function updateTask(taskId, taskDetail) {
   }
 }
 
-export { getTask , addTask , deleteTask , updateTask}
+export { getMethod , addMethod , deleteMethod , updateMethod}

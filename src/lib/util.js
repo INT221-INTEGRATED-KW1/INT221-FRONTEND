@@ -1,6 +1,6 @@
 import router from '@/router/router'
 import { ref, toHandlerKey } from 'vue'
-import { getTask } from './fetchAPI'
+import { getMethod } from './fetchAPI'
 const statusMap = {
   NO_STATUS: 'No Status',
   TO_DO: 'To Do',
@@ -21,12 +21,13 @@ const statusColors = {
 }
 
 const taskDetail = ref({})
-async function onMountSetup() {
+
+async function onMountSetup(database) {
   const mode = router.currentRoute.value.name ?? 'detail'
   // console.log(mode);
   const id = router.currentRoute.value.params.id
   try {
-    const taskRes = await getTask(`tasks/${id}`)
+    const taskRes = await getMethod(`${database}/${id}`)
     // console.log(taskRes)
     taskDetail.value = taskRes.data
     taskDetail.value.createdOn = formatToLocalTime(taskDetail.value.createdOn)

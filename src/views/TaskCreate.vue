@@ -1,5 +1,5 @@
 <script setup>
-import { addTask } from '@/lib/fetchAPI'
+import { addMethod } from '@/lib/fetchAPI'
 import { formatStatusReverse } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
@@ -30,8 +30,8 @@ async function addNewTask() {
       status: TaskDetail.value.status,
       description: !TaskDetail.value.description ? null : TaskDetail.value.description.trim()
     })
-    // let addtask function and send out info into the main page :D
-    const result = await addTask(TaskDetail.value)
+    // let addMethod function and send out info into the main page :D
+    const result = await addMethod(TaskDetail.value, "tasks")
     store.taskList.push(result.data)
     store.resStatus = 'addDone'
     router.push('/task')

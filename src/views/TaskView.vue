@@ -1,6 +1,6 @@
 <script setup>
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { deleteTask, getTask } from '../lib/fetchAPI'
+import { deleteMethod, getMethod } from '../lib/fetchAPI'
 import router from '@/router/router'
 import { formatStatus, colorStatus } from '@/lib/util'
 import { useRoute } from 'vue-router'
@@ -21,7 +21,7 @@ const route = useRoute()
 const fetchTasks = async () => {
   try {
     store.resStatus
-    const taskRes = await getTask('tasks')
+    const taskRes = await getMethod('tasks')
     store.taskList.push(...taskRes.data)
     // console.log(store.taskList);
   } catch (error) {
@@ -43,7 +43,7 @@ function showDeleteModal(id) {
 async function delTask(id) {
   isComplete.value = false
   try {
-    const result = await deleteTask(id)
+    const result = await deleteMethod(id, "tasks")
     // console.log(result.resCode)
     store.resStatus = 'deleteDone'
     // console.log(store.errorRes)
@@ -115,8 +115,8 @@ watch(
       <h2 class="text-3xl"></h2>
       <p class="text-base font-medium">Do something better than do nothing .</p>
     </div>
-   <div class="css-selector w-full h-1"></div>
-    <div class="w-full h-auto flex justify-end gap-4">
+    <div class="css-selector w-full h-1"></div>
+    <div class="w-full h-auto flex justify-end gap-4 px-6">
       <button
         @click="router.push('/task/add')"
         class="itbkk-button-add btn px-4 h-9 min-h-9 bg-sky-300 hover:bg-sky-400 hover:border-sky-400 border-none"
@@ -126,11 +126,13 @@ watch(
       </button>
 
       <button
-        @click="router.push('/task/add')"
+        @click="router.push('/status/manage')"
         class="itbkk-button-add btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
       >
-        <PlusIcon class="size-6"></PlusIcon>
-        Status M.
+        <span :class="thead"
+          ><FireIcon class="size-6" />
+          <p>Status M.</p></span
+        >
       </button>
     </div>
     <div
