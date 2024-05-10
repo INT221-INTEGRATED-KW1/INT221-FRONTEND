@@ -8,7 +8,7 @@ const errorData = {
     detail:{
         message: "The requested task does not exist"
     },
-    edit: {
+    editTask: {
         message: "The task does not exist",
     },
     delete:{

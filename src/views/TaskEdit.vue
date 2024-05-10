@@ -5,7 +5,6 @@ import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { compile, computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-
 const route = useRoute()
 const store = useTaskStore()
 const id = router.currentRoute.value.params.id

@@ -18,17 +18,27 @@ import ErrorModal from '@/views/ErrorModal.vue'
 const store = useTaskStore()
 const taskList = store.taskList
 const route = useRoute()
-const fetchTasks = async () => {
+const statusList = ref(store.statusList)
+onMounted(async () => {
   try {
-    store.resStatus
+    store.taskList.splice(0, store.taskList.length)
     const taskRes = await getMethod('tasks')
     store.taskList.push(...taskRes.data)
-    // console.log(store.taskList);
+    // console.log(store.taskList)
   } catch (error) {
     console.error('Error fetching tasks:', error.message)
   }
-}
-fetchTasks()
+
+  try {
+    const statusRes = await getMethod('statuses')
+    // store.statusList = [...statusRes.data]
+    store.statusList = []
+    store.statusList.push(...statusRes.data)
+    // console.log(store.statusList)
+  } catch (error) {
+    console.error('Fail to get status', error)
+  }
+})
 
 const isDeleting = ref(false)
 const isComplete = ref(false)
@@ -43,7 +53,7 @@ function showDeleteModal(id) {
 async function delTask(id) {
   isComplete.value = false
   try {
-    const result = await deleteMethod(id, "tasks")
+    const result = await deleteMethod(id, 'tasks')
     // console.log(result.resCode)
     store.resStatus = 'deleteDone'
     // console.log(store.errorRes)
@@ -91,6 +101,12 @@ function alertMessage(status) {
   }
 }
 
+function matchColor(statusName) {
+  const result = store.statusList.find((status) => status.name == statusName) ?? 'grey'
+  const color = colorStatus(result.color)
+  return color
+}
+
 const msg = ref({})
 watch(
   () => store.resStatus,
@@ -104,6 +120,7 @@ watch(
     }
   }
 )
+
 </script>
 
 <template>
@@ -118,7 +135,7 @@ watch(
     <div class="css-selector w-full h-1"></div>
     <div class="w-full h-auto flex justify-end gap-4 px-6">
       <button
-        @click="router.push('/task/add')"
+        @click="router.push({ name: 'addTask' })"
         class="itbkk-button-add btn px-4 h-9 min-h-9 bg-sky-300 hover:bg-sky-400 hover:border-sky-400 border-none"
       >
         <PlusIcon class="size-6"></PlusIcon>
@@ -126,7 +143,7 @@ watch(
       </button>
 
       <button
-        @click="router.push('/status/manage')"
+        @click="router.push('/status')"
         class="itbkk-button-add btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
       >
         <span :class="thead"
@@ -189,9 +206,9 @@ watch(
             <td>
               <div
                 class="rounded-md px-[8px] py-[2px] w-fit itbkk-status"
-                :class="[colorStatus(task.status), { 'itbkk-assignees': !route.params.id }]"
+                :class="[matchColor(task.status), { 'itbkk-assignees': !route.params.id }]"
               >
-                {{ formatStatus(task.status) }}
+                {{ task.status }}
               </div>
             </td>
             <td class="dropdown dropdown-bottom dropdown-end">

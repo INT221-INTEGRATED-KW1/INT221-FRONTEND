@@ -24,33 +24,29 @@ const routes = [
       },
       {
         path: 'add',
-        name: 'add',
+        name: 'addTask',
         component: TaskCreate
       },
       {
         path: ':id/edit',
-        name: 'edit',
+        name: 'editTask',
         component: TaskEdit
-      },
+      }
     ]
   },
   {
     path: '/status',
     name: 'status',
+    component: StatusManager,
     children: [
       {
-        path: 'manage',
-        name: 'manage',
-        component: StatusManager
-      },
-      {
         path: 'add',
-        name: 'add',
+        name: 'addStatus',
         component: StatusAdd
       },
       {
-        path: 'edit',
-        name: 'edit',
+        path: ':id/edit',
+        name: 'editStatus',
         component: StatusEdit
       },
     ]

@@ -1,13 +1,40 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import router from '@/router/router'
-import { formatStatus, colorStatus } from '@/lib/util'
+import { formatStatus, colorStatus, onMountSetup } from '@/lib/util'
 import {
   ClipboardDocumentListIcon,
+  EllipsisHorizontalIcon,
+  EllipsisVerticalIcon,
   FireIcon,
   PlusIcon,
   UserCircleIcon
 } from '@heroicons/vue/24/outline'
+import { useTaskStore } from '@/store/store'
+import { getMethod } from '@/lib/fetchAPI'
+
+const store = useTaskStore()
+const statusList = store.statusList
+// console.log(store.statusList.length)
+// const statusList = ref(store.statusList)
+const fetchStatus = async () => {
+  // console.log(store.statusList.length)
+  if (store.statusList.length === 0) {
+    // console.log('A')
+    try {
+      // console.log(store.statusList)
+      const statusRes = await getMethod('statuses')
+      store.statusList = [...statusRes.data]
+      // console.log(store.statusList)
+    } catch (error) {
+      console.error('Fail to get status', error)
+    }
+  } else {
+    // console.log('B')
+    return
+  }
+}
+fetchStatus()
 
 const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
@@ -34,11 +61,10 @@ const thead = ref(
             >
               Task
             </li>
-            <li>Edit</li>
+            <li>Task Status</li>
           </ul>
         </div>
         <div></div>
-      
       </div>
       <div class="w-1/2 h-auto flex justify-end gap-4">
         <button
@@ -57,6 +83,7 @@ const thead = ref(
       <table class="table rounded-3xl">
         <thead class="border-b-[1px] border-opacity-10 bg-gray-600 bg-opacity-20">
           <tr>
+            <td>Id</td>
             <td class="w-3/5 border-r-[1px] border-opacity-10">
               <span :class="thead"
                 ><ClipboardDocumentListIcon class="size-6" />
@@ -78,9 +105,46 @@ const thead = ref(
             <td></td>
           </tr>
         </thead>
+        <tbody>
+          <tr v-for="(status, index) in store.statusList" :key="status.id">
+            <td>{{ index + 1 }}</td>
+            <td>{{ status.name }}</td>
+            <td>{{ status.description }}</td>
+            <td>
+              <div
+                class="rounded-md px-[8px] py-[2px] w-fit itbkk-status"
+                :class="[colorStatus(status.color)]"
+              >
+                {{ status.name }}
+              </div>
+            </td>
+            <td>{{ status.color }}</td>
+            <td class="dropdown dropdown-bottom dropdown-end">
+              <div tabindex="0" role="button" class="m-1">
+                <EllipsisVerticalIcon class="itbkk-button-action size-6 hover:scale-150" />
+              </div>
+              <ul
+                tabindex="0"
+                class="dropdown-content z-0 menu p-2 shadow bg-base-100 rounded-box w-52"
+              >
+                <li class="">
+                  <a
+                    @click="router.push({ name: 'editStatus', params: { id: status.id } })"
+                    class="itbkk-button-edit"
+                    >Edit</a
+                  >
+                </li>
+                <li class="text-red-500 hover:bg-red-300 bg-red-300 rounded-lg">
+                  <a @click="showDeleteModal(task.id)" class="itbkk-button-delete">Delete</a>
+                </li>
+              </ul>
+            </td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>
+  <router-view></router-view>
 </template>
 
 <style></style>

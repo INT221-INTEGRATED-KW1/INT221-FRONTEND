@@ -5,7 +5,7 @@ import router from '@/router/router'
 import { formatStatus, colorStatus, onMountSetup } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import { useTaskStore } from '@/store/store'
-
+// console.log('taskdetail');
 const store = useTaskStore()
 const route = useRoute()
 const taskDetail = ref({})

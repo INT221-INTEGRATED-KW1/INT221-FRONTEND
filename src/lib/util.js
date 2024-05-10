@@ -14,33 +14,46 @@ for (const key in statusMap) {
 }
 
 const statusColors = {
-  NO_STATUS: 'bg-slate-200 text-gray-500 italic',
-  TO_DO: 'bg-orange-200 text-orange-800',
-  DOING: 'bg-blue-200 text-blue-800',
-  DONE: 'bg-emerald-200 text-emerald-800'
+  grey: 'bg-slate-200 text-gray-500 italic',
+  orange: 'bg-orange-200 text-orange-800',
+  blue: 'bg-blue-200 text-blue-800',
+  green: 'bg-emerald-200 text-emerald-800',
+  purple: 'bg-purple-200 text-purple-800',
+  pink: 'bg-pink-200 text-pink-800',
+  red: 'bg-red-200 text-red-800',
+  yellow: 'bg-yellow-200 text-yellow-800',
+  indigo: 'bg-indigo-200 text-indigo-800',
+  teal: 'bg-teal-200 text-teal-800',
+  gray: 'bg-gray-200 text-gray-800',
+  cyan: 'bg-cyan-200 text-cyan-800',
+  lime: 'bg-lime-200 text-lime-800',
+  amber: 'bg-amber-200 text-amber-800',
+  rose: 'bg-rose-200 text-rose-800',
+  violet: 'bg-violet-200 text-violet-800',
+  fuchsia: 'bg-fuchsia-200 text-fuchsia-800'
 }
 
-const taskDetail = ref({})
+const dataList = ref({})
 
 async function onMountSetup(database) {
   const mode = router.currentRoute.value.name ?? 'detail'
   // console.log(mode);
-  const id = router.currentRoute.value.params.id
+  const id = router.currentRoute.value.params.id ?? ''
   try {
     const taskRes = await getMethod(`${database}/${id}`)
     // console.log(taskRes)
-    taskDetail.value = taskRes.data
-    taskDetail.value.createdOn = formatToLocalTime(taskDetail.value.createdOn)
-    taskDetail.value.updatedOn = formatToLocalTime(taskDetail.value.updatedOn)
-    // console.log(taskDetail.value);
-    return taskDetail.value
+    dataList.value = taskRes.data
+    if (database == 'tasks') {
+      dataList.value.createdOn = formatToLocalTime(dataList.value.createdOn)
+      dataList.value.updatedOn = formatToLocalTime(dataList.value.updatedOn)
+    }
+    // console.log(dataList.value);
+    return dataList.value
   } catch (error) {
     return { getMode: mode, error: error }
     // router.push('/task')
   }
 }
-
-
 
 function formatStatus(status) {
   return statusMap[status] || null
@@ -64,4 +77,12 @@ function formatToLocalTime(timeStr) {
   return formattedTime
 }
 
-export { formatStatus, formatStatusReverse, colorStatus, alert, formatToLocalTime, onMountSetup }
+export {
+  formatStatus,
+  formatStatusReverse,
+  colorStatus,
+  alert,
+  formatToLocalTime,
+  onMountSetup,
+  statusColors
+}

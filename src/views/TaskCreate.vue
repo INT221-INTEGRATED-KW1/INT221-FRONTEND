@@ -5,7 +5,7 @@ import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-
+console.log('add');
 const TaskDetail = ref({
   title: null,
   assignees: null,

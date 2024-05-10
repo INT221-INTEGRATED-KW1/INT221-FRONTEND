@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 
 export const useTaskStore = defineStore('task', () => {
   const taskList = []
+  const statusList = []
+  
   const resStatus = ""
   const errorRes = "Done"
   const isLoading = false
@@ -10,5 +12,5 @@ export const useTaskStore = defineStore('task', () => {
     return index
   }
   
-  return { taskList , findTaskIndexById , resStatus , errorRes ,isLoading}
+  return { taskList , statusList , findTaskIndexById , resStatus , errorRes ,isLoading}
 })
