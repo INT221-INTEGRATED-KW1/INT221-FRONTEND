@@ -1,11 +1,11 @@
 <script setup>
 import { addMethod } from '@/lib/fetchAPI'
-import { formatStatusReverse } from '@/lib/util'
+import { colorStatus } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
-console.log('add');
+// console.log('add');
 const TaskDetail = ref({
   title: null,
   assignees: null,
@@ -31,10 +31,14 @@ async function addNewTask() {
       description: !TaskDetail.value.description ? null : TaskDetail.value.description.trim()
     })
     // let addMethod function and send out info into the main page :D
-    const result = await addMethod(TaskDetail.value, "tasks")
+    const result = await addMethod(TaskDetail.value, 'tasks')
     store.taskList.push(result.data)
     store.resStatus = 'addDone'
-    router.push('/task')
+    router.push({ name: 'task' })
+    store.ToastMessage = {
+      msg: 'The task has been successfully added',
+      color: 'green'
+    }
     // setInterval(store.resStatus = "", 5000)
   }
 }
@@ -49,12 +53,12 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
     <div
       name="backdrop"
       class="w-lvw h-lvh bg-black bg-opacity-40"
-      @click="router.push(`/task`)"
+      @click="router.push({ name: 'task' })"
     ></div>
 
     <div
       name="detail"
-      class="fixed w-[640px] h-5/6 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
+      class="fixed w-[640px] h-4/6 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
     >
       <div class="w-auto flex flex-row justify-between m-12 mb-0 font-bold">
         <div>Create New Task</div>
@@ -76,10 +80,15 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             :class="inputField"
             v-model="TaskDetail.status"
           >
-            <option value="NO_STATUS" selected>No Status</option>
-            <option value="TO_DO">To Do</option>
-            <option value="DOING">Doing</option>
-            <option value="DONE">Done</option>
+            <option disabled selected>Pick one</option>
+            <option
+              v-for="status in store.statusList"
+              :key="status.id"
+              :value="status.name"
+              :class="colorStatus(status.color)"
+            >
+              {{ status.name }}
+            </option>
           </select>
           <!-- <input type="test" v-model="TaskDetail.status" placeholder="Empty" :class="inputField" /> -->
           <span :class="header" class="col-span-1"> Assignees </span>
@@ -98,13 +107,22 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             maxlength="500"
             placeholder="Hi"
             v-model="TaskDetail.description"
-            class="itbkk-description w-full h-28"
+            class="itbkk-description w-full max-h-48 min-h-48"
+            :class="inputField"
           ></textarea>
         </div>
       </div>
       <div class="right-0 m-12 mt-0 flex justify-center gap-4">
-        <button @click="addNewTask()" class="itbkk-button-confirm btn bg-green-400 " :disabled="!TaskDetail.title">Save</button>
-        <button @click="router.push('/task')" class="itbkk-button-cancel btn bg-grey-400">Cancel</button>
+        <button
+          @click="addNewTask()"
+          class="itbkk-button-confirm btn bg-green-400"
+          :disabled="!TaskDetail.title"
+        >
+          Save
+        </button>
+        <button @click="router.push({ name: 'task' })" class="itbkk-button-cancel btn bg-grey-400">
+          Cancel
+        </button>
       </div>
     </div>
   </div>

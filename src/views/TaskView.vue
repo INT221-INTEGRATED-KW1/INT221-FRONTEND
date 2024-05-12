@@ -2,7 +2,7 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { deleteMethod, getMethod } from '../lib/fetchAPI'
 import router from '@/router/router'
-import { formatStatus, colorStatus } from '@/lib/util'
+import { formatStatus, colorStatus, alertMessage } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import {
   CheckCircleIcon,
@@ -15,30 +15,11 @@ import {
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import ErrorModal from '@/views/ErrorModal.vue'
+import ToastMessage from '@/views/ToastMessage.vue'
 const store = useTaskStore()
 const taskList = store.taskList
 const route = useRoute()
 const statusList = ref(store.statusList)
-onMounted(async () => {
-  try {
-    store.taskList.splice(0, store.taskList.length)
-    const taskRes = await getMethod('tasks')
-    store.taskList.push(...taskRes.data)
-    // console.log(store.taskList)
-  } catch (error) {
-    console.error('Error fetching tasks:', error.message)
-  }
-
-  try {
-    const statusRes = await getMethod('statuses')
-    // store.statusList = [...statusRes.data]
-    store.statusList = []
-    store.statusList.push(...statusRes.data)
-    // console.log(store.statusList)
-  } catch (error) {
-    console.error('Fail to get status', error)
-  }
-})
 
 const isDeleting = ref(false)
 const isComplete = ref(false)
@@ -54,13 +35,14 @@ async function delTask(id) {
   isComplete.value = false
   try {
     const result = await deleteMethod(id, 'tasks')
-    // console.log(result.resCode)
     store.resStatus = 'deleteDone'
-    // console.log(store.errorRes)
+    store.ToastMessage = {
+      msg: 'The task has been deleted',
+      color: 'green'
+    }
   } catch (error) {
     store.resStatus = 'deleteError'
     store.errorRes = 'delete'
-    // console.log(store.errorRes)
   }
   isDeleting.value = false
   taskList.splice(store.findTaskIndexById(id), 1)
@@ -70,57 +52,11 @@ const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
 )
 
-function alertMessage(status) {
-  const alertmsg = {
-    addDone: {
-      message: 'The task has been successfully added',
-      css: 'alert alert-success bg-green-200'
-    },
-    editDone: {
-      message: 'The task has been updated',
-      css: 'alert alert-success border-sky-500 bg-sky-200'
-    },
-    deleteDone: {
-      message: 'The task has been deleted',
-      css: 'alert alert-success bg-green-200'
-    },
-    updateError: {
-      message: 'The update was unsuccessful',
-      css: 'alert alert-error bg-red-200'
-    },
-    deleteError: {
-      message: 'An error has occurred, the task does not exist.',
-      css: 'alert alert-error bg-red-200'
-    }
-  }
-  if (alertmsg.hasOwnProperty(status)) {
-    const obj = alertmsg[status]
-    return { message: obj.message, css: obj.css }
-  } else {
-    return false
-  }
-}
-
 function matchColor(statusName) {
   const result = store.statusList.find((status) => status.name == statusName) ?? 'grey'
   const color = colorStatus(result.color)
   return color
 }
-
-const msg = ref({})
-watch(
-  () => store.resStatus,
-  (newStatus) => {
-    msg.value = alertMessage(newStatus)
-    if (newStatus) {
-      setTimeout(() => {
-        store.resStatus = ''
-        msg.value = {}
-      }, 5000)
-    }
-  }
-)
-
 </script>
 
 <template>
@@ -143,7 +79,7 @@ watch(
       </button>
 
       <button
-        @click="router.push('/status')"
+        @click="router.push({ name: 'status' })"
         class="itbkk-button-add btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
       >
         <span :class="thead"
@@ -156,26 +92,26 @@ watch(
       name="data"
       class="w-full flex flex-col justify-center items-center px-6 bg-white rounded-2xl"
     >
-      <table class="table rounded-3xl">
+      <table class="table rounded-3xl w-auto">
         <thead class="border-b-[1px] border-opacity-10 bg-gray-600 bg-opacity-20">
           <tr>
             <td class="w-3/5 border-r-[1px] border-opacity-10">
-              <span :class="thead"
-                ><ClipboardDocumentListIcon class="size-6" />
-                <p>Title</p></span
-              >
+              <span :class="thead">
+                <ClipboardDocumentListIcon class="size-6" />
+                <p>Title</p>
+              </span>
             </td>
             <td class="w-1/5 border-r-[1px] border-opacity-10">
-              <span :class="thead"
-                ><UserCircleIcon class="size-6" />
-                <p>Assignees</p></span
-              >
+              <span :class="thead">
+                <UserCircleIcon class="size-6" />
+                <p>Assignees</p>
+              </span>
             </td>
             <td class="w-1/5">
-              <span :class="thead"
-                ><FireIcon class="size-6" />
-                <p>Status</p></span
-              >
+              <span :class="thead">
+                <FireIcon class="size-6" />
+                <p>Status</p>
+              </span>
             </td>
             <td></td>
           </tr>
@@ -187,19 +123,18 @@ watch(
             class="hover:cursor-pointer hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 itbkk-item"
           >
             <td
-              v-text="task.title"
-              class="itbkk-title border-r-[1px] border-opacity-10"
-              :class="{
-                'itbkk-title': !route.params.id
-              }"
-              @click="router.push(`/task/${task.id}`)"
-            ></td>
+              class="itbkk-title border-r-[1px] border-opacity-10 whitespace-normal"
+              :class="{ 'itbkk-title': !route.params.id }"
+              @click="router.push({ name: 'taskDetail', params: { id: task.id } })"
+            >
+              {{ task.title }}
+            </td>
             <td
               :class="{
                 'italic text-gray-500': !task.assignees,
                 'itbkk-assignees': !route.params.id
               }"
-              class="border-r-[1px]"
+              class="border-r-[1px] whitespace-normal"
             >
               {{ !task.assignees ? 'Unassigned' : task.assignees }}
             </td>
@@ -217,10 +152,12 @@ watch(
               </div>
               <ul
                 tabindex="0"
-                class="dropdown-content z-0 menu p-2 shadow bg-base-100 rounded-box w-52"
+                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
               >
                 <li class="">
-                  <a @click="router.push(`/task/${task.id}/edit`)" class="itbkk-button-edit"
+                  <a
+                    @click="router.push({ name: 'editTask', params: { id: task.id } })"
+                    class="itbkk-button-edit"
                     >Edit</a
                   >
                 </li>
@@ -232,23 +169,19 @@ watch(
           </tr>
 
           <tr v-if="taskList.length == 0">
-            <td col- class="text-center font-momo italic font-semibold text-opacity-70">No task</td>
+            <td
+              colspan="4"
+              class="text-center font-momo italic font-semibold text-opacity-70 whitespace-normal"
+            >
+              No task
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- SOME THING HAPPEn -->
-  <transition name="alert">
-    <div class="fixed top-4 w-full" v-if="store.resStatus != ''">
-      <div role="alert" class="w-fit mx-auto" :class="msg.css">
-        <CheckCircleIcon class="size-8"></CheckCircleIcon>
-        <span class="itbkk-message">{{ msg.message }}</span>
-        <!-- <XMarkIcon class="size-8 hover:scale-125" @click="store.resStatus = ''"></XMarkIcon> -->
-      </div>
-    </div>
-  </transition>
+  <ToastMessage></ToastMessage>
 
   <div
     v-if="isDeleting && store.errorRes == 'Done'"
@@ -281,12 +214,7 @@ watch(
       </div>
     </transition>
   </div>
-  <ErrorModal v-if="store.errorRes != 'Done'"></ErrorModal>
-  <router-view v-slot="{ Component }">
-    <transition>
-      <component :is="Component" />
-    </transition>
-  </router-view>
+  <router-view />
 </template>
 
 <style>

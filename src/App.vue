@@ -1,21 +1,8 @@
-<template>
-  <!-- <div class="h-screen flex flex-row"> -->
-  <!-- <Navbar /> -->
-  <div
-    v-if="store.isLoading"
-    class="fixed top-0 left-0 w-full h-full flex justify-center items-center"
-  >
-    <div class="loader"></div>
-  </div>
-
-  <router-view v-if="!store.isLoading" />
-  <!-- </div> -->
-</template>
-
 <script setup>
 import { onMounted } from 'vue'
 import Navbar from './components/Navbar.vue'
 import { useTaskStore } from './store/store'
+import { getMethod } from './lib/fetchAPI'
 
 const store = useTaskStore()
 
@@ -24,8 +11,39 @@ onMounted(async () => {
   // setTimeout(() => {
   //   store.isLoading = false
   // }, 3000)
+
+  try {
+    store.taskList.splice(0, store.taskList.length)
+    const taskRes = await getMethod('tasks')
+    store.taskList.push(...taskRes.data)
+  } catch (error) {
+    console.error('Error fetching :', error.message)
+  }
+
+  if (store.statusList.length == 0) {
+    try {
+      const statusRes = await getMethod('statuses')
+      store.statusList.splice(0, store.taskList.length)
+      store.statusList.push(...statusRes.data)
+    } catch (error) {
+      console.error('Fail to get status', error)
+    }
+  }
+  // console.log(store.taskList)
+  // console.log(store.statusList)
 })
 </script>
+
+<template>
+  <div
+    v-if="store.isLoading"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center"
+  >
+    <div class="loader"></div>
+  </div>
+
+  <router-view v-if="!store.isLoading" />
+</template>
 
 <style>
 .loader {

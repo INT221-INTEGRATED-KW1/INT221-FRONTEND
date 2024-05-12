@@ -33,12 +33,16 @@ async function addNewStatus() {
       // console.log(store.statusList)
       store.statusList.push(result.data)
       store.resStatus = 'addDone'
-      router.go(-1)
+      router.push({ name: 'status' })
+      store.ToastMessage = {
+        msg: 'The status has been added',
+        color: 'green'
+      }
     } catch (error) {
       isInValid.value = true
       setTimeout(() => {
         isInValid.value = false
-      },  8000);
+      }, 8000)
       console.error('fail to post : ', error)
     }
   }
@@ -49,7 +53,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 
 <template>
   <div
-    class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900"
+    class="fixed top-0 z-[2] left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900"
   >
     <div
       name="backdrop"
@@ -59,13 +63,15 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 
     <div
       name="detail"
-      class="fixed w-[640px] h-[55%] bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
+      class="fixed w-[640px] h-auto bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
     >
       <div class="w-auto flex flex-row justify-between m-12 mb-0 font-bold text-2xl">
         <div>Create new status</div>
       </div>
-      <div v-if="isInValid" class="kbd kbd-md mx-12 bg-red-300">Status {{ StatusDetail.name }} is already existed.</div>
-      <div class="w-full h-2/6 flex justify-center items-center py-auto">
+      <div v-if="isInValid" class="kbd kbd-md mx-12 bg-red-300">
+        Status {{ StatusDetail.name }} is already existed.
+      </div>
+      <div class="w-full my-4 flex justify-center items-center py-auto">
         <div
           class="rounded-md px-[8px] py-[2px] w-fit h-fit min-h-8 text-xl"
           :class="[colorStatus(StatusDetail.color)]"
@@ -73,9 +79,9 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           {{ !StatusDetail.name ? 'Status' : StatusDetail.name }}
         </div>
       </div>
-      <div class="overflow-y-auto h-full m-12 my-0 mb-4">
+      <div class="overflow-y-auto h-full m-12 my-0">
         <div class="w-full flex flex-col gap-2">
-          <span class="w-full divider divider-start"><b>Name</b></span>
+          <span class="w-full divider divider-start mb-0"><b>Name</b></span>
           <input
             type="text"
             placeholder="Untitle"
@@ -85,16 +91,16 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           />
         </div>
         <div class="w-full flex flex-col gap-2">
-          <span class="w-full divider divider-start"><b>Description</b></span>
+          <span class="w-full divider divider-start mb-0"><b>Description</b></span>
           <textarea
             placeholder="Add some status ..."
             maxlength="50"
             v-model="StatusDetail.description"
-            class="itbkk-status-description w-full h-24 p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
+            class="itbkk-status-description w-full max-h-24 min-h-24 p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
           ></textarea>
         </div>
-        <span class="w-full divider divider-start"><b>Color</b></span>
-        <div class="grid grid-cols-6 wrap gap-4 m-6">
+        <span class="w-full divider divider-start mb-0"><b>Color</b></span>
+        <div class="grid grid-cols-8 wrap gap-4 m-6 place-items-center">
           <label
             v-for="(colorClass, colorName) in statusColors"
             :key="colorName"
@@ -110,9 +116,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             <div
               class="size-10 rounded-md py-auto ring-2 ring-transparent transition-all hover:shadow peer-checked:text-sky-600 peer-checked:ring-blue-400 peer-checked:ring-offset-2 text-center content-center"
               :class="[colorClass]"
-            >
-              <!-- {{ colorName }} -->
-            </div>
+            ></div>
           </label>
         </div>
       </div>
@@ -125,7 +129,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         >
           Save
         </button>
-        <button @click="router.push('/status/manage')" class="itbkk-button-cancel btn bg-grey-400">
+        <button @click="router.push({name: 'status'})" class="itbkk-button-cancel btn bg-grey-400">
           Cancel
         </button>
       </div>

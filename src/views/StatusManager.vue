@@ -1,40 +1,42 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import router from '@/router/router'
-import { formatStatus, colorStatus, onMountSetup } from '@/lib/util'
+import { formatStatus, colorStatus, onMountSetup, alertMessage } from '@/lib/util'
 import {
   ClipboardDocumentListIcon,
   EllipsisHorizontalIcon,
   EllipsisVerticalIcon,
   FireIcon,
   PlusIcon,
-  UserCircleIcon
+  UserCircleIcon,
+  CheckCircleIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import { getMethod } from '@/lib/fetchAPI'
-
+import ToastMessage from './ToastMessage.vue'
 const store = useTaskStore()
 const statusList = store.statusList
-// console.log(store.statusList.length)
-// const statusList = ref(store.statusList)
-const fetchStatus = async () => {
-  // console.log(store.statusList.length)
-  if (store.statusList.length === 0) {
-    // console.log('A')
-    try {
-      // console.log(store.statusList)
-      const statusRes = await getMethod('statuses')
-      store.statusList = [...statusRes.data]
-      // console.log(store.statusList)
-    } catch (error) {
-      console.error('Fail to get status', error)
-    }
-  } else {
-    // console.log('B')
-    return
-  }
+function navToDeleteStatus(status) {
+  store.currentItem = status
+  router.push({
+    name: 'deleteStatus',
+    params: { id: status.id }
+  })
 }
-fetchStatus()
+
+const msg = ref({})
+watch(
+  () => store.resStatus,
+  (newStatus) => {
+    msg.value = alertMessage(newStatus)
+    if (newStatus) {
+      setTimeout(() => {
+        store.resStatus = ''
+        msg.value = {}
+      }, 5000)
+    }
+  }
+)
 
 const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
@@ -57,7 +59,7 @@ const thead = ref(
           <ul>
             <li
               class="hover:underline hover:cursor-pointer text-[#9c9c9c]"
-              @click="router.push(`/task`)"
+              @click="router.push({ name: 'task' })"
             >
               Task
             </li>
@@ -68,7 +70,7 @@ const thead = ref(
       </div>
       <div class="w-1/2 h-auto flex justify-end gap-4">
         <button
-          @click="router.push('/status/add')"
+          @click="router.push({ name: 'addStatus' })"
           class="itbkk-button-add btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
         >
           <PlusIcon class="size-6"></PlusIcon>
@@ -80,7 +82,7 @@ const thead = ref(
       name="data"
       class="w-full flex flex-col justify-center items-center px-6 bg-white rounded-2xl"
     >
-      <table class="table rounded-3xl">
+      <table class="table rounded-3xl w-10/12">
         <thead class="border-b-[1px] border-opacity-10 bg-gray-600 bg-opacity-20">
           <tr>
             <td>Id</td>
@@ -102,7 +104,7 @@ const thead = ref(
                 <p>Status</p></span
               >
             </td>
-            <td></td>
+            <td class="w-fit"></td>
           </tr>
         </thead>
         <tbody>
@@ -118,14 +120,14 @@ const thead = ref(
                 {{ status.name }}
               </div>
             </td>
-            <td>{{ status.color }}</td>
-            <td class="dropdown dropdown-bottom dropdown-end">
+
+            <td v-if="status.name != 'NO_STATUS'" class="dropdown dropdown-bottom dropdown-end">
               <div tabindex="0" role="button" class="m-1">
                 <EllipsisVerticalIcon class="itbkk-button-action size-6 hover:scale-150" />
               </div>
               <ul
                 tabindex="0"
-                class="dropdown-content z-0 menu p-2 shadow bg-base-100 rounded-box w-52"
+                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
               >
                 <li class="">
                   <a
@@ -135,16 +137,37 @@ const thead = ref(
                   >
                 </li>
                 <li class="text-red-500 hover:bg-red-300 bg-red-300 rounded-lg">
-                  <a @click="showDeleteModal(task.id)" class="itbkk-button-delete">Delete</a>
+                  <a @click="navToDeleteStatus(status)" class="itbkk-button-delete">Delete</a>
                 </li>
               </ul>
             </td>
+            <td v-else class="text-gray-500 italic">default</td>
           </tr>
         </tbody>
       </table>
     </div>
   </div>
+
+  <!-- <transition name="alert">
+    <div class="fixed top-4 w-full" v-if="store.resStatus != ''">
+      <div role="alert" class="w-fit mx-auto" :class="msg.css">
+        <CheckCircleIcon class="size-8"></CheckCircleIcon>
+        <span class="itbkk-message">{{ msg.message }}</span>
+      </div>
+    </div>
+  </transition> -->
+  <ToastMessage></ToastMessage>
   <router-view></router-view>
 </template>
 
-<style></style>
+<style>
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+</style>

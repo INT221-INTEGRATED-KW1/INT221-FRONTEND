@@ -1,10 +1,11 @@
 <script setup>
 import { updateMethod } from '@/lib/fetchAPI'
-import { formatStatusReverse, onMountSetup } from '@/lib/util'
+import { formatStatusReverse, onMountSetup, colorStatus } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { compile, computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import ErrorModal from './ErrorModal.vue'
 const route = useRoute()
 const store = useTaskStore()
 const id = router.currentRoute.value.params.id
@@ -13,20 +14,20 @@ const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
 
 const taskDetail = ref({})
-console.log("edit")
+// console.log("edit")
 let oldDetail = {}
 const updateDetail = ref({})
-
+store.isError = false
 onMounted(async () => {
   try {
-    taskDetail.value = await onMountSetup("tasks")
-    store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
+    taskDetail.value = await onMountSetup('tasks')
+    // store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
     oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
     updateDetail.value = taskDetail.value
-    console.log(taskDetail.value);
-    console.log(store.errorRes);
-    // console.log('done');
   } catch (error) {
+    console.log('errqq')
+    store.ErrorMessage = 'The task does not exist'
+    store.isError = true
     taskDetail.value = {}
     throw error
   }
@@ -42,7 +43,7 @@ async function editTask() {
   store.resStatus = ''
   isInValid.value = false
   if (isSameDetail.value) {
-    return router.push('/task')
+    return router.push({ name: 'task' })
   }
   if (!updateDetail.value.title) {
     return (isInValid.value = true)
@@ -55,15 +56,19 @@ async function editTask() {
     }
     // let addtask function and send out info into the main page :D
     try {
-      const result = await updateMethod(taskDetail.value.id, "tasks", updateDetail.value)
+      const result = await updateMethod(taskDetail.value.id, 'tasks', updateDetail.value)
       Object.assign(store.taskList[store.findTaskIndexById(result.data.id)], result.data)
       store.resStatus = 'editDone'
-      router.push('/task')
+      router.push({ name: 'task' })
+      store.ToastMessage = {
+        msg: 'The task has been updated',
+        color: 'cyan'
+      }
     } catch (error) {
       store.resStatus = 'updateError'
       throw error
     }
-    router.push('/task')
+    router.push({ name: 'task' })
   }
 }
 
@@ -72,22 +77,22 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
 <template>
   <div
-    v-if="Object.keys(taskDetail).length !== 0 && store.errorRes == 'Done'"
-    class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900"
+    v-if="Object.keys(taskDetail).length !== 0 && !store.isError"
+    class="fixed z-[2] top-0 left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900"
   >
     <div
       name="backdrop"
       class="w-lvw h-lvh bg-black bg-opacity-40"
-      @click="router.push(`/task`)"
+      @click="router.push({ name: 'task' })"
     ></div>
 
-    <div name="updateDetail" class="fixed w-[640px] h-5/6 bg-white flex flex-col gap-4 rounded-xl">
+    <div name="updateDetail" class="fixed w-[640px] h-4/5 bg-white flex flex-col gap-4 rounded-xl">
       <div class="w-auto flex flex-row justify-between m-12 mb-0">
         <div class="text-sm breadcrumbs">
           <ul>
             <li
               class="hover:underline hover:cursor-pointer text-[#9c9c9c]"
-              @click="router.push(`/task`)"
+              @click="router.push({ name: 'task' })"
             >
               Task
             </li>
@@ -113,10 +118,15 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             :class="inputField"
             v-model="updateDetail.status"
           >
-            <option value="NO_STATUS">No Status</option>
-            <option value="TO_DO">To Do</option>
-            <option value="DOING">Doing</option>
-            <option value="DONE">Done</option>
+            <option disabled selected>Pick one</option>
+            <option
+              v-for="status in store.statusList"
+              :key="status.id"
+              :value="status.name"
+              :class="colorStatus(status.color)"
+            >
+              {{ status.name }}
+            </option>
           </select>
           <!-- <input type="test" v-model="updateDetail.status" placeholder="Empty" :class="inputField" /> -->
           <span :class="header" class="col-span-1"> Assignees </span>
@@ -141,7 +151,8 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             placeholder="Hi"
             maxlength="500"
             v-model="updateDetail.description"
-            class="itbkk-description w-full h-36"
+            class="itbkk-description w-full max-h-48 min-h-48"
+            :class="inputField"
           ></textarea>
         </div>
       </div>
@@ -153,12 +164,14 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         >
           Save
         </button>
-        <button @click="router.push('/task')" class="itbkk-button-cancel btn bg-grey-400">
+        <button @click="router.push({ name: 'task' })" class="itbkk-button-cancel btn bg-grey-400">
           Cancel
         </button>
       </div>
     </div>
   </div>
-  <!-- <ErrorModal v-if="store.errorRes != 'done'"></ErrorModal> -->
+  <ErrorModal v-if="store.isError">
+    <template #message>{{ store.ErrorMessage }}</template>
+  </ErrorModal>
 </template>
 <style></style>

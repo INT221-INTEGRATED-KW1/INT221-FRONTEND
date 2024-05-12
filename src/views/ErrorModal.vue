@@ -1,49 +1,45 @@
 <script setup>
-import { useTaskStore } from "@/store/store";
-import { computed, ref, watch } from "vue";
-import router from "@/router/router";
-// console.log("hi");
+import { useTaskStore } from '@/store/store'
+import { computed, ref, watch } from 'vue'
+import router from '@/router/router'
+import { useRoute } from 'vue-router'
 const store = useTaskStore()
+const route = useRoute()
 const errorData = {
-    detail:{
-        message: "The requested task does not exist"
-    },
-    editTask: {
-        message: "The task does not exist",
-    },
-    delete:{
-        message: "The task does not exist"
-    },
+  detail: {
+    message: 'The requested task does not exist'
+  },
+  editTask: {
+    message: 'The task does not exist'
+  },
+  delete: {
+    message: 'The task does not exist'
+  }
 }
-
+// console.log('errr')
 function findMessage() {
-  // console.log(store.errorRes);
-    if (errorData.hasOwnProperty(store.errorRes)) {
-        const obj = errorData[store.errorRes]
-        return obj.message || "Message not found";
-    } else {
-        return "status done";
-    }
+  if (errorData.hasOwnProperty(store.errorRes)) {
+    const obj = errorData[store.errorRes]
+    return obj.message || 'Message not found'
+  } else {
+    return 'status done'
+  }
 }
 
-const message = ref("")
-setTimeout(() => { 
+const message = ref('')
+setTimeout(() => {
   message.value = findMessage()
-  // console.log( message.value);
 }, 50)
-
+// console.log(route.matched[0].name);
 function goBack() {
-  store.errorRes = 'Done'
-  router.push('/task')
-  // console.log(store.errorRes);
+  store.isError = false
+  router.push({ name: route.matched[0].name })
 }
-
 </script>
 
 <template>
-<div
+  <div
     class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900"
-    v-if="store.errorRes != 'Done'"
   >
     <div
       name="backdrop"
@@ -54,19 +50,16 @@ function goBack() {
       name="detail"
       class="fixed w-[640px] h-auto p-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center justify-center"
     >
-      <img src="/public/caution.png" alt="" class="size-24 mx-auto">
+      <img src="/public/caution.png" alt="" class="size-24 mx-auto" />
       <h1 class="w-full text-center font-semibold text-xl">Something problem</h1>
-      <p class="itbkk-message w-full text-center text-lg break-words inline-block">
-        {{ message ?? "" }}
+      <p class="w-full text-center text-lg break-words inline-block">
+        <slot name="message" class="itbkk-message">Something wrong !</slot>
       </p>
       <div class="w-full flex flex-row gap-4 justify-center items-center mt-2">
-        <button class="itbkk-button-cancel btn bg-slate-300 px-8" @click="goBack()">
-          Back
-        </button>
+        <button class="itbkk-button-cancel btn bg-slate-300 px-8" @click="goBack()">Back</button>
       </div>
     </div>
   </div>
 </template>
 
-<style>
-</style>
+<style></style>

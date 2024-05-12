@@ -6,7 +6,7 @@ import TaskCreate from '@/views/TaskCreate.vue'
 import StatusManager from '@/views/StatusManager.vue'
 import StatusAdd from '@/views/StatusAdd.vue'
 import StatusEdit from '@/views/StatusEdit.vue'
-
+import StatusDelete from '@/views/StatusDelete.vue'
 const routes = [
   {
     path: '',
@@ -20,6 +20,7 @@ const routes = [
     children: [
       {
         path: ':id',
+        name: 'taskDetail',
         component: TaskDetail,
       },
       {
@@ -48,6 +49,11 @@ const routes = [
         path: ':id/edit',
         name: 'editStatus',
         component: StatusEdit
+      },
+      {
+        path: ':id/delete',
+        name: 'deleteStatus',
+        component: StatusDelete
       },
     ]
   },

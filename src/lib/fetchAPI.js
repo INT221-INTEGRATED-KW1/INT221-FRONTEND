@@ -9,6 +9,7 @@ async function getMethod(path) {
     const data = await response.json()
     return { resCode: response.status, data: data }
   } catch (error) {
+    // console.log('geterr');
     throw error
   }
 }
@@ -50,6 +51,24 @@ async function deleteMethod(taskId, database) {
   }
 }
 
+async function deleteTranMethod(taskId, database, newId) {
+  try {
+    const response = await fetch(`${url}${database}/${taskId}/${newId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    if (!response.ok) {
+      throw new Error('Failed to delete task id : ', taskId)
+    }
+    const data = await response.json()
+    return { resCode: response.status, data: data }
+  } catch (error) {
+    throw error
+  }
+}
+
 async function updateMethod(taskId, database, taskDetail) {
   try {
     const response = await fetch(`${url}${database}/${taskId}`, {
@@ -69,4 +88,4 @@ async function updateMethod(taskId, database, taskDetail) {
   }
 }
 
-export { getMethod , addMethod , deleteMethod , updateMethod}
+export { getMethod , addMethod , deleteMethod , updateMethod, deleteTranMethod}

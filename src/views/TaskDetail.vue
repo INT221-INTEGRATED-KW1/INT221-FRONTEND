@@ -5,6 +5,7 @@ import router from '@/router/router'
 import { formatStatus, colorStatus, onMountSetup } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import { useTaskStore } from '@/store/store'
+import ErrorModal from './ErrorModal.vue'
 // console.log('taskdetail');
 const store = useTaskStore()
 const route = useRoute()
@@ -18,23 +19,32 @@ onMounted(async () => {
     taskDetail.value = await onMountSetup("tasks")
     store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
   } catch (error) {
+    console.log('errqq');
+    store.ErrorMessage = "The requested task does not exist"
+    store.isError = true
     taskDetail.value = {}
     throw error
   }
 })
+
+function matchColor(statusName) {
+  const result = store.statusList.find((status) => status.name == statusName) ?? 'grey'
+  const color = colorStatus(result.color)
+  return color
+}
 
 const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
 
 <template>
   <div
-    v-if="Object.keys(taskDetail).length !== 0 && store.errorRes == 'Done'"
+    v-if="Object.keys(taskDetail).length !== 0 && !store.isError"
     class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900"
   >
     <div
       name="backdrop"
       class="w-lvw h-lvh bg-black bg-opacity-40 itbkk-button"
-      @click="router.push(`/task`)"
+      @click="router.push({name: 'task'})"
     ></div>
 
     <div name="detail" class="fixed w-[640px] h-4/5 bg-white flex flex-col gap-4 rounded-xl">
@@ -43,7 +53,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           <ul>
             <li
               class="hover:underline hover:cursor-pointer text-[#9c9c9c] rotate-in-center"
-              @click="router.push(`/task`)"
+              @click="router.push({name: 'task'})"
             >
               Task
             </li>
@@ -63,9 +73,9 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           <div class="col-span-3">
             <p
               class="itbkk-status rounded-md px-[8px] py-[2px] w-fit"
-              :class="colorStatus(taskDetail.status)"
+              :class="[matchColor(taskDetail.status)]"
             >
-              {{ formatStatus(taskDetail.status) }}
+              {{ taskDetail.status }}
             </p>
           </div>
           <span :class="header" class="col-span-1"> Assignees </span>
@@ -91,6 +101,9 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       </div>
     </div>
   </div>
+  <ErrorModal v-if="store.isError">
+    <template #message>{{ store.ErrorMessage }}</template>
+  </ErrorModal>
 </template>
 
 <style>

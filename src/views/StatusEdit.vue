@@ -1,11 +1,11 @@
 <script setup>
 import { updateMethod } from '@/lib/fetchAPI'
-import { formatStatusReverse, onMountSetup , colorStatus , statusColors} from '@/lib/util'
+import { formatStatusReverse, onMountSetup, colorStatus, statusColors } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { compile, computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-
+import ErrorModal from './ErrorModal.vue'
 const route = useRoute()
 const store = useTaskStore()
 const id = router.currentRoute.value.params.id
@@ -20,13 +20,15 @@ const updateDetail = ref({})
 onMounted(async () => {
   try {
     statusDetail.value = await onMountSetup('statuses')
-    store.errorRes = (await statusDetail.value.getMode) ?? 'Done'
+    // store.errorRes = (await statusDetail.value.getMode) ?? 'Done'
     oldDetail = JSON.parse(JSON.stringify(statusDetail.value))
     updateDetail.value = statusDetail.value
-    console.log(statusDetail.value)
-    console.log(store.errorRes)
-    // console.log('done');
+    // console.log('a');
+    store.isError = false
   } catch (error) {
+    // console.log('err');
+    store.ErrorMessage = 'An error has occurred, the status does not exist.'
+    store.isError = true
     statusDetail.value = {}
     throw error
   }
@@ -35,8 +37,6 @@ onMounted(async () => {
 const isInValid = ref(false)
 
 const isSameDetail = computed(() => {
-  // console.log('old : ' , JSON.stringify(oldDetail));
-  // console.log('update : ' , JSON.stringify(updateDetail.value));
   return JSON.stringify(oldDetail) === JSON.stringify(updateDetail.value)
 })
 
@@ -44,8 +44,8 @@ async function editStatus() {
   store.resStatus = ''
   isInValid.value = false
   if (isSameDetail.value) {
-    console.log('same');
-    return router.push({name: 'status'})
+    // console.log('same');
+    return router.push({ name: 'status' })
   }
   if (!updateDetail.value.name) {
     return (isInValid.value = true)
@@ -61,20 +61,26 @@ async function editStatus() {
     try {
       const result = await updateMethod(statusDetail.value.id, 'statuses', updateDetail.value)
       const index = store.statusList.findIndex((status) => status.id == result.data.id)
-      // console.log(result.data);
-      // console.log(store.statusList[index]);
       Object.assign(store.statusList[index], result.data)
+      const tasklist = store.taskList
+      tasklist
+        .filter((task) => task.status == oldDetail.name)
+        .map((task) => (task.status = updateDetail.value.name))
       store.resStatus = 'editDone'
-      router.push({name: 'status'})
+      router.push({ name: 'status' })
+      store.ToastMessage = {
+        msg: 'The status has been updated',
+        color: 'lime'
+      }
     } catch (error) {
       isInValid.value = true
       setTimeout(() => {
         isInValid.value = false
-      }, 8000);
+      }, 8000)
       store.resStatus = 'updateError'
-      throw console.error('error : ', error);
+      throw console.error('error : ', error)
     }
-    router.push({name: 'status'})
+    router.push({ name: 'status' })
   }
 }
 
@@ -83,26 +89,26 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
 <template>
   <div
-    v-if="Object.keys(statusDetail).length !== 0 && store.errorRes == 'Done'"
-    class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900"
+    v-if="Object.keys(statusDetail).length !== 0 && !store.isError"
+    class="fixed top-0 z-[2] left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900"
   >
     <div
       name="backdrop"
       class="w-lvw h-lvh bg-black bg-opacity-40"
-      @click="router.push({name: 'status'})"
+      @click="router.push({ name: 'status' })"
     ></div>
 
     <div
       name="detail"
-      class="fixed w-[640px] h-[55%] bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
+      class="fixed w-[640px] h-auto bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center text-black text-opacity-60"
     >
       <div class="w-auto flex flex-row justify-between m-12 mb-0 font-bold text-2xl">
-        <div>Edit your status Right now!!!!</div>
+        <div>Edit status</div>
       </div>
       <div v-if="isInValid" class="kbd kbd-md mx-12 bg-red-300">
         Status {{ updateDetail.name }} is already existed.
       </div>
-      <div class="w-full h-2/6 flex justify-center items-center py-auto">
+      <div class="w-full my-4 flex justify-center items-center py-auto">
         <div
           class="rounded-md px-[8px] py-[2px] w-fit h-fit min-h-8 text-xl"
           :class="[colorStatus(updateDetail.color)]"
@@ -110,9 +116,9 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           {{ !updateDetail.name ? 'Status' : updateDetail.name }}
         </div>
       </div>
-      <div class="overflow-y-auto h-full m-12 my-0 mb-4">
+      <div class="overflow-y-auto h-full m-12 my-0">
         <div class="w-full flex flex-col gap-2">
-          <span class="w-full divider divider-start"><b>Name</b></span>
+          <span class="w-full divider divider-start mb-0"><b>Name</b></span>
           <input
             type="text"
             placeholder="Unname"
@@ -122,16 +128,16 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           />
         </div>
         <div class="w-full flex flex-col gap-2">
-          <span class="w-full divider divider-start"><b>Description</b></span>
+          <span class="w-full divider divider-start mb-0"><b>Description</b></span>
           <textarea
             placeholder="Add some status ..."
             maxlength="50"
             v-model="updateDetail.description"
-            class="itbkk-status-description w-full h-24 p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
+            class="itbkk-status-description w-full max-h-24 min-h-24 p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
           ></textarea>
         </div>
-        <span class="w-full divider divider-start"><b>Color</b></span>
-        <div class="grid grid-cols-6 wrap gap-4 m-6">
+        <span class="w-full divider divider-start mb-0"><b>Color</b></span>
+        <div class="grid grid-cols-8 wrap gap-4 m-6 place-items-center">
           <label
             v-for="(colorClass, colorName) in statusColors"
             :key="colorName"
@@ -162,12 +168,17 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         >
           Save
         </button>
-        <button @click="router.push('/status/manage')" class="itbkk-button-cancel btn bg-grey-400">
+        <button
+          @click="router.push({ name: 'status' })"
+          class="itbkk-button-cancel btn bg-grey-400"
+        >
           Cancel
         </button>
       </div>
     </div>
   </div>
-  <!-- <ErrorModal v-if="store.errorRes != 'done'"></ErrorModal> -->
+  <ErrorModal v-if="store.isError">
+    <template #message>{{ store.ErrorMessage }}</template>
+  </ErrorModal>
 </template>
 <style></style>
