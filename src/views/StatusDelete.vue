@@ -84,7 +84,7 @@ const tranferId = ref(0)
   >
     <div
       name="backdrop"
-      class="w-lvw h-lvh bg-black bg-opacity-40 blur-sm"
+      class="w-lvw h-lvh bg-black bg-opacity-40"
       @click="router.push({ name: 'status' })"
     ></div>
 

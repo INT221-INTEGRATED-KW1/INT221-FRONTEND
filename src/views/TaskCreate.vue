@@ -84,7 +84,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             <option
               v-for="status in store.statusList"
               :key="status.id"
-              :value="status.name"
+              :value="status.id"
               :class="colorStatus(status.color)"
             >
               {{ status.name }}

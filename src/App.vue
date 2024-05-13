@@ -7,10 +7,10 @@ import { getMethod } from './lib/fetchAPI'
 const store = useTaskStore()
 
 onMounted(async () => {
-  store.isLoading = true
-  setTimeout(() => {
-    store.isLoading = false
-  }, 2000)
+  // store.isLoading = true
+  // setTimeout(() => {
+  //   store.isLoading = false
+  // }, 2000)
 
   try {
     store.taskList.splice(0, store.taskList.length)
@@ -37,12 +37,11 @@ onMounted(async () => {
 <template>
   <div
     v-if="store.isLoading"
-    class="fixed top-0 left-0 w-full h-full flex justify-center items-center"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-white z-40"
   >
     <div class="loader"></div>
   </div>
-
-  <router-view v-if="!store.isLoading" />
+  <router-view/>
 </template>
 
 <style>
