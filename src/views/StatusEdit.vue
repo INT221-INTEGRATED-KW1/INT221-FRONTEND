@@ -21,6 +21,15 @@ onMounted(async () => {
   try {
     statusDetail.value = await onMountSetup('statuses')
     // store.errorRes = (await statusDetail.value.getMode) ?? 'Done'
+    // console.log(statusDetail.value.name)
+    if (statusDetail.value.name == 'NO_STATUS') {
+      router.push({ name: 'status' })
+      store.ToastMessage = {
+        msg: 'Cannot edit default status (NO_STATUS)',
+        color: 'red',
+        erroricon: true
+      }
+    }
     oldDetail = JSON.parse(JSON.stringify(statusDetail.value))
     updateDetail.value = statusDetail.value
     // console.log('a');
@@ -64,8 +73,8 @@ async function editStatus() {
       Object.assign(store.statusList[index], result.data)
       const tasklist = store.taskList
       tasklist
-        .filter((task) => task.status == oldDetail.name)
-        .map((task) => (task.status = updateDetail.value.name))
+        .filter((task) => task.status.name == oldDetail.name)
+        .map((task) => (task.status.name = updateDetail.value.name))
       store.resStatus = 'editDone'
       router.push({ name: 'status' })
       store.ToastMessage = {
@@ -100,7 +109,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 
     <div
       name="detail"
-      class="fixed w-[640px] h-auto bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center text-black text-opacity-60"
+      class="fixed w-[640px] h-auto bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center text-black text-opacity-60 itbkk-modal-status"
     >
       <div class="w-auto flex flex-row justify-between m-12 mb-0 font-bold text-2xl">
         <div>Edit status</div>

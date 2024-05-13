@@ -5,32 +5,7 @@ import router from '@/router/router'
 import { useRoute } from 'vue-router'
 const store = useTaskStore()
 const route = useRoute()
-const errorData = {
-  detail: {
-    message: 'The requested task does not exist'
-  },
-  editTask: {
-    message: 'The task does not exist'
-  },
-  delete: {
-    message: 'The task does not exist'
-  }
-}
-// console.log('errr')
-function findMessage() {
-  if (errorData.hasOwnProperty(store.errorRes)) {
-    const obj = errorData[store.errorRes]
-    return obj.message || 'Message not found'
-  } else {
-    return 'status done'
-  }
-}
 
-const message = ref('')
-setTimeout(() => {
-  message.value = findMessage()
-}, 50)
-// console.log(route.matched[0].name);
 function goBack() {
   store.isError = false
   router.push({ name: route.matched[0].name })

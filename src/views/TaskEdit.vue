@@ -6,6 +6,7 @@ import { useTaskStore } from '@/store/store'
 import { compile, computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import ErrorModal from './ErrorModal.vue'
+import TaskDetail from './TaskDetail.vue'
 const route = useRoute()
 const store = useTaskStore()
 const id = router.currentRoute.value.params.id
@@ -24,8 +25,8 @@ onMounted(async () => {
     // store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
     oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
     updateDetail.value = taskDetail.value
+    console.log(updateDetail.value.status.id);
   } catch (error) {
-    console.log('errqq')
     store.ErrorMessage = 'The task does not exist'
     store.isError = true
     taskDetail.value = {}
@@ -49,13 +50,15 @@ async function editTask() {
     return (isInValid.value = true)
   } else {
     updateDetail.value = {
+      id: updateDetail.value.id,
       title: updateDetail.value.title.trim(),
       assignees: !updateDetail.value.assignees ? null : updateDetail.value.assignees.trim(),
-      status: updateDetail.value.status,
+      status: updateDetail.value.status.id,
       description: !updateDetail.value.description ? null : updateDetail.value.description.trim()
     }
     // let addtask function and send out info into the main page :D
     try {
+      console.log(taskDetail.value.id);
       const result = await updateMethod(taskDetail.value.id, 'tasks', updateDetail.value)
       Object.assign(store.taskList[store.findTaskIndexById(result.data.id)], result.data)
       store.resStatus = 'editDone'
@@ -116,13 +119,13 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           <select
             class="itbkk-status select select-bordered select-md w-full text-base p-0"
             :class="inputField"
-            v-model="updateDetail.status"
+            v-model="updateDetail.status.id"
           >
             <option disabled selected>Pick one</option>
             <option
               v-for="status in store.statusList"
               :key="status.id"
-              :value="status.name"
+              :value="status.id"
               :class="colorStatus(status.color)"
             >
               {{ status.name }}

@@ -80,7 +80,7 @@ function matchColor(statusName) {
 
       <button
         @click="router.push({ name: 'status' })"
-        class="itbkk-button-add btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
+        class="itbkk-manage-status btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
       >
         <span :class="thead"
           ><FireIcon class="size-6" />
@@ -141,9 +141,9 @@ function matchColor(statusName) {
             <td>
               <div
                 class="rounded-md px-[8px] py-[2px] w-fit itbkk-status"
-                :class="[matchColor(task.status), { 'itbkk-assignees': !route.params.id }]"
+                :class="[matchColor(task.status.name), { 'itbkk-assignees': !route.params.id }]"
               >
-                {{ task.status }}
+                {{ task.status.name }}
               </div>
             </td>
             <td class="dropdown dropdown-bottom dropdown-end">
@@ -197,7 +197,7 @@ function matchColor(statusName) {
         name="detail"
         class="fixed w-[640px] h-auto p-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center justify-center"
       >
-        <img src="/public/folder.png" alt="" class="size-24 mx-auto" />
+        <img src="/public/trash-can.png" alt="" class="size-24 mx-auto" />
         <h1 class="w-full text-center font-semibold text-xl">Deleting</h1>
         <p class="itbkk-message w-full text-center text-lg break-words inline-block">
           Do you want to delete the task number {{ currentTask.id }}

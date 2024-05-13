@@ -42,7 +42,7 @@ async function deleteMethod(taskId, database) {
       }
     })
     if (!response.ok) {
-      throw new Error('Failed to delete task id : ', taskId)
+      return { resCode: response.status}
     }
     const data = await response.json()
     return { resCode: response.status, data: data }
@@ -88,4 +88,4 @@ async function updateMethod(taskId, database, taskDetail) {
   }
 }
 
-export { getMethod , addMethod , deleteMethod , updateMethod, deleteTranMethod}
+export { getMethod, addMethod, deleteMethod, updateMethod, deleteTranMethod }

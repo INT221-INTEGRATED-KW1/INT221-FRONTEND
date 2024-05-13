@@ -12,13 +12,12 @@ const route = useRoute()
 const id = route.params.id
 const currentData = ref({})
 let hasTask = []
-setTimeout(async () => {
-  const item = store.statusList.find((status) => status.id == id) ?? {}
-  // console.log(item)
+onMounted(() => {
+  const item = store.statusList.find((status) => status.id == id) ?? {id: route.params.id}
   currentData.value = item
-  hasTask = store.taskList.filter((task) => task.status == item.name)
-  // console.log(hasTask);
-}, 100)
+  // console.log(currentData.value)
+  hasTask = store.taskList.filter((task) => task.status.name == item.name)
+})
 store.isError = false
 const isHastask = ref(false)
 const deleteStatus = async (statusId) => {
@@ -27,9 +26,17 @@ const deleteStatus = async (statusId) => {
     let res = null
     try {
       res = await deleteMethod(statusId, 'statuses')
+      if (res.resCode == '500') {
+        router.push({ name: 'status' })
+        store.ToastMessage = {
+          msg: 'Cannot delete default status (NO_STATUS)',
+          color: 'red',
+          erroricon: true
+        }
+        return
+      } else if (res.resCode == '404') throw new error()
     } catch (error) {
       store.ErrorMessage = 'An error has occurred, the status does not exist.'
-      // console.log(store.ErrorMessage)
       return (store.isError = true)
     }
     const index = statusList.findIndex((status) => status.id == res.data.id)
@@ -53,15 +60,19 @@ const tranferStatus = async (currId, newId) => {
     throw error
   }
   isHastask.value = false
+  console.log(store.taskList);
   //delete item in status menu , map item in task menu
   const index = store.statusList.findIndex((status) => status.id == currId)
+  const total = store.taskList.filter(
+    (task) => task.status.name == store.statusList[index].name
+  ).length
   store.taskList
-    .filter((task) => task.status == store.statusList[index].name)
-    .map((task) => (task.status = res.data.name))
+    .filter((task) => task.status.name == store.statusList[index].name)
+    .map((task) => (task.status.name = res.data.name))
   statusList.splice(index, 1)
   router.push({ name: 'status' })
   store.ToastMessage = {
-    msg: 'The task(s) have been transferred and the status has been deleted',
+    msg: `The ${total} task(s) have been transferred and the status has been deleted`,
     color: 'yellow'
   }
   store.resStatus = 'deleteDone'
@@ -77,23 +88,24 @@ const tranferId = ref(0)
   >
     <div
       name="backdrop"
-      class="w-lvw h-lvh bg-black bg-opacity-40 blur-sm"
+      class="w-lvw h-lvh bg-black bg-opacity-40"
       @click="router.push({ name: 'status' })"
     ></div>
 
     <div
       v-if="!isHastask"
       name="detail"
-      class="fixed w-[640px] h-[280px] bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center items-center justify-center"
+      class="fixed w-[640px] h-auto py-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center items-center justify-center"
     >
-      <div class="">Delete a Status</div>
-      <p>
+      <img src="/public/trash-can.png" alt="" class="size-24 mx-auto" />
+      <div class="w-full text-center font-semibold text-xl">Delete a Status</div>
+      <p class="itbkk-message">
         Do you want to delete the <span class="font-semibold">"{{ currentData.name }}"</span> Status
         ?
       </p>
       <div class="flex justify-center gap-4">
-        <button @click="deleteStatus(id)" class="itbkk-button-confirm btn bg-green-400">
-          Save
+        <button @click="deleteStatus(currentData.id)" class="itbkk-button-confirm btn bg-green-400">
+          Confirm
         </button>
         <button
           @click="router.push({ name: 'status' })"
@@ -106,17 +118,23 @@ const tranferId = ref(0)
     <div
       v-if="isHastask"
       name="detail"
-      class="fixed w-[640px] h-[280px] bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center items-center justify-center"
+      class="fixed w-[640px] h-auto py-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center items-center justify-center"
     >
-      <div>Tranfer a Status</div>
-      <p>There is some task associated with the "{{ currentData.name }}" status.</p>
+      <img src="/public/return.png" alt="" class="size-24 mx-auto" />
+
+      <div class="w-full text-center font-semibold text-xl">Tranfer a Status</div>
+      <p class="itbkk-message">
+        There is some task associated with the "<span class="font-semibold">{{
+          currentData.name ?? 'No status'
+        }}</span
+        >" status.
+      </p>
       <div>
-        <p></p>
         <label class="form-control w-full max-w-xs">
           <div class="label">
             <span class="label-text">Tranfer to</span>
           </div>
-          <select class="select select-bordered" v-model="tranferId">
+          <select class="select select-bordered itbkk-status" v-model="tranferId">
             <option disabled selected>Pick one</option>
             <option
               v-for="status in store.statusList"
@@ -129,7 +147,7 @@ const tranferId = ref(0)
             </option>
           </select>
         </label>
-        <div class="flex justify-center gap-4">
+        <div class="flex justify-center gap-4 mt-4">
           <button
             @click="tranferStatus(currentData.id, tranferId)"
             class="itbkk-button-confirm btn bg-green-400"

@@ -24,10 +24,11 @@ async function addNewTask() {
   if (!TaskDetail.value.title) {
     return (isInValid.value = true)
   } else {
+    console.log(TaskDetail.value);
     Object.assign(TaskDetail.value, {
       title: TaskDetail.value.title.trim(),
       assignees: !TaskDetail.value.assignees ? null : TaskDetail.value.assignees.trim(),
-      status: TaskDetail.value.status,
+      status: TaskDetail.value.status ?? 1,
       description: !TaskDetail.value.description ? null : TaskDetail.value.description.trim()
     })
     // let addMethod function and send out info into the main page :D
@@ -84,7 +85,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             <option
               v-for="status in store.statusList"
               :key="status.id"
-              :value="status.name"
+              :value="status.id"
               :class="colorStatus(status.color)"
             >
               {{ status.name }}

@@ -73,9 +73,9 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           <div class="col-span-3">
             <p
               class="itbkk-status rounded-md px-[8px] py-[2px] w-fit"
-              :class="[matchColor(taskDetail.status)]"
+              :class="[colorStatus(taskDetail.status.color)]"
             >
-              {{ taskDetail.status }}
+              {{ taskDetail.status.name }}
             </p>
           </div>
           <span :class="header" class="col-span-1"> Assignees </span>
