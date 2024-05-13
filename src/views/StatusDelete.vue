@@ -60,7 +60,7 @@ const tranferStatus = async (currId, newId) => {
     throw error
   }
   isHastask.value = false
-  console.log(store.taskList);
+  // console.log(store.taskList);
   //delete item in status menu , map item in task menu
   const index = store.statusList.findIndex((status) => status.id == currId)
   const total = store.taskList.filter(

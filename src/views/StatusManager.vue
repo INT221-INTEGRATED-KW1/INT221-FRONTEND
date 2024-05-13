@@ -123,7 +123,7 @@ const thead = ref(
               </div>
             </td>
 
-            <td v-if="status.name != 'NO_STATUS'" class="dropdown dropdown-bottom dropdown-end">
+            <td v-if="status.name != 'No Status'" class="dropdown dropdown-bottom dropdown-end">
               <div tabindex="0" role="button" class="m-1">
                 <EllipsisVerticalIcon class="size-6 hover:scale-150" />
               </div>

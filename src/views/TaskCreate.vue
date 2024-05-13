@@ -24,7 +24,7 @@ async function addNewTask() {
   if (!TaskDetail.value.title) {
     return (isInValid.value = true)
   } else {
-    console.log(TaskDetail.value);
+    // console.log(TaskDetail.value);
     Object.assign(TaskDetail.value, {
       title: TaskDetail.value.title.trim(),
       assignees: !TaskDetail.value.assignees ? null : TaskDetail.value.assignees.trim(),
