@@ -25,7 +25,7 @@ onMounted(async () => {
     oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
     updateDetail.value = taskDetail.value
   } catch (error) {
-    console.log('errqq')
+    // console.log('errqq')
     store.ErrorMessage = 'The task does not exist'
     store.isError = true
     taskDetail.value = {}

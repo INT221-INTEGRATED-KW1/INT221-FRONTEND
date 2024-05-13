@@ -58,7 +58,7 @@ const thead = ref(
         <div class="text-sm breadcrumbs">
           <ul>
             <li
-              class="hover:underline hover:cursor-pointer text-[#9c9c9c]"
+              class="hover:underline hover:cursor-pointer text-[#9c9c9c] itbkk-button-home"
               @click="router.push({ name: 'task' })"
             >
               Task
@@ -108,13 +108,15 @@ const thead = ref(
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(status, index) in store.statusList" :key="status.id">
+          <tr v-for="(status, index) in store.statusList" :key="status.id" class="itbkk-item">
             <td>{{ index + 1 }}</td>
-            <td>{{ status.name }}</td>
-            <td>{{ status.description }}</td>
+            <td class="itbkk-status-name">{{ status.name }}</td>
+            <td class="itbkk-status-description" :class="{ 'italic text-gray-500': !status.description }">
+              {{ status.description ?? 'No description is provided.' }}
+            </td>
             <td>
               <div
-                class="rounded-md px-[8px] py-[2px] w-fit itbkk-status"
+                class="rounded-md px-[8px] py-[2px] w-fit"
                 :class="[colorStatus(status.color)]"
               >
                 {{ status.name }}
@@ -123,7 +125,7 @@ const thead = ref(
 
             <td v-if="status.name != 'NO_STATUS'" class="dropdown dropdown-bottom dropdown-end">
               <div tabindex="0" role="button" class="m-1">
-                <EllipsisVerticalIcon class="itbkk-button-action size-6 hover:scale-150" />
+                <EllipsisVerticalIcon class="size-6 hover:scale-150" />
               </div>
               <ul
                 tabindex="0"
@@ -143,19 +145,14 @@ const thead = ref(
             </td>
             <td v-else class="text-gray-500 italic">default</td>
           </tr>
+          <tr v-if="store.statusList.length == 0">
+            <td colspan="4" class="text-center text-gray-600 italic">No Status</td>
+          </tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- <transition name="alert">
-    <div class="fixed top-4 w-full" v-if="store.resStatus != ''">
-      <div role="alert" class="w-fit mx-auto" :class="msg.css">
-        <CheckCircleIcon class="size-8"></CheckCircleIcon>
-        <span class="itbkk-message">{{ msg.message }}</span>
-      </div>
-    </div>
-  </transition> -->
   <ToastMessage></ToastMessage>
   <router-view></router-view>
 </template>

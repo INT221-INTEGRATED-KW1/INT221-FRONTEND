@@ -53,7 +53,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 
 <template>
   <div
-    class="fixed top-0 z-[2] left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900"
+    class="fixed top-0 z-[2] left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900 itbkk-modal-status"
   >
     <div
       name="backdrop"

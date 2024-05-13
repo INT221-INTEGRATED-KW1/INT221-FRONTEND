@@ -7,10 +7,10 @@ import { getMethod } from './lib/fetchAPI'
 const store = useTaskStore()
 
 onMounted(async () => {
-  // store.isLoading = true
-  // setTimeout(() => {
-  //   store.isLoading = false
-  // }, 3000)
+  store.isLoading = true
+  setTimeout(() => {
+    store.isLoading = false
+  }, 2000)
 
   try {
     store.taskList.splice(0, store.taskList.length)
@@ -50,7 +50,7 @@ onMounted(async () => {
   width: 180px;
   height: 20px;
   background: linear-gradient(#1f1f1f 0 0) 0/0% no-repeat #ddd;
-  animation: l1 3.1s ease-in-out;
+  animation: l1 2.1s ease-in-out;
 }
 @keyframes l1 {
   75% {
