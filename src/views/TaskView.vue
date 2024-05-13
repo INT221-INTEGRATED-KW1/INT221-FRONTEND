@@ -10,6 +10,7 @@ import {
   EllipsisVerticalIcon,
   FireIcon,
   PlusIcon,
+  Squares2X2Icon,
   UserCircleIcon,
   XMarkIcon
 } from '@heroicons/vue/24/outline'
@@ -83,7 +84,7 @@ function matchColor(statusName) {
         class="itbkk-manage-status btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
       >
         <span :class="thead"
-          ><FireIcon class="size-6" />
+          ><Squares2X2Icon class="size-6" />
           <p>Status M.</p></span
         >
       </button>
@@ -138,10 +139,10 @@ function matchColor(statusName) {
             >
               {{ !task.assignees ? 'Unassigned' : task.assignees }}
             </td>
-            <td>
+            <td class="w-1/6">
               <div
-                class="rounded-md px-[8px] py-[2px] w-fit itbkk-status"
-                :class="[matchColor(task.status.name), { 'itbkk-assignees': !route.params.id }]"
+                class="rounded-md px-[8px] py-[2px] w-fit"
+                :class="[matchColor(task.status.name), { 'itbkk-status': !route.params.id }]"
               >
                 {{ task.status.name }}
               </div>

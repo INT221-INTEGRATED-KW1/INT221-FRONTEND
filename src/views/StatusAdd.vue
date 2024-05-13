@@ -57,7 +57,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
   >
     <div
       name="backdrop"
-      class="w-lvw h-lvh bg-black bg-opacity-40 blur-sm"
+      class="w-lvw h-lvh bg-black bg-opacity-40"
       @click="router.push({ name: 'status' })"
     ></div>
 
@@ -94,9 +94,9 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           <span class="w-full divider divider-start mb-0"><b>Description</b></span>
           <textarea
             placeholder="Add some status ..."
-            maxlength="50"
+            maxlength="200"
             v-model="StatusDetail.description"
-            class="itbkk-status-description w-full max-h-24 min-h-24 p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
+            class="itbkk-status-description w-full max-h-28 min-h-28 p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
           ></textarea>
         </div>
         <span class="w-full divider divider-start mb-0"><b>Color</b></span>

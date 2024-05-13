@@ -8,7 +8,9 @@ const route = useRoute()
 
 function goBack() {
   store.isError = false
-  router.push({ name: route.matched[0].name })
+  router.push({ name: route.matched[0].name }).then(() => {
+    location.reload()
+  })
 }
 </script>
 
