@@ -9,13 +9,16 @@ import {
   FireIcon,
   PlusIcon,
   UserCircleIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  FaceSmileIcon,
+  SquaresPlusIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import { getMethod } from '@/lib/fetchAPI'
 import ToastMessage from './ToastMessage.vue'
 const store = useTaskStore()
 const statusList = store.statusList
+// console.log(store.statusList)
 function navToDeleteStatus(status) {
   store.currentItem = status
   router.push({
@@ -73,7 +76,7 @@ const thead = ref(
           @click="router.push({ name: 'addStatus' })"
           class="itbkk-button-add btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
         >
-          <PlusIcon class="size-6"></PlusIcon>
+          <SquaresPlusIcon class="size-6" />
           Add Status
         </button>
       </div>
@@ -85,47 +88,55 @@ const thead = ref(
       <table class="table rounded-3xl w-10/12">
         <thead class="border-b-[1px] border-opacity-10 bg-gray-600 bg-opacity-20">
           <tr>
-            <td>Id</td>
-            <td class="w-3/5 border-r-[1px] border-opacity-10">
+            <td class="w-1/12 border-r-[1px] border-opacity-10 text-center">
+              ID
+            </td>
+            <td class="w-3/12 border-r-[1px] border-opacity-10">
               <span :class="thead"
                 ><ClipboardDocumentListIcon class="size-6" />
                 <p>Name</p></span
               >
             </td>
-            <td class="w-1/5 border-r-[1px] border-opacity-10">
+            <td class="w-4/12 border-r-[1px] border-opacity-10">
               <span :class="thead"
                 ><UserCircleIcon class="size-6" />
                 <p>Description</p></span
               >
             </td>
-            <td class="w-1/5">
+            <td class="w-2/12 border-r-[1px] border-opacity-10">
               <span :class="thead"
                 ><FireIcon class="size-6" />
                 <p>Status</p></span
               >
             </td>
-            <td class="w-fit"></td>
+            <td class="w-1/12 border-r-[1px] border-opacity-10">
+              <span :class="thead">
+                <FaceSmileIcon class="size-6" />
+                <p>Usage</p></span
+              >
+            </td>
+            <td class="w-1/12">Action</td>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(status, index) in store.statusList" :key="status.id" class="itbkk-item">
-            <td>{{ index + 1 }}</td>
+            <td class="text-center">{{ index + 1 }}</td>
             <td class="itbkk-status-name">{{ status.name }}</td>
-            <td class="itbkk-status-description" :class="{ 'italic text-gray-500': !status.description }">
+            <td
+              class="itbkk-status-description"
+              :class="{ 'italic text-gray-500': !status.description }"
+            >
               {{ status.description ?? 'No description is provided.' }}
             </td>
             <td>
-              <div
-                class="rounded-md px-[8px] py-[2px] w-fit"
-                :class="[colorStatus(status.color)]"
-              >
+              <div class="rounded-md px-[8px] py-[2px] w-fit" :class="[colorStatus(status.color)]">
                 {{ status.name }}
               </div>
             </td>
-
+            <td class="text-center">{{ status.countTask }}</td>
             <td v-if="status.name != 'No Status'" class="dropdown dropdown-bottom dropdown-end">
               <div tabindex="0" role="button" class="m-1">
-                <EllipsisVerticalIcon class="size-6 hover:scale-150" />
+                <EllipsisVerticalIcon class="itbkk-button-action size-6 hover:scale-150" />
               </div>
               <ul
                 tabindex="0"

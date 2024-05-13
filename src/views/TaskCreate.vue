@@ -59,7 +59,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 
     <div
       name="detail"
-      class="fixed w-[640px] h-4/6 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
+      class="itbkk-modal-task fixed w-[640px] h-4/6 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center"
     >
       <div class="w-auto flex flex-row justify-between m-12 mb-0 font-bold">
         <div>Create New Task</div>

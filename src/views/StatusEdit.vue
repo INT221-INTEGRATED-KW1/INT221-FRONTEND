@@ -39,7 +39,7 @@ onMounted(async () => {
     store.ErrorMessage = 'An error has occurred, the status does not exist.'
     store.isError = true
     statusDetail.value = {}
-    throw error
+    return error
   }
 })
 
@@ -140,9 +140,9 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           <span class="w-full divider divider-start mb-0"><b>Description</b></span>
           <textarea
             placeholder="Add some status ..."
-            maxlength="50"
+            maxlength="200"
             v-model="updateDetail.description"
-            class="itbkk-status-description w-full max-h-24 min-h-24 p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
+            class="itbkk-status-description w-full max-h-28 min-h-28 p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
           ></textarea>
         </div>
         <span class="w-full divider divider-start mb-0"><b>Color</b></span>
@@ -173,7 +173,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         <button
           @click="editStatus()"
           class="itbkk-button-confirm btn bg-green-400"
-          :disabled="!updateDetail.name"
+          :disabled="!updateDetail.name || isSameDetail"
         >
           Save
         </button>
