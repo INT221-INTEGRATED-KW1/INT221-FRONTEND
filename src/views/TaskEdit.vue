@@ -25,7 +25,7 @@ onMounted(async () => {
     // store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
     oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
     updateDetail.value = taskDetail.value
-    console.log(updateDetail.value.status.id);
+    // console.log(updateDetail.value.status.id);
   } catch (error) {
     store.ErrorMessage = 'The task does not exist'
     store.isError = true
@@ -58,7 +58,7 @@ async function editTask() {
     }
     // let addtask function and send out info into the main page :D
     try {
-      console.log(taskDetail.value.id);
+      // console.log(taskDetail.value.id);
       const result = await updateMethod(taskDetail.value.id, 'tasks', updateDetail.value)
       Object.assign(store.taskList[store.findTaskIndexById(result.data.id)], result.data)
       store.resStatus = 'editDone'
