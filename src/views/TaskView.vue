@@ -141,9 +141,9 @@ function matchColor(statusName) {
             <td>
               <div
                 class="rounded-md px-[8px] py-[2px] w-fit itbkk-status"
-                :class="[matchColor(task.status), { 'itbkk-assignees': !route.params.id }]"
+                :class="[matchColor(task.status.name), { 'itbkk-assignees': !route.params.id }]"
               >
-                {{ task.status }}
+                {{ task.status.name }}
               </div>
             </td>
             <td class="dropdown dropdown-bottom dropdown-end">

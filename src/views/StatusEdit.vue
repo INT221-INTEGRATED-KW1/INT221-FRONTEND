@@ -21,7 +21,7 @@ onMounted(async () => {
   try {
     statusDetail.value = await onMountSetup('statuses')
     // store.errorRes = (await statusDetail.value.getMode) ?? 'Done'
-    console.log(statusDetail.value.name)
+    // console.log(statusDetail.value.name)
     if (statusDetail.value.name == 'NO_STATUS') {
       router.push({ name: 'status' })
       store.ToastMessage = {
@@ -73,8 +73,8 @@ async function editStatus() {
       Object.assign(store.statusList[index], result.data)
       const tasklist = store.taskList
       tasklist
-        .filter((task) => task.status == oldDetail.name)
-        .map((task) => (task.status = updateDetail.value.name))
+        .filter((task) => task.status.name == oldDetail.name)
+        .map((task) => (task.status.name = updateDetail.value.name))
       store.resStatus = 'editDone'
       router.push({ name: 'status' })
       store.ToastMessage = {

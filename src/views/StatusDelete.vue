@@ -13,9 +13,10 @@ const id = route.params.id
 const currentData = ref({})
 let hasTask = []
 onMounted(() => {
-  const item = store.statusList.find((status) => status.id == id) ?? {}
+  const item = store.statusList.find((status) => status.id == id) ?? {id: route.params.id}
   currentData.value = item
-  hasTask = store.taskList.filter((task) => task.status == item.name)
+  // console.log(currentData.value)
+  hasTask = store.taskList.filter((task) => task.status.name == item.name)
 })
 store.isError = false
 const isHastask = ref(false)
@@ -59,12 +60,15 @@ const tranferStatus = async (currId, newId) => {
     throw error
   }
   isHastask.value = false
+  console.log(store.taskList);
   //delete item in status menu , map item in task menu
   const index = store.statusList.findIndex((status) => status.id == currId)
-  const total = store.taskList.filter((task) => task.status == store.statusList[index].name).length
+  const total = store.taskList.filter(
+    (task) => task.status.name == store.statusList[index].name
+  ).length
   store.taskList
-    .filter((task) => task.status == store.statusList[index].name)
-    .map((task) => (task.status = res.data.name))
+    .filter((task) => task.status.name == store.statusList[index].name)
+    .map((task) => (task.status.name = res.data.name))
   statusList.splice(index, 1)
   router.push({ name: 'status' })
   store.ToastMessage = {
@@ -100,7 +104,7 @@ const tranferId = ref(0)
         ?
       </p>
       <div class="flex justify-center gap-4">
-        <button @click="deleteStatus(id)" class="itbkk-button-confirm btn bg-green-400">
+        <button @click="deleteStatus(currentData.id)" class="itbkk-button-confirm btn bg-green-400">
           Confirm
         </button>
         <button
@@ -116,10 +120,15 @@ const tranferId = ref(0)
       name="detail"
       class="fixed w-[640px] h-auto py-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center items-center justify-center"
     >
-    <img src="/public/return.png" alt="" class="size-24 mx-auto" />
+      <img src="/public/return.png" alt="" class="size-24 mx-auto" />
 
       <div class="w-full text-center font-semibold text-xl">Tranfer a Status</div>
-      <p class="itbkk-message">There is some task associated with the "<span class="font-semibold">{{ currentData.name ?? 'No status' }}</span>" status.</p>
+      <p class="itbkk-message">
+        There is some task associated with the "<span class="font-semibold">{{
+          currentData.name ?? 'No status'
+        }}</span
+        >" status.
+      </p>
       <div>
         <label class="form-control w-full max-w-xs">
           <div class="label">
