@@ -90,10 +90,9 @@ const thead = ref(
       <table class="table rounded-3xl w-10/12">
         <thead class="border-b-[1px] border-opacity-10 bg-gray-600 bg-opacity-20">
           <tr>
-            <td class="w-1/12 border-r-[1px] border-opacity-10 text-center"><span :class="thead" class="flex justify-center"
-                >
-                <p>Id</p></span
-              ></td>
+            <td class="w-1/12 border-r-[1px] border-opacity-10 text-center">
+              <span :class="thead" class="flex justify-center"> <p>Id</p></span>
+            </td>
             <td class="w-3/12 border-r-[1px] border-opacity-10">
               <span :class="thead"
                 ><ClipboardDocumentListIcon class="size-6" />
@@ -142,8 +141,21 @@ const thead = ref(
               </div>
             </td>
             <!-- <td class="text-center">{{ status.countTask }}</td> -->
-            <td v-if="status.name != 'No Status'" class="dropdown dropdown-bottom dropdown-end flex justify-center">
-              <div tabindex="0" role="button" class="m-1">
+            <td
+              v-if="status.name != 'No Status'"
+              class="dropdown dropdown-bottom dropdown-end flex justify-center"
+            >
+              <div class="flex flex-row gap-2">
+                <a
+                  @click="router.push({ name: 'editStatus', params: { id: status.id } })"
+                  class="itbkk-button-edit btn btn-sm"
+                  >Edit</a
+                >
+                <a @click="navToDeleteStatus(status)" class="itbkk-button-delete btn btn-sm"
+                  >Delete</a
+                >
+              </div>
+              <!-- <div tabindex="0" role="button" class="m-1">
                 <EllipsisVerticalIcon class="itbkk-button-action size-6 hover:scale-150" />
               </div>
               <ul
@@ -160,7 +172,7 @@ const thead = ref(
                 <li class="text-red-500 hover:bg-red-300 bg-red-300 rounded-lg">
                   <a @click="navToDeleteStatus(status)" class="itbkk-button-delete">Delete</a>
                 </li>
-              </ul>
+              </ul> -->
             </td>
             <td v-else class="text-gray-500 italic text-center">default</td>
           </tr>
