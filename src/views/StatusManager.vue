@@ -11,7 +11,9 @@ import {
   UserCircleIcon,
   CheckCircleIcon,
   FaceSmileIcon,
-  SquaresPlusIcon
+  SquaresPlusIcon,
+  RocketLaunchIcon,
+  ListBulletIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import { getMethod } from '@/lib/fetchAPI'
@@ -88,9 +90,10 @@ const thead = ref(
       <table class="table rounded-3xl w-10/12">
         <thead class="border-b-[1px] border-opacity-10 bg-gray-600 bg-opacity-20">
           <tr>
-            <td class="w-1/12 border-r-[1px] border-opacity-10 text-center">
-              ID
-            </td>
+            <td class="w-1/12 border-r-[1px] border-opacity-10 text-center"><span :class="thead" class="flex justify-center"
+                >
+                <p>Id</p></span
+              ></td>
             <td class="w-3/12 border-r-[1px] border-opacity-10">
               <span :class="thead"
                 ><ClipboardDocumentListIcon class="size-6" />
@@ -109,13 +112,18 @@ const thead = ref(
                 <p>Status</p></span
               >
             </td>
-            <td class="w-1/12 border-r-[1px] border-opacity-10">
+            <!-- <td class="w-1/12 border-r-[1px] border-opacity-10">
               <span :class="thead">
                 <FaceSmileIcon class="size-6" />
                 <p>Usage</p></span
               >
+            </td> -->
+            <td class="w-1/12 border-r-[1px] border-opacity-10">
+              <span :class="thead"
+                ><RocketLaunchIcon class="size-6" />
+                <p>Action</p></span
+              >
             </td>
-            <td class="w-1/12">Action</td>
           </tr>
         </thead>
         <tbody>
@@ -133,8 +141,8 @@ const thead = ref(
                 {{ status.name }}
               </div>
             </td>
-            <td class="text-center">{{ status.countTask }}</td>
-            <td v-if="status.name != 'No Status'" class="dropdown dropdown-bottom dropdown-end">
+            <!-- <td class="text-center">{{ status.countTask }}</td> -->
+            <td v-if="status.name != 'No Status'" class="dropdown dropdown-bottom dropdown-end flex justify-center">
               <div tabindex="0" role="button" class="m-1">
                 <EllipsisVerticalIcon class="itbkk-button-action size-6 hover:scale-150" />
               </div>
@@ -154,7 +162,7 @@ const thead = ref(
                 </li>
               </ul>
             </td>
-            <td v-else class="text-gray-500 italic">default</td>
+            <td v-else class="text-gray-500 italic text-center">default</td>
           </tr>
           <tr v-if="store.statusList.length == 0">
             <td colspan="4" class="text-center text-gray-600 italic">No Status</td>
