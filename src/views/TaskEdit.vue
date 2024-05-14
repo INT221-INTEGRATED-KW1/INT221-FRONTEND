@@ -26,6 +26,7 @@ onMounted(async () => {
     oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
     updateDetail.value = taskDetail.value
     // console.log(updateDetail.value.status.id);
+    console.log(oldDetail);
   } catch (error) {
     store.ErrorMessage = 'The task does not exist'
     store.isError = true
@@ -57,9 +58,10 @@ async function editTask() {
       description: !updateDetail.value.description ? null : updateDetail.value.description.trim()
     }
     // let addtask function and send out info into the main page :D
+    let result
     try {
       // console.log(taskDetail.value.id);
-      const result = await updateMethod(taskDetail.value.id, 'tasks', updateDetail.value)
+      result = await updateMethod(taskDetail.value.id, 'tasks', updateDetail.value)
       Object.assign(store.taskList[store.findTaskIndexById(result.data.id)], result.data)
       store.resStatus = 'editDone'
       router.push({ name: 'task' })
@@ -71,6 +73,14 @@ async function editTask() {
       store.resStatus = 'updateError'
       throw error
     }
+    const oldStatus = store.statusList.find((status) => status.id == oldDetail.status.id)
+    // console.log(oldStatus);
+    oldStatus.countTask == 0 ? '' : --oldStatus.countTask
+    // console.log(oldStatus)
+    const newStatus = store.statusList.find((status) => status.id == result.data.status.id)
+    // console.log(newStatus);
+    newStatus.countTask = ++newStatus.countTask
+    // console.log(newStatus);
     router.push({ name: 'task' })
   }
 }

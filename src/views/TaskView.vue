@@ -34,8 +34,9 @@ function showDeleteModal(id) {
 }
 async function delTask(id) {
   isComplete.value = false
+  let result
   try {
-    const result = await deleteMethod(id, 'tasks')
+    result = await deleteMethod(id, 'tasks')
     store.resStatus = 'deleteDone'
     store.ToastMessage = {
       msg: 'The task has been deleted',
@@ -47,6 +48,9 @@ async function delTask(id) {
   }
   isDeleting.value = false
   taskList.splice(store.findTaskIndexById(id), 1)
+  // console.log(result.data)
+  // console.log(store.statusList[result.data.status.id -1])
+  store.statusList[result.data.status.id -1].countTask = store.statusList[result.data.status.id -1].countTask - 1 
 }
 
 const thead = ref(
@@ -186,7 +190,7 @@ function matchColor(statusName) {
 
   <div
     v-if="isDeleting && store.errorRes == 'Done'"
-    class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900"
+    class="fixed top-0 z-[1] left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900"
   >
     <div
       name="backdrop"
