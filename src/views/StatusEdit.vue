@@ -36,7 +36,7 @@ onMounted(async () => {
     store.isError = false
   } catch (error) {
     // console.log('err');
-    store.ErrorMessage = 'An error has occurred, the status does not exist.'
+    store.ErrorMessage = 'An error has occurred, the status does not exist'
     store.isError = true
     statusDetail.value = {}
     return error
