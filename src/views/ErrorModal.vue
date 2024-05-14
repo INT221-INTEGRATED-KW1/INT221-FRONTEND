@@ -30,7 +30,7 @@ function goBack() {
       <img src="/public/caution.png" alt="" class="size-24 mx-auto" />
       <h1 class="w-full text-center font-semibold text-xl">Something problem</h1>
       <p class="w-full text-center text-lg break-words inline-block">
-        <slot name="message" class="itbkk-message">Something wrong !</slot>
+        <span class="itbkk-message"><slot name="message" ></slot></span>
       </p>
       <div class="w-full flex flex-row gap-4 justify-center items-center mt-2">
         <button class="itbkk-button-cancel btn bg-slate-300 px-8" @click="goBack()">Back</button>

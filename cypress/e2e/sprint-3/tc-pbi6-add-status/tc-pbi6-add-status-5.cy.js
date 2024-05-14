@@ -2,6 +2,7 @@ describe(`TC-PBI6-ADD-STATUS-5\n
           Test Scenario : normal - add 3 tasks with No Status and To Do status`, () => {
   
   beforeEach(()=> {
+    cy.viewport(1024, 768) ;
     cy.visit('/task') ;
     cy.wait(100) ;
   }) ;
@@ -53,7 +54,7 @@ describe(`TC-PBI6-ADD-STATUS-5\n
     cy.get('.itbkk-modal-task').should('exist').as('modal')
     cy.get('@modal').find('.itbkk-title').type("ดาต้าเบส")
     cy.get('@modal').find('.itbkk-description').type("ສ້າງຖານຂໍ້ມູນ")
-    cy.get('@modal').find('.itbkk-assignees').type('あなた、彼、彼女 (私ではありません)')
+    cy.get('@modal').find('.itbkk-.assignees').type('あなた、彼、彼女 (私ではありません)')
     cy.get('@modal').find('.itbkk-status').select('Waiting')
     cy.get('@modal').find('.itbkk-button-confirm').contains('save',{matchCase: false}).as('save') ;
     cy.get('@save').click()
