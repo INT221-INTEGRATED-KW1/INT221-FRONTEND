@@ -37,7 +37,7 @@ const deleteStatus = async (statusId) => {
           erroricon: true
         }
         return
-      } else if (res.resCode == '404') throw new error()
+      } else if (res.resCode == '400') throw new error()
     } catch (error) {
       store.ErrorMessage = 'An error has occurred, the status does not exist.'
       return (store.isError = true)
@@ -64,12 +64,12 @@ const tranferStatus = async (currId, newId) => {
   } catch (error) {
     store.ErrorMessage = 'An error has occurred, the status does not exist.'
     isHastask.value = false
-    return store.isError = true
+    return (store.isError = true)
   }
   isHastask.value = false
   // console.log(store.taskList);
   //delete item in status menu , map item in task menu
-  
+
   const newindex = store.statusList.findIndex((status) => status.id == newId)
   const total = store.taskList.filter(
     (task) => task.status.name == store.statusList[index].name

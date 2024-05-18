@@ -5,6 +5,7 @@ import router from '@/router/router'
 import { formatStatus, colorStatus, alertMessage, statusColors } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import {
+  ArchiveBoxXMarkIcon,
   CheckCircleIcon,
   ClipboardDocumentListIcon,
   EllipsisVerticalIcon,
@@ -18,6 +19,7 @@ import {
 import { useTaskStore } from '@/store/store'
 import ErrorModal from '@/views/ErrorModal.vue'
 import ToastMessage from '@/views/ToastMessage.vue'
+import TaskDetail from './TaskDetail.vue'
 const store = useTaskStore()
 const taskList = store.taskList
 const route = useRoute()
@@ -65,16 +67,81 @@ function matchColor(statusName) {
   return color
 }
 
+// CONFUSE SECTION HAPPEN !!!
+// const taskListDisplay = computed(() => {
+//   if (!filterList.value.length) {
+//     return store.taskList
+//   } else {
+//     return store.taskList.filter((task) => filterList.value.includes(task.status.name))
+//     // .sort((a, b) => a.status.name.localeCompare(b.status.name));
+//   }
+// })
+
 const filterList = ref([])
-let taskListDisplay = store.taskList 
-watch(() => filterList.value , () => {
-  if (!filterList.value.length) { taskListDisplay = store.taskList }
-  else {
-    taskListDisplay = store.taskList.filter((task) => filterList.value.includes(task.status.name)).sort((a, b) => a.status.name.localeCompare(b.status.name))
-    console.log(taskListDisplay);
+const taskListDisplay = ref(store.taskList)
+const sortBy = ref(null)
+
+async function fetchTasksValidate() {
+  try {
+    const result = await getMethod('tasks', sortBy.value, filterList.value)
+    taskListDisplay.value = result.data
+  } catch (error) {
+    console.error('Error fetching tasks:', error)
+    taskListDisplay.value = store.taskList
   }
-  console.log("upd")
-})
+}
+// FILTER and SORT BE version
+watch(
+  [() => filterList.value, () => sortBy.value],
+  () => {
+    console.log('asd')
+    if (!filterList.value.length) {
+      taskListDisplay.value = store.taskList
+    } else {
+      fetchTasksValidate()
+    }
+  },
+  { deep: true }
+)
+
+// FILTER and SORT frontend version
+// watch(
+//   () => filterList.value,
+//   () => {
+//     console.log('asd')
+//     if (!filterList.value.length) {
+//       taskListDisplay.value = store.taskList
+//     } else {
+//       taskListDisplay.value = store.taskList.filter((task) =>
+//         filterList.value.includes(task.status.name)
+//       )
+//     }
+//   }
+// )
+
+let sortByASC = false
+function sortMethod(source, property, nestedProperty = null) {
+  // console.log(...source)
+  // console.log(source.slice());
+  source.sort((a, b) => {
+    let itemA = a[property] ?? ''
+    let itemB = b[property] ?? ''
+    if (nestedProperty && itemA && itemB) {
+      itemA = itemA[nestedProperty]
+      itemB = itemB[nestedProperty]
+    }
+    let compare = 0
+    compare = itemA.localeCompare(itemB)
+    return sortByASC ? compare : -compare
+  })
+  sortByASC = !sortByASC
+  // console.log(...source)
+}
+
+const removeStatus = (index) => {
+  filterList.value.splice(index, 1)
+  filterList.value = filterList.value.slice()
+}
 </script>
 
 <template>
@@ -86,40 +153,70 @@ watch(() => filterList.value , () => {
       <h2 class="text-3xl"></h2>
       <p class="text-base font-medium">Do something better than do nothing .</p>
     </div>
+    <!-- {{ taskList }} -->
+    <div class="btn" @click="sortMethod(taskListDisplay, 'status', 'name')">sort</div>
     <div class="css-selector w-full h-1"></div>
+    {{ filterList }}
     <div name="optionlist" class="w-full px-6 flex flex-row gap-0 items-center">
-      <div class="w-1/2 h-auto flex justify-start gap-2">
+      <div class="w-3/4 pr-20 h-auto flex justify-start gap-2">
         <div class="dropdown dropdown-bottom">
-          <div tabindex="0" role="button" class="btn m-1"><SwatchIcon class="size-6 h-9" /></div>
+          <div tabindex="0" role="button" class="btn m-1 hover:shadow-inner">
+            <SwatchIcon class="size-6 h-9" />
+          </div>
           <div
             tabindex="0"
-            class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+            class="dropdown-content z-[1] menu shadow bg-slate-50 rounded-box w-64 flex flex-row p-6"
           >
-            <li><a>Item 1</a></li>
-            <li v-for="(status, index) in store.statusList" :key="index">
-              <label class="cursor-pointer pr-0">
+            <div class="w-full flex items-center">
+              <h1 class="w-3/4 font-semibold text-base">
+                Filter (selected {{ filterList.length }})
+              </h1>
+              <div class="w-1/4 flex justify-end">
+                <ArchiveBoxXMarkIcon
+                  class="size-6 cursor-pointer hover:shadow-inner"
+                  @click="filterList = []"
+                />
+              </div>
+            </div>
+            <div class="divider w-full my-[1px]"></div>
+            <li v-for="(status, index) in store.statusList" :key="index" class="w-full">
+              <label class="cursor-pointer w-full">
                 <input
                   type="checkbox"
-                  class="peer sr-only"
+                  class="peer size-4"
                   name="color"
                   v-model="filterList"
                   :value="status.name"
                 />
                 <div
-                  class="rounded-md py-auto ring-2 ring-transparent transition-all hover:shadow peer-checked:text-sky-600 peer-checked:ring-blue-400 peer-checked:ring-offset-2 text-center content-center"
+                  class="rounded-md w-full px-[8px] py-[2px] ring-2 ring-transparent transition-all text-center content-center flex flex-row gap-2 items-center"
                 >
-                  {{ status.name }}
+                  <div
+                    :class="statusColors[status.color]"
+                    class="size-4 rounded-full shadow-inner"
+                  ></div>
+                  <span class="text-base">{{ status.name }}</span>
                 </div>
               </label>
             </li>
           </div>
         </div>
-        {{ filterList }}
+        <div class="flex flex-wrap gap-2 items-center">
+          <div
+            v-for="(status, index) in filterList"
+            :key="index"
+            class="w-auto rounded-md px-[8px] py-[2px]"
+            :class="matchColor(status)"
+          >
+            {{ status }}
+            <span @click="removeStatus(index)"> x </span>
+          </div>
+        </div>
       </div>
-      <div class="w-1/2 h-auto flex justify-end gap-4">
+      <div class="w-1/4 h-auto flex justify-end gap-4">
         <button
           @click="router.push({ name: 'addTask' })"
-          class="itbkk-button-add btn px-4 h-9 min-h-9 bg-sky-300 hover:bg-sky-400 hover:border-sky-400 border-none"
+          class="itbkk-button-add btn px-4 h-9 min-h-9 shadow-inner bg-sky-300 hover:bg-sky-400 hover:border-sky-400 border-none"
         >
           <PlusIcon class="size-6"></PlusIcon>
           Add
@@ -127,7 +224,7 @@ watch(() => filterList.value , () => {
 
         <button
           @click="router.push({ name: 'status' })"
-          class="itbkk-manage-status btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
+          class="itbkk-manage-status btn px-4 h-9 min-h-9 shadow-inner bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
         >
           <span :class="thead"
             ><Squares2X2Icon class="size-6" />
@@ -216,7 +313,7 @@ watch(() => filterList.value , () => {
             </td>
           </tr>
 
-          <tr v-if="taskList.length == 0">
+          <tr v-if="taskListDisplay.length == 0">
             <td
               colspan="4"
               class="text-center font-momo italic font-semibold text-opacity-70 whitespace-normal"
@@ -309,7 +406,16 @@ watch(() => filterList.value , () => {
 }
 
 .css-selector {
-  background: linear-gradient(90deg, #b90000, #ff3535, #fffb35, #6cff35, #35ffc2, #35a4ff, #4b35ff);
+  background: linear-gradient(
+    180deg,
+    #b90000,
+    #ff3535,
+    #fffb35,
+    #6cff35,
+    #35ffc2,
+    #35a4ff,
+    #4b35ff
+  );
   background-size: 1400% 1400%;
   -webkit-animation: AnimationName 30s ease infinite;
   -moz-animation: AnimationName 30s ease infinite;
