@@ -119,7 +119,7 @@ watch(
 //   }
 // )
 
-let sortByASC = false
+let sortByASC = true
 function sortMethod(source, property, nestedProperty = null) {
   // console.log(...source)
   // console.log(source.slice());
