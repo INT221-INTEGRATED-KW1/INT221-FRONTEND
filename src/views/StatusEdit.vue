@@ -22,7 +22,7 @@ onMounted(async () => {
     statusDetail.value = await onMountSetup('statuses')
     // store.errorRes = (await statusDetail.value.getMode) ?? 'Done'
     // console.log(statusDetail.value.name)
-    if (statusDetail.value.name == 'No Status') {
+    if (statusDetail.value.name == 'No Status' || statusDetail.value.name == 'Done') {
       router.push({ name: 'status' })
       store.ToastMessage = {
         msg: `Cannot edit default status (${statusDetail.value.name})`,

@@ -15,7 +15,8 @@ let hasTask = []
 onMounted(() => {
   const item = store.statusList.find((status) => status.id == id) ?? {
     id: route.params.id,
-    name: 'No Status'
+    name: 'No Status',
+    name: 'Done'
   }
   currentData.value = item
   // console.log(currentData.value)

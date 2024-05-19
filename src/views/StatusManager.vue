@@ -142,7 +142,7 @@ const thead = ref(
             </td>
             <!-- <td class="text-center">{{ status.countTask }}</td> -->
             <td
-              v-if="status.name != 'No Status'"
+              v-if="status.name != 'No Status' && status.name != 'Done'"
               class="dropdown dropdown-bottom dropdown-end flex justify-center"
             >
               <div class="flex flex-row gap-2">
@@ -178,6 +178,7 @@ const thead = ref(
           </tr>
           <tr v-if="store.statusList.length == 0">
             <td colspan="4" class="text-center text-gray-600 italic">No Status</td>
+            <td colspan="4" class="text-center text-gray-600 italic">Done</td>
           </tr>
         </tbody>
       </table>
