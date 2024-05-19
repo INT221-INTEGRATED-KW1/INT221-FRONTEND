@@ -14,7 +14,7 @@ import {
   Squares2X2Icon,
   SwatchIcon,
   UserCircleIcon,
-  XMarkIcon
+  AdjustmentsHorizontalIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import ErrorModal from '@/views/ErrorModal.vue'
@@ -237,7 +237,7 @@ const removeStatus = (index) => {
           class="itbkk-status-setting btn px-4 h-9 min-h-9 shadow-inner bg-green-400 hover:bg-green-400 hover:border-green-400 border-none"
         >
           <span :class="thead">
-            <FireIcon class="size-6" />
+            <AdjustmentsHorizontalIcon class="size-6" />
           </span>
         </button>
       </div>

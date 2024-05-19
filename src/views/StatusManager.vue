@@ -111,12 +111,12 @@ const thead = ref(
                 <p>Status</p></span
               >
             </td>
-            <!-- <td class="w-1/12 border-r-[1px] border-opacity-10">
+            <td class="w-1/12 border-r-[1px] border-opacity-10">
               <span :class="thead">
                 <FaceSmileIcon class="size-6" />
                 <p>Usage</p></span
               >
-            </td> -->
+            </td>
             <td class="w-1/12 border-r-[1px] border-opacity-10">
               <span :class="thead"
                 ><RocketLaunchIcon class="size-6" />
@@ -140,7 +140,7 @@ const thead = ref(
                 {{ status.name }}
               </div>
             </td>
-            <!-- <td class="text-center">{{ status.countTask }}</td> -->
+            <td class="text-center">{{ status.noOfTasks }}</td>
             <td
               v-if="status.name != 'No Status' && status.name != 'Done'"
               class="dropdown dropdown-bottom dropdown-end flex justify-center"

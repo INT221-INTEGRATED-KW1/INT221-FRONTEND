@@ -2,29 +2,22 @@
 import { useTaskStore } from '@/store/store'
 import { computed, ref, watch } from 'vue'
 import router from '@/router/router'
-import { useRoute } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 
 const store = useTaskStore()
 const route = useRoute()
 
-let maxTask = ref(0)
-let onDisabled = ref(false)
-
-function confirmSetting() {}
-
 function goBack() {
   store.isError = false
-  router.push({ name: route.matched[0].name }).then(() => {
-    location.reload()
-  })
+  router.push({ name: route.matched[0].name })
 }
 
 function validateInput() {
-  return this.maxTask > 10 ? true : false
+  return store.maxTask > 10
 }
 
 function isOnDisabled() {
-  return this.onDisabled === false
+  return store.onDisabled
 }
 </script>
 
@@ -47,7 +40,7 @@ function isOnDisabled() {
 
       <!-- Task function block -->
       <div class="itbkk-limit-task flex flex-row">
-        <input type="checkbox" class="toggle" v-model="onDisabled" checked />
+        <input type="checkbox" class="toggle" v-model="store.onDisabled" checked />
         <p class="ml-5"><b>Limit task in this status</b></p>
       </div>
       <div class="itbkk-max-task flex flex-row">
@@ -56,7 +49,7 @@ function isOnDisabled() {
           type="text"
           maxlength="2"
           class="input input-bordered w-full max-w-xs"
-          v-model="maxTask"
+          v-model="store.maxTask"
         />
       </div>
       <br />
@@ -80,7 +73,7 @@ function isOnDisabled() {
       </div>
 
       <!-- On limit enable alert -->
-      <div v-if="!isOnDisabled()" role="alert" class="alert alert-success">
+      <div v-if="isOnDisabled()" role="alert" class="alert alert-success">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="stroke-current shrink-0 h-6 w-6"
@@ -98,7 +91,7 @@ function isOnDisabled() {
       </div>
 
       <!-- On limit disable alert -->
-      <div v-if="isOnDisabled()" role="alert" class="alert alert-warning">
+      <div v-if="!isOnDisabled()" role="alert" class="alert alert-warning">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="stroke-current shrink-0 h-6 w-6"
@@ -122,7 +115,7 @@ function isOnDisabled() {
         <button
           class="itbkk-button-confirm btn bg-green-600 text-white px-8"
           :disabled="validateInput()"
-          @click="confirmSetting()"
+          @click="goBack()"
         >
           Save
         </button>

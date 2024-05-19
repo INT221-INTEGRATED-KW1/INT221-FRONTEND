@@ -113,6 +113,17 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           ></textarea>
         </div>
       </div>
+
+      <!-- Enabled/Disabled State -->
+      <div v-if="store.onDisabled">
+        <p class="text-center text-green-400"><b>Kaban board limits is enabled!</b></p>
+        <br />
+      </div>
+      <div v-else>
+        <p class="text-center text-red-400"><b>Kaban board limits is disabled!</b></p>
+        <br />
+      </div>
+
       <div class="right-0 m-12 mt-0 flex justify-center gap-4">
         <button
           @click="addNewTask()"
