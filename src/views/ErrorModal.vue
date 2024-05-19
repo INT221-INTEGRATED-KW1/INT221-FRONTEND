@@ -12,6 +12,7 @@ function goBack() {
     location.reload()
   })
 }
+
 </script>
 
 <template>

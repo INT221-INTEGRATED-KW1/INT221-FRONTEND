@@ -231,6 +231,15 @@ const removeStatus = (index) => {
             <p>Status M.</p></span
           >
         </button>
+
+        <button
+          @click="router.push({ name: 'limitStatus' })"
+          class="itbkk-status-setting btn px-4 h-9 min-h-9 shadow-inner bg-green-400 hover:bg-green-400 hover:border-green-400 border-none"
+        >
+          <span :class="thead">
+            <FireIcon class="size-6" />
+          </span>
+        </button>
       </div>
     </div>
     <div
