@@ -11,11 +11,13 @@ const statusList = store.statusList
 const route = useRoute()
 const id = route.params.id
 const currentData = ref({})
+const tranferId = ref(0)
 let hasTask = []
 onMounted(() => {
   const item = store.statusList.find((status) => status.id == id) ?? {
     id: route.params.id,
-    name: 'No Status'
+    name: 'No Status',
+    name: 'Done'
   }
   currentData.value = item
   // console.log(currentData.value)
@@ -37,7 +39,7 @@ const deleteStatus = async (statusId) => {
           erroricon: true
         }
         return
-      } else if (res.resCode == '404') throw new error()
+      } else if (res.resCode == '400') throw new error()
     } catch (error) {
       store.ErrorMessage = 'An error has occurred, the status does not exist.'
       return (store.isError = true)
@@ -58,18 +60,19 @@ const deleteStatus = async (statusId) => {
 const tranferStatus = async (currId, newId) => {
   let res = null
   const index = store.statusList.findIndex((status) => status.id == currId)
+  const tindex = store.statusList.findIndex((status) => status.id == tranferId.value)
   try {
     res = await deleteTranMethod(currId, 'statuses', newId)
     if (res.resCode == '404') throw new error()
   } catch (error) {
-    store.ErrorMessage = 'An error has occurred, the status does not exist.'
+    store.ErrorMessage = `Cannot transfer to number of task in ${store.statusList[tindex].name} status since it will exceed the limit. Please choose another status to transfer to.`
     isHastask.value = false
-    return store.isError = true
+    return (store.isError = true)
   }
   isHastask.value = false
   // console.log(store.taskList);
   //delete item in status menu , map item in task menu
-  
+
   const newindex = store.statusList.findIndex((status) => status.id == newId)
   const total = store.taskList.filter(
     (task) => task.status.name == store.statusList[index].name
@@ -86,8 +89,6 @@ const tranferStatus = async (currId, newId) => {
   }
   store.resStatus = 'deleteDone'
 }
-
-const tranferId = ref(0)
 </script>
 
 <template>

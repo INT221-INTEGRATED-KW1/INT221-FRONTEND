@@ -1,17 +1,28 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import Navbar from './components/Navbar.vue'
 import { useTaskStore } from './store/store'
 import { getMethod } from './lib/fetchAPI'
 
 const store = useTaskStore()
 
+const isAppReady = ref(false);
+
+const initializeApp = async () => {
+  // Perform any setup or async operations here
+  await new Promise((resolve) => setTimeout(resolve, 200)); // Example delay
+
+  // Set the flag to true after initialization
+  isAppReady.value = true;
+};
+
+
 onMounted(async () => {
   // store.isLoading = true
   // setTimeout(() => {
   //   store.isLoading = false
   // }, 2000)
-
+  initializeApp()
   try {
     store.taskList.splice(0, store.taskList.length)
     const taskRes = await getMethod('tasks')
@@ -29,9 +40,21 @@ onMounted(async () => {
       console.error('Fail to get status', error)
     }
   }
+
+  try {
+    const limitresult = await getMethod('statusesLimit')
+    store.limitSwitch = limitresult.data[0].statusLimit
+    store.limitInfo = limitresult.data[0].statuses
+    // console.log(store.limitSwitch);
+  } catch (error) {
+    console.error('Error fetching :', error.message)
+  }
   // console.log(store.taskList)
   // console.log(store.statusList)
 })
+
+
+
 </script>
 
 <template>
@@ -41,7 +64,7 @@ onMounted(async () => {
   >
     <div class="loader"></div>
   </div>
-  <router-view/>
+  <router-view v-if="isAppReady"/>
 </template>
 
 <style>

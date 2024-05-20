@@ -7,6 +7,7 @@ import StatusManager from '@/views/StatusManager.vue'
 import StatusAdd from '@/views/StatusAdd.vue'
 import StatusEdit from '@/views/StatusEdit.vue'
 import StatusDelete from '@/views/StatusDelete.vue'
+import LimitModal from '@/views/LimitModal.vue'
 const routes = [
   {
     path: '',
@@ -32,6 +33,11 @@ const routes = [
         path: ':id/edit',
         name: 'editTask',
         component: TaskEdit
+      },
+      {
+        path: 'limit',
+        name: 'limitStatus',
+        component: LimitModal
       }
     ]
   },

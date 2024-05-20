@@ -46,6 +46,8 @@ watch(
 const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
 )
+
+console.log()
 </script>
 
 <template>
@@ -111,12 +113,12 @@ const thead = ref(
                 <p>Status</p></span
               >
             </td>
-            <!-- <td class="w-1/12 border-r-[1px] border-opacity-10">
+            <td class="w-1/12 border-r-[1px] border-opacity-10">
               <span :class="thead">
                 <FaceSmileIcon class="size-6" />
                 <p>Usage</p></span
               >
-            </td> -->
+            </td>
             <td class="w-1/12 border-r-[1px] border-opacity-10">
               <span :class="thead"
                 ><RocketLaunchIcon class="size-6" />
@@ -140,9 +142,10 @@ const thead = ref(
                 {{ status.name }}
               </div>
             </td>
-            <!-- <td class="text-center">{{ status.countTask }}</td> -->
+
+            <td class="text-center">{{ status.noOfTasks }}</td>
             <td
-              v-if="status.name != 'No Status'"
+              v-if="status.name != 'No Status' && status.name != 'Done'"
               class="dropdown dropdown-bottom dropdown-end flex justify-center"
             >
               <div class="flex flex-row gap-2">
@@ -178,6 +181,7 @@ const thead = ref(
           </tr>
           <tr v-if="store.statusList.length == 0">
             <td colspan="4" class="text-center text-gray-600 italic">No Status</td>
+            <td colspan="4" class="text-center text-gray-600 italic">Done</td>
           </tr>
         </tbody>
       </table>

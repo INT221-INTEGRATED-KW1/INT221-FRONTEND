@@ -2,21 +2,24 @@
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { deleteMethod, getMethod } from '../lib/fetchAPI'
 import router from '@/router/router'
-import { formatStatus, colorStatus, alertMessage } from '@/lib/util'
+import { formatStatus, colorStatus, alertMessage, statusColors } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import {
+  ArchiveBoxXMarkIcon,
   CheckCircleIcon,
   ClipboardDocumentListIcon,
   EllipsisVerticalIcon,
   FireIcon,
   PlusIcon,
   Squares2X2Icon,
+  SwatchIcon,
   UserCircleIcon,
-  XMarkIcon
+  AdjustmentsHorizontalIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import ErrorModal from '@/views/ErrorModal.vue'
 import ToastMessage from '@/views/ToastMessage.vue'
+import TaskDetail from './TaskDetail.vue'
 const store = useTaskStore()
 const taskList = store.taskList
 const route = useRoute()
@@ -50,7 +53,8 @@ async function delTask(id) {
   taskList.splice(store.findTaskIndexById(id), 1)
   // console.log(result.data)
   // console.log(store.statusList[result.data.status.id -1])
-  store.statusList[result.data.status.id -1].countTask = store.statusList[result.data.status.id -1].countTask - 1 
+  store.statusList[result.data.status.id - 1].countTask =
+    store.statusList[result.data.status.id - 1].countTask - 1
 }
 
 const thead = ref(
@@ -61,6 +65,82 @@ function matchColor(statusName) {
   const result = store.statusList.find((status) => status.name == statusName) ?? 'grey'
   const color = colorStatus(result.color)
   return color
+}
+
+// CONFUSE SECTION HAPPEN !!!
+// const taskListDisplay = computed(() => {
+//   if (!filterList.value.length) {
+//     return store.taskList
+//   } else {
+//     return store.taskList.filter((task) => filterList.value.includes(task.status.name))
+//     // .sort((a, b) => a.status.name.localeCompare(b.status.name));
+//   }
+// })
+
+const filterList = ref([])
+const taskListDisplay = ref(store.taskList)
+const sortBy = ref(null)
+
+async function fetchTasksValidate() {
+  try {
+    const result = await getMethod('tasks', sortBy.value, filterList.value)
+    taskListDisplay.value = result.data
+  } catch (error) {
+    console.error('Error fetching tasks:', error)
+    taskListDisplay.value = store.taskList
+  }
+}
+// FILTER and SORT BE version
+watch(
+  [() => filterList.value, () => sortBy.value],
+  () => {
+    // console.log('asd')
+    if (!filterList.value.length) {
+      taskListDisplay.value = store.taskList
+    } else {
+      fetchTasksValidate()
+    }
+  },
+  { deep: true }
+)
+
+// FILTER and SORT frontend version
+// watch(
+//   () => filterList.value,
+//   () => {
+//     console.log('asd')
+//     if (!filterList.value.length) {
+//       taskListDisplay.value = store.taskList
+//     } else {
+//       taskListDisplay.value = store.taskList.filter((task) =>
+//         filterList.value.includes(task.status.name)
+//       )
+//     }
+//   }
+// )
+
+let sortByASC = true
+function sortMethod(source, property, nestedProperty = null) {
+  // console.log(...source)
+  // console.log(source.slice());
+  source.sort((a, b) => {
+    let itemA = a[property] ?? ''
+    let itemB = b[property] ?? ''
+    if (nestedProperty && itemA && itemB) {
+      itemA = itemA[nestedProperty]
+      itemB = itemB[nestedProperty]
+    }
+    let compare = 0
+    compare = itemA.localeCompare(itemB)
+    return sortByASC ? compare : -compare
+  })
+  sortByASC = !sortByASC
+  // console.log(...source)
+}
+
+const removeStatus = (index) => {
+  filterList.value.splice(index, 1)
+  filterList.value = filterList.value.slice()
 }
 </script>
 
@@ -73,25 +153,94 @@ function matchColor(statusName) {
       <h2 class="text-3xl"></h2>
       <p class="text-base font-medium">Do something better than do nothing .</p>
     </div>
+    <!-- {{ taskList }} -->
+    <div class="btn" @click="sortMethod(taskListDisplay, 'status', 'name')">sort</div>
     <div class="css-selector w-full h-1"></div>
-    <div class="w-full h-auto flex justify-end gap-4 px-6">
-      <button
-        @click="router.push({ name: 'addTask' })"
-        class="itbkk-button-add btn px-4 h-9 min-h-9 bg-sky-300 hover:bg-sky-400 hover:border-sky-400 border-none"
-      >
-        <PlusIcon class="size-6"></PlusIcon>
-        Add
-      </button>
-
-      <button
-        @click="router.push({ name: 'status' })"
-        class="itbkk-manage-status btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
-      >
-        <span :class="thead"
-          ><Squares2X2Icon class="size-6" />
-          <p>Status M.</p></span
+    {{ filterList }}
+    <div name="optionlist" class="w-full px-6 flex flex-row gap-0 items-center">
+      <div class="w-3/4 pr-20 h-auto flex justify-start gap-2">
+        <div class="dropdown dropdown-bottom">
+          <div tabindex="0" role="button" class="btn m-1 hover:shadow-inner">
+            <SwatchIcon class="size-6 h-9" />
+          </div>
+          <div
+            tabindex="0"
+            class="dropdown-content z-[1] menu shadow bg-slate-50 rounded-box w-64 flex flex-row p-6"
+          >
+            <div class="w-full flex items-center">
+              <h1 class="w-3/4 font-semibold text-base">
+                Filter (selected {{ filterList.length }})
+              </h1>
+              <div class="w-1/4 flex justify-end">
+                <ArchiveBoxXMarkIcon
+                  class="size-6 cursor-pointer hover:shadow-inner"
+                  @click="filterList = []"
+                />
+              </div>
+            </div>
+            <div class="divider w-full my-[1px]"></div>
+            <li v-for="(status, index) in store.statusList" :key="index" class="w-full">
+              <label class="cursor-pointer w-full">
+                <input
+                  type="checkbox"
+                  class="peer size-4"
+                  name="color"
+                  v-model="filterList"
+                  :value="status.name"
+                />
+                <div
+                  class="rounded-md w-full px-[8px] py-[2px] ring-2 ring-transparent transition-all text-center content-center flex flex-row gap-2 items-center"
+                >
+                  <div
+                    :class="statusColors[status.color]"
+                    class="size-4 rounded-full shadow-inner"
+                  ></div>
+                  <span class="text-base">{{ status.name }}</span>
+                </div>
+              </label>
+            </li>
+          </div>
+        </div>
+        <div class="flex flex-wrap gap-2 items-center">
+          <div
+            v-for="(status, index) in filterList"
+            :key="index"
+            class="w-auto rounded-md px-[8px] py-[2px]"
+            :class="matchColor(status)"
+          >
+            {{ status }}
+            <span @click="removeStatus(index)"> x </span>
+          </div>
+        </div>
+      </div>
+      <div class="w-1/4 h-auto flex justify-end gap-4">
+        <button
+          @click="router.push({ name: 'addTask' })"
+          class="itbkk-button-add btn px-4 h-9 min-h-9 shadow-inner bg-sky-300 hover:bg-sky-400 hover:border-sky-400 border-none"
         >
-      </button>
+          <PlusIcon class="size-6"></PlusIcon>
+          Add
+        </button>
+
+        <button
+          @click="router.push({ name: 'status' })"
+          class="itbkk-manage-status btn px-4 h-9 min-h-9 shadow-inner bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
+        >
+          <span :class="thead"
+            ><Squares2X2Icon class="size-6" />
+            <p>Status M.</p></span
+          >
+        </button>
+
+        <button
+          @click="router.push({ name: 'limitStatus' })"
+          class="itbkk-status-setting btn px-4 h-9 min-h-9 shadow-inner bg-green-400 hover:bg-green-400 hover:border-green-400 border-none"
+        >
+          <span :class="thead">
+            <AdjustmentsHorizontalIcon class="size-6" />
+          </span>
+        </button>
+      </div>
     </div>
     <div
       name="data"
@@ -123,7 +272,7 @@ function matchColor(statusName) {
         </thead>
         <tbody>
           <tr
-            v-for="task in taskList"
+            v-for="task in taskListDisplay"
             :key="task.id"
             class="hover:cursor-pointer hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 itbkk-item"
           >
@@ -173,7 +322,7 @@ function matchColor(statusName) {
             </td>
           </tr>
 
-          <tr v-if="taskList.length == 0">
+          <tr v-if="taskListDisplay.length == 0">
             <td
               colspan="4"
               class="text-center font-momo italic font-semibold text-opacity-70 whitespace-normal"

@@ -1,15 +1,37 @@
 const url = import.meta.env.VITE_BASE_URL
 
-async function getMethod(path) {
+async function getMethod(path, sortBy = null, filterStatuses = []) {
   try {
-    const response = await fetch(`${url}${path}`)
+    const params = new URLSearchParams()
+    // console.log(filterStatuses)
+    if (sortBy) {
+      params.append('sortBy', sortBy)
+    }
+
+    if (filterStatuses.length > 0) {
+      const filterStatusesString = filterStatuses.join(',')
+      params.append('filterStatuses', filterStatusesString)
+    }
+
+    // If need in requirement (assign multiple params)
+    // filterStatuses.forEach((status) => {
+    //   params.append('filterStatuses', status)
+    // })
+
+    const response = await fetch(`${url}${path}?${params.toString()}`, {
+      method: 'GET',
+      headers: {
+        Accept: 'application/hal+json',
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+      }
+    })
     if (!response.ok) {
       throw new Error(`Failed to get method ${path}`)
     }
     const data = await response.json()
-    return { resCode: response.status, data: data }
+    return { resCode: response.status, data }
   } catch (error) {
-    // console.log('geterr');
+    console.error('Error fetching data:', error)
     throw error
   }
 }
@@ -27,7 +49,7 @@ async function addMethod(detail, database) {
       throw new Error(`Fail to add new ${database}.`)
     }
     const data = await response.json()
-    return { resCode: response.status, data: data }
+    return { resCode: response.status, data }
   } catch (error) {
     throw error
   }
@@ -42,10 +64,10 @@ async function deleteMethod(taskId, database) {
       }
     })
     if (!response.ok) {
-      return { resCode: response.status}
+      return { resCode: response.status }
     }
     const data = await response.json()
-    return { resCode: response.status, data: data }
+    return { resCode: response.status, data }
   } catch (error) {
     throw error
   }
@@ -60,32 +82,51 @@ async function deleteTranMethod(taskId, database, newId) {
       }
     })
     if (!response.ok) {
-      throw new Error('Failed to delete task id : ', taskId)
+      throw new Error(`Failed to delete task id: ${taskId}`)
     }
     const data = await response.json()
-    return { resCode: response.status, data: data }
+    return { resCode: response.status, data }
   } catch (error) {
     throw error
   }
 }
 
-async function updateMethod(taskId, database, taskDetail) {
+async function updateMethod(Id, database, Detail) {
   try {
-    const response = await fetch(`${url}${database}/${taskId}`, {
+    const response = await fetch(`${url}${database}/${Id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(taskDetail)
+      body: JSON.stringify(Detail)
     })
     if (!response.ok) {
-      throw new Error(`Failed to update ${database} id : `, taskId)
+      throw new Error(`Failed to update ${database} id: ${Id}`)
     }
     const data = await response.json()
-    return { resCode: response.status, data: data }
+    return { resCode: response.status, data }
   } catch (error) {
     throw error
   }
 }
 
-export { getMethod, addMethod, deleteMethod, updateMethod, deleteTranMethod }
+async function patchMethod(Id, database, subfix ,  Detail) {
+  try {
+    const response = await fetch(`${url}${database}/${Id}/${subfix}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(Detail)
+    })
+    if (!response.ok) {
+      throw new Error(`Failed to update ${database} id: ${Id}`)
+    }
+    const data = await response.json()
+    return { resCode: response.status, data }
+  } catch (error) {
+    throw error
+  }
+}
+
+export { getMethod, addMethod, deleteMethod, updateMethod, deleteTranMethod , patchMethod}
