@@ -11,6 +11,7 @@ const statusList = store.statusList
 const route = useRoute()
 const id = route.params.id
 const currentData = ref({})
+const tranferId = ref(0)
 let hasTask = []
 onMounted(() => {
   const item = store.statusList.find((status) => status.id == id) ?? {
@@ -59,11 +60,12 @@ const deleteStatus = async (statusId) => {
 const tranferStatus = async (currId, newId) => {
   let res = null
   const index = store.statusList.findIndex((status) => status.id == currId)
+  const tindex = store.statusList.findIndex((status) => status.id == tranferId.value)
   try {
     res = await deleteTranMethod(currId, 'statuses', newId)
     if (res.resCode == '404') throw new error()
   } catch (error) {
-    store.ErrorMessage = 'An error has occurred, the status does not exist.'
+    store.ErrorMessage = `Cannot transfer to number of task in ${store.statusList[tindex].name} status since it will exceed the limit. Please choose another status to transfer to.`
     isHastask.value = false
     return (store.isError = true)
   }
@@ -76,7 +78,7 @@ const tranferStatus = async (currId, newId) => {
     (task) => task.status.name == store.statusList[index].name
   ).length
   store.taskList
-    .filter((task) => task.status.name == store.statusList[index].name)
+    .filter((task) => task.status.name == store.statusList[tranferId].name)
     .map((task) => (task.status.name = res.data.name))
   statusList[newindex].countTask = statusList[newindex].countTask + total
   statusList.splice(index, 1)
@@ -87,8 +89,6 @@ const tranferStatus = async (currId, newId) => {
   }
   store.resStatus = 'deleteDone'
 }
-
-const tranferId = ref(0)
 </script>
 
 <template>

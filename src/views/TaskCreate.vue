@@ -37,7 +37,7 @@ async function addNewTask() {
         msg:
           'The status ' +
           store.limitInfo[index].name +
-          ' will have too many tasks. Please make progress and update statusof existing tasks',
+          ' will have too many tasks. Please make progress and update status of existing tasks',
         color: 'red'
       }
       return
