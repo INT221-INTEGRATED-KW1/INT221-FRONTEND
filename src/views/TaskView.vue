@@ -261,7 +261,7 @@ const removeStatus = (index) => {
                   </div>
                   <div
                     class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-600 text-white"
-                    @click="sortMethod(taskListDisplay, 'title')"
+                    @click="router.go()"
                   >
                     R
                   </div>
@@ -283,7 +283,7 @@ const removeStatus = (index) => {
                   </div>
                   <div
                     class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-600 text-white"
-                    @click="sortMethod(taskListDisplay, 'assignees')"
+                    @click="router.go()"
                   >
                     R
                   </div>
@@ -308,7 +308,7 @@ const removeStatus = (index) => {
                 </div>
                 <div
                   class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-600 text-white"
-                  @click="sortMethod(taskListDisplay, 'status', 'name')"
+                  @click="router.go()"
                 >
                   R
                 </div>
