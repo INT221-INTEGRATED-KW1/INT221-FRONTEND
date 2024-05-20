@@ -70,7 +70,7 @@ const routes = [
 ]
 //import.meta.env.BASE_URL
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory("/kw1/"),
   routes
 })
 
