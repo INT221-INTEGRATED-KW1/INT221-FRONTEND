@@ -101,6 +101,9 @@ async function editStatus() {
 }
 
 watch([() => updateDetail.value.name, () => updateDetail.value.description], () => {
+  if (updateDetail.value.description == null) {
+    updateDetail.value.description = ''
+  }
   if (updateDetail.value.name.length > 50 || updateDetail.value.description.length > 200) {
     return (isTextOver.value = true)
   } else {

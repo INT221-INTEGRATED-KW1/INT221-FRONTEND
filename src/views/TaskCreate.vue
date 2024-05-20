@@ -38,9 +38,9 @@ async function addNewTask() {
     // console.log(TaskDetail.value);
     Object.assign(TaskDetail.value, {
       title: TaskDetail.value.title.trim(),
-      assignees: !TaskDetail.value.assignees ? null : TaskDetail.value.assignees.trim(),
+      assignees: !TaskDetail.value.assignees ? null : TaskDetail.value.assignees,
       status: TaskDetail.value.status ?? 1,
-      description: !TaskDetail.value.description ? null : TaskDetail.value.description.trim()
+      description: !TaskDetail.value.description ? null : TaskDetail.value.description,
     })
     // let addMethod function and send out info into the main page :D
     const result = await addMethod(TaskDetail.value, 'tasks')
@@ -65,6 +65,12 @@ watch(
     () => TaskDetail.value.description
   ],
   () => {
+    if (TaskDetail.value.assignees == null) {
+      TaskDetail.value.assignees = ""
+    }
+    if (TaskDetail.value.description == null) {
+      TaskDetail.value.description = ""
+    }
     if (
       TaskDetail.value.title.length > 100 ||
       TaskDetail.value.assignees.length > 30 ||
