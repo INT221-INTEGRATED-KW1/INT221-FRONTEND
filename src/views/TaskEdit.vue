@@ -29,8 +29,8 @@ onMounted(async () => {
     oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
     updateDetail.value = taskDetail.value
     Object.assign(updateDetail.value, {
-      assignees: updateDetail.value.assignees ?? "",
-      description: updateDetail.value.description ?? ""
+      assignees: updateDetail.value.assignees ?? '',
+      description: updateDetail.value.description ?? ''
     })
     // console.log(updateDetail.value.status.id);
     // console.log(oldDetail)
@@ -108,6 +108,12 @@ watch(
     () => updateDetail.value.description
   ],
   () => {
+    if (updateDetail.value.assignees == null) {
+      updateDetail.value.assignees = ""
+    }
+    if (updateDetail.value.description == null) {
+      updateDetail.value.description = ""
+    }
     if (
       updateDetail.value.title.length > 100 ||
       updateDetail.value.assignees.length > 30 ||

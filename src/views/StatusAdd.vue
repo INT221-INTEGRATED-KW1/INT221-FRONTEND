@@ -23,7 +23,7 @@ async function addNewStatus() {
   } else {
     Object.assign(StatusDetail.value, {
       name: StatusDetail.value.name.trim(),
-      description: !StatusDetail.value.description ? null : StatusDetail.value.description.trim(),
+      description: !StatusDetail.value.description ? null : StatusDetail.value.description,
       color: StatusDetail.value.color ?? 'grey'
     })
     // let addtask function and send out info into the main page :D
@@ -34,6 +34,7 @@ async function addNewStatus() {
       Object.assign(result.data, {
         noOfTasks: 0
       })
+
       store.statusList.push(result.data)
       store.resStatus = 'addDone'
       router.push({ name: 'status' })
@@ -52,6 +53,9 @@ async function addNewStatus() {
 }
 
 watch([() => StatusDetail.value.name, () => StatusDetail.value.description], () => {
+  if (StatusDetail.value.description == null) {
+    StatusDetail.value.description = ''
+  }
   if (StatusDetail.value.name.length > 50 || StatusDetail.value.description.length > 200) {
     return (isTextOver.value = true)
   } else {
