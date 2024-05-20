@@ -26,9 +26,9 @@ onMounted(async () => {
     // console.log(statusDetail.value.name)
 
     Object.assign(statusDetail.value, {
-      description: statusDetail.value.description ?? ""
+      description: statusDetail.value.description ?? ''
     })
-    
+
     if (statusDetail.value.name == 'No Status' || statusDetail.value.name == 'Done') {
       router.push({ name: 'status' })
       store.ToastMessage = {
@@ -66,12 +66,12 @@ async function editStatus() {
   if (!updateDetail.value.name) {
     return (isInValid.value = true)
   } else {
-    updateDetail.value = {
+    Object.assign(updateDetail.value ,{
       id: updateDetail.value.id,
       name: updateDetail.value.name.trim(),
-      description: updateDetail.value.description ?? null,
+      description: !updateDetail.value.description ? null : updateDetail.value.description,
       color: updateDetail.value.color
-    }
+    })
     // console.log(updateDetail.value);
     // let addtask function and send out info into the main page :D
     try {
@@ -101,10 +101,14 @@ async function editStatus() {
 }
 
 watch([() => updateDetail.value.name, () => updateDetail.value.description], () => {
-  if (updateDetail.value.name.length > 50 || updateDetail.value.description.length > 200) {
-    return (isTextOver.value = true)
+  if (updateDetail.value.name != null) {
+    if (updateDetail.value.name.length > 50 || updateDetail.value.description.length > 200) {
+      return (isTextOver.value = true)
+    } else {
+      return (isTextOver.value = false)
+    }
   } else {
-    return (isTextOver.value = false)
+    updateDetail.value.description = ''
   }
 })
 
@@ -141,13 +145,16 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         </div>
       </div>
       <div class="overflow-y-auto h-full m-12 my-0">
-        <div class="w-full flex flex-col gap-2">
-          <span class="w-full divider divider-start mb-0"><b>Name</b></span>
+        <div class="w-full flex flex-col gap-2 font-semibold">
+          <span class="w-full divider divider-start mb-0 "
+            >Name<span :class="{ 'text-red-500': updateDetail.name.length > 50 }">
+              ({{ updateDetail.name.length }}/50)</span
+            ></span
+          >
           <label class="form-control w-full">
-            <div class="label">
-              [{{ updateDetail.name.length }}/50]
+            <div class="label p-0 pb-[2px] font-semibold">
               <div v-if="updateDetail.name.length > 50">
-                <p class="text-red-500">Name cannot be more than 50 characters.</p>
+                <p class="text-red-500 pl-2">Name cannot be more than 50 characters.</p>
               </div>
             </div>
             <input
@@ -158,20 +165,26 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             />
           </label>
         </div>
-        <div class="w-full flex flex-col gap-2">
-          <span class="w-full divider divider-start mb-0"><b>Description</b></span>
+        <div class="w-full flex flex-col gap-2 font-semibold">
+          <span class="w-full divider divider-start mb-0 font-semibold"
+            >Description<b
+              class="font-semibold"
+              :class="{ 'text-red-500': updateDetail.description.length > 200 }"
+            >
+              ({{ updateDetail.description.length }}/200)</b
+            ></span
+          >
 
           <label class="form-control w-full">
-            <div class="label">
-              [{{ updateDetail.description.length }}/200]
+            <div class="label p-0 pb-[2px] font-semibold">
               <div v-if="updateDetail.description.length > 200">
-                <p class="text-red-500">Description cannot be more than 200 characters.</p>
+                <p class="text-red-500 pl-2">Description cannot be more than 200 characters.</p>
               </div>
             </div>
             <textarea
-            placeholder="Add some status ..."
-            v-model="updateDetail.description"
-            class="itbkk-status-description w-full max-h-28 min-h-28 p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
+              placeholder="Add some status ..."
+              v-model="updateDetail.description"
+              class="itbkk-status-description w-full max-h-28 min-h-28 p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
             ></textarea>
           </label>
         </div>
@@ -203,7 +216,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         <button
           @click="editStatus()"
           class="itbkk-button-confirm btn bg-green-400"
-          :disabled="!updateDetail.name || (isSameDetail || isTextOver)"
+          :disabled="!updateDetail.name || isSameDetail || isTextOver"
         >
           Save
         </button>

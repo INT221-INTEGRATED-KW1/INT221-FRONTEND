@@ -23,7 +23,7 @@ async function addNewStatus() {
   } else {
     Object.assign(StatusDetail.value, {
       name: StatusDetail.value.name.trim(),
-      description: !StatusDetail.value.description ? null : StatusDetail.value.description.trim(),
+      description: !StatusDetail.value.description ? null : StatusDetail.value.description,
       color: StatusDetail.value.color ?? 'grey'
     })
     // let addtask function and send out info into the main page :D
@@ -52,10 +52,14 @@ async function addNewStatus() {
 }
 
 watch([() => StatusDetail.value.name, () => StatusDetail.value.description], () => {
-  if (StatusDetail.value.name.length > 50 || StatusDetail.value.description.length > 200) {
-    return (isTextOver.value = true)
+  if (StatusDetail.value.description != null) {
+    if (StatusDetail.value.name.length > 50 || StatusDetail.value.description.length > 200) {
+      return (isTextOver.value = true)
+    } else {
+      return (isTextOver.value = false)
+    }
   } else {
-    return (isTextOver.value = false)
+    StatusDetail.value.description = ''
   }
 })
 
@@ -93,12 +97,15 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       </div>
       <div class="overflow-y-auto h-full m-12 my-0">
         <div class="w-full flex flex-col gap-2">
-          <span class="w-full divider divider-start mb-0"><b>Name</b></span>
+          <span class="w-full divider divider-start mb-0 font-semibold"
+            >Name<span :class="{ 'text-red-500': StatusDetail.name.length > 50 }">
+              ({{ StatusDetail.name.length }}/50)</span
+            ></span
+          >
           <label class="form-control w-full">
-            <div class="label">
-              [{{ StatusDetail.name.length }}/50]
+            <div class="label p-0 pb-[2px] font-semibold">
               <div v-if="StatusDetail.name.length > 50">
-                <p class="text-red-500">Name cannot be more than 50 characters.</p>
+                <p class="text-red-500 pl-2">Name cannot be more than 50 characters.</p>
               </div>
             </div>
             <input
@@ -110,13 +117,19 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           </label>
         </div>
         <div class="w-full flex flex-col gap-2">
-          <span class="w-full divider divider-start mb-0"><b>Description</b></span>
+          <span class="w-full divider divider-start mb-0 font-semibold"
+            >Description<b
+              class="font-semibold"
+              :class="{ 'text-red-500': StatusDetail.description.length > 200 }"
+            >
+              ({{ StatusDetail.description.length }}/200)</b
+            ></span
+          >
 
           <label class="form-control w-full">
-            <div class="label">
-              [{{ StatusDetail.description.length }}/200]
+            <div class="label p-0 pb-[2px] font-semibold">
               <div v-if="StatusDetail.description.length > 200">
-                <p class="text-red-500">Description cannot be more than 200 characters.</p>
+                <p class="text-red-500 pl-2">Description cannot be more than 200 characters.</p>
               </div>
             </div>
             <textarea

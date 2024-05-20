@@ -29,8 +29,8 @@ onMounted(async () => {
     oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
     updateDetail.value = taskDetail.value
     Object.assign(updateDetail.value, {
-      assignees: updateDetail.value.assignees ?? "",
-      description: updateDetail.value.description ?? ""
+      assignees: updateDetail.value.assignees ?? '',
+      description: updateDetail.value.description ?? ''
     })
     // console.log(updateDetail.value.status.id);
     // console.log(oldDetail)
@@ -79,6 +79,16 @@ async function editTask() {
       // console.log(taskDetail.value.id);
       result = await updateMethod(taskDetail.value.id, 'tasks', updateDetail.value)
       Object.assign(store.taskList[store.findTaskIndexById(result.data.id)], result.data)
+      const findResultStatus = store.statusList.find((status) => status.id == result.data.status.id)
+      const findOldStatus = store.statusList.find((status) => status.id == updateDetail.value.status)
+      if (updateDetail.value.status.id != result.data.status.id) {
+        Object.assign(findResultStatus, {
+          noOfTasks: findResultStatus.noOfTasks + 1
+        })
+        Object.assign(findOldStatus, {
+          noOfTasks: findOldStatus.noOfTasks - 1
+        })
+      }
       store.resStatus = 'editDone'
       router.push({ name: 'task' })
       store.ToastMessage = {
@@ -108,14 +118,19 @@ watch(
     () => updateDetail.value.description
   ],
   () => {
-    if (
-      updateDetail.value.title.length > 100 ||
-      updateDetail.value.assignees.length > 30 ||
-      updateDetail.value.description.length > 500
-    ) {
-      return (isTextOver.value = true)
+    if (updateDetail.value.assignees != null && updateDetail.value.description != null) {
+      if (
+        updateDetail.value.title.length > 100 ||
+        updateDetail.value.assignees.length > 30 ||
+        updateDetail.value.description.length > 500
+      ) {
+        return (isTextOver.value = true)
+      } else {
+        return (isTextOver.value = false)
+      }
     } else {
-      return (isTextOver.value = false)
+      updateDetail.value.assignees = ''
+      updateDetail.value.description = ''
     }
   }
 )
@@ -134,7 +149,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       @click="router.push({ name: 'task' })"
     ></div>
 
-    <div name="updateDetail" class="fixed w-[640px] h-4/5 bg-white flex flex-col gap-4 rounded-xl">
+    <div name="updateDetail" class="fixed w-[640px] h-auto bg-white flex flex-col gap-4 rounded-xl">
       <div class="w-auto flex flex-row justify-between m-12 mb-0">
         <div class="text-sm breadcrumbs">
           <ul>
@@ -153,8 +168,11 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       <div v-if="isInValid" class="kbd kbd-md mx-12 bg-red-300">invalid title required!!!!</div>
       <div class="overflow-y-auto h-full m-12 my-0 mb-4">
         <label class="form-control w-full">
-          <div class="label">
-            [{{ updateDetail.title.length }}/100]
+          <div
+            class="label p-0 pb-[2px] font-semibold"
+            :class="{ 'text-red-500': updateDetail.title.length > 100 }"
+          >
+            ({{ updateDetail.title.length }}/100)
             <div v-if="updateDetail.title.length > 100">
               <p class="text-red-500">Title cannot be more than 100 characters.</p>
             </div>
@@ -163,7 +181,10 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             type="text"
             placeholder="Untitled"
             v-model="updateDetail.title"
-            class="itbkk-title w-full h-auto text-2xl font-bold mb-4 break-words inline-block border border-none"
+            :autofocus="
+              !updateDetail.title ? '' : (updateDetail.title = updateDetail.title.trimStart())
+            "
+            class="itbkk-title w-full h-auto text-2xl font-bold mb-4 break-words inline-block border border-none focus:border-transparent focus:outline-none"
           />
         </label>
         <div class="grid grid-cols-4 gap-y-2 text-md items-center">
@@ -184,11 +205,14 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             </option>
           </select>
           <!-- <input type="test" v-model="updateDetail.status" placeholder="Empty" :class="inputField" /> -->
-          <span :class="header" class="col-span-1"> Assignees </span>
-
-          <label class="form-control w-full">
-            <div class="label">
-              [{{ updateDetail.assignees.length }}/30]
+          <span :class="header" class="col-span-1">
+            Assignees
+            <span :class="{ 'text-red-500': updateDetail.assignees.length > 30 }"
+              >({{ updateDetail.assignees.length }}/30)</span
+            ></span
+          >
+          <label class="form-control w-full col-span-3">
+            <div class="label p-0 pl-1 font-semibold">
               <div v-if="updateDetail.assignees.length > 30">
                 <p class="text-red-500">Assignees cannot be more than 30 characters.</p>
               </div>
@@ -197,7 +221,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
               type="test"
               v-model="updateDetail.assignees"
               placeholder="Empty"
-              class="itbkk-assignees"
+              class="itbkk-assignees w-full"
               :class="inputField"
             />
           </label>
@@ -208,53 +232,59 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           <span :class="header" class="col-span-1">UpdateOn</span>
           <div v-text="updateDetail.updatedOn" class="itbkk-updated-on col-span-3 p-2"></div>
         </div>
-        <div class="w-full flex flex-col gap-2">
-          <span :class="header" class="w-full divider divider-start">Description</span>
+        <div class="w-full flex flex-col">
+          <span :class="header" class="w-full divider divider-start mb-0"
+            >Description<span :class="{ 'text-red-500': updateDetail.description.length > 500 }"
+              >({{ updateDetail.description.length }}/500)</span
+            >
+          </span>
 
           <label class="form-control w-full">
-            <div class="label">
-              [{{ updateDetail.description.length }}/500]
-              <div v-if="updateDetail.description.length > 500">
-                <p class="text-red-500">Description cannot be more than 500 characters.</p>
-              </div>
+            <div class="label pb-0 font-semibold">
+              <p v-if="updateDetail.description.length > 500" class="text-red-500">
+                Description cannot be more than 500 characters.
+              </p>
             </div>
             <textarea
               placeholder="Hi"
               v-model="updateDetail.description"
               class="itbkk-description w-full max-h-48 min-h-48"
               :class="inputField"
-            >
-            </textarea>
+            ></textarea>
           </label>
         </div>
       </div>
 
-      <!-- Enabled/Disabled State -->
-      <div v-if="store.limitSwitch">
-        <p class="text-center text-green-400"><b>Kaban board limits is enabled!</b></p>
-        <br />
-      </div>
-      <div v-else>
-        <p class="text-center text-red-400"><b>Kaban board limits is disabled!</b></p>
-        <br />
-      </div>
+      <div class="right-0 m-12 my-10 mt-0 flex flex-col justify-center gap-2">
+        <div v-if="maxStatus" class="text-red-400 text-center font-semibold">
+          The status {{ statusName }} will have too many tasks. <br />
+          Please make progress and updatestatus of existing tasks'
+        </div>
 
-      <div v-if="maxStatus" class="mx-12 text-red-400">
-        The status {{ statusName }} will have too many tasks. Please make progress and update status
-        of existing tasks'
-      </div>
-
-      <div class="right-0 m-12 mt-0 flex justify-center gap-4">
-        <button
-          @click="editTask()"
-          v-if="!isSameDetail && !isTextOver"
-          class="itbkk-button-confirm btn bg-green-400"
-        >
-          Save
-        </button>
-        <button @click="router.push({ name: 'task' })" class="itbkk-button-cancel btn bg-grey-400">
-          Cancel
-        </button>
+        <!-- Enabled/Disabled State -->
+        <div v-if="store.limitSwitch">
+          <p class="text-center text-green-400"><b>Kaban board limits is enabled!</b></p>
+          <br />
+        </div>
+        <div v-else>
+          <p class="text-center text-red-400"><b>Kaban board limits is disabled!</b></p>
+          <br />
+        </div>
+        <div class="flex justify-center gap-4">
+          <button
+            @click="editTask()"
+            v-if="!isSameDetail && !isTextOver"
+            class="itbkk-button-confirm btn bg-green-400"
+          >
+            Save
+          </button>
+          <button
+            @click="router.push({ name: 'task' })"
+            class="itbkk-button-cancel btn bg-grey-400"
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   </div>

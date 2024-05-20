@@ -42,13 +42,14 @@ async function addNewTask() {
       status: TaskDetail.value.status ?? 1,
       description: !TaskDetail.value.description ? null : TaskDetail.value.description
     })
-    // console.log(TaskDetail.value)
+    console.log(TaskDetail.value)
     // let addMethod function and send out info into the main page :D
     const result = await addMethod(TaskDetail.value, 'tasks')
-    Object.assign(result.data, {
-      noOfTasks:
-        store.statusList.find((status) => status.name == result.data.status.name).noOfTasks + 1
+    const findStatus = store.statusList.find((status) => status.id == result.data.status.id)
+    Object.assign(findStatus, {
+      noOfTasks: findStatus.noOfTasks + 1
     })
+    
     store.taskList.push(result.data)
     store.resStatus = 'addDone'
     router.push({ name: 'task' })
@@ -67,7 +68,7 @@ watch(
     () => TaskDetail.value.description
   ],
   () => {
-    if (TaskDetail.value.assignees || TaskDetail.value.description) {
+    if (TaskDetail.value.assignees != null && TaskDetail.value.description != null) {
       if (
         TaskDetail.value.title.length > 100 ||
         TaskDetail.value.assignees.length > 30 ||
@@ -77,6 +78,9 @@ watch(
       } else {
         return (isTextOver.value = false)
       }
+    } else {
+      TaskDetail.value.assignees = ''
+      TaskDetail.value.description = ''
     }
   }
 )
@@ -107,6 +111,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         <label class="form-control w-full">
           <div
             class="label p-0 pb-[2px] font-semibold"
+            :class="{ 'text-red-500': TaskDetail.title.length > 100 }"
           >
             ({{ TaskDetail.title.length }}/100)
             <div v-if="TaskDetail.title.length > 100">
@@ -139,10 +144,12 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
               {{ status.name }}
             </option>
           </select>
-
           <!-- <input type="test" v-model="TaskDetail.status" placeholder="Empty" :class="inputField" /> -->
           <span :class="header" class="col-span-1">
-            Assignees ({{ TaskDetail.assignees.length ? TaskDetail.assignees.length : 0 }}/30)</span
+            Assignees
+            <span :class="{ 'text-red-500': TaskDetail.assignees.length > 30 }"
+              >({{ TaskDetail.assignees.length }}/30)</span
+            ></span
           >
           <label class="form-control w-full col-span-3">
             <div class="label p-0 pl-1 font-semibold">
@@ -162,7 +169,9 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
 
         <div class="w-full flex flex-col">
           <span :class="header" class="w-full divider divider-start mb-0"
-            >Description({{ TaskDetail.description.length }}/500)
+            >Description<span :class="{ 'text-red-500': TaskDetail.description.length > 500 }"
+              >({{ TaskDetail.description.length }}/500)</span
+            >
           </span>
 
           <label class="form-control w-full">

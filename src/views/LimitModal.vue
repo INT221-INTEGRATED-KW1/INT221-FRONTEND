@@ -27,7 +27,7 @@ async function confirmLimit() {
     result = await patchMethod('1', 'statusesLimit', 'maximum-status', obj)
     if (result.resCode == '200') {
       store.limitSwitch = result.data.statusLimit
-      if (!result.data.statuses) {
+      if (!result.data.statuses || result.data.statuses.length == 0) {
         goBack()
         store.ToastMessage = {
           msg: updatedEnableLimit.value

@@ -40,6 +40,11 @@ async function delTask(id) {
   let result
   try {
     result = await deleteMethod(id, 'tasks')
+    const findStatus = store.statusList.find((status) => status.id == result.data.status.id)
+    Object.assign(findStatus, {
+      noOfTasks: findStatus.noOfTasks - 1
+    })
+
     store.resStatus = 'deleteDone'
     store.ToastMessage = {
       msg: 'The task has been deleted',
