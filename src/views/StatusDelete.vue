@@ -77,6 +77,10 @@ const tranferStatus = async (currId, newId) => {
   const total = store.taskList.filter(
     (task) => task.status.name == store.statusList[index].name
   ).length
+  // const findStatus = store.statusList.find((status) => status.id == result.data.id)
+  Object.assign(store.statusList[newindex], {
+    noOfTasks: store.statusList[newindex].noOfTasks + total
+  })
   store.taskList
     .filter((task) => task.status.name == store.statusList[index].name)
     .map((task) => (task.status.name = res.data.name))
