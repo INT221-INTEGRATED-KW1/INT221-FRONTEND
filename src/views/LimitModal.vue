@@ -7,17 +7,35 @@ import { RouterLink, useRoute } from 'vue-router'
 const store = useTaskStore()
 const route = useRoute()
 
-function goBack() {
-  store.isError = false
-  router.push({ name: route.matched[0].name })
+function goBack(isClear) {
+  if (isClear) {
+    store.limitSwitch = false
+    router.push({ name: route.matched[0].name }).then(() => {
+      location.reload()
+    })
+  } else {
+    router.push({ name: route.matched[0].name })
+  }
 }
 
 function validateInput() {
   return store.maxTask > 10
 }
 
-function isOnDisabled() {
-  return store.onDisabled
+function isLimitSwitch() {
+  return store.limitSwitch
+}
+
+function confirmLimit() {
+  store.statusList.forEach((status, index) => {
+    if (status.noOfTasks <= store.maxTask || status.noOfTasks > store.maxTask) {
+      if (status.name != 'No Status' && status.name != 'Done') {
+        store.limitTrigger = true
+        store.limitInfo.push({ id: status.id, name: status.name, count: status.noOfTasks })
+      }
+    }
+  })
+  goBack(false)
 }
 </script>
 
@@ -40,10 +58,10 @@ function isOnDisabled() {
 
       <!-- Task function block -->
       <div class="itbkk-limit-task flex flex-row">
-        <input type="checkbox" class="toggle" v-model="store.onDisabled" checked />
+        <input type="checkbox" class="toggle" v-model="store.limitSwitch" checked />
         <p class="ml-5"><b>Limit task in this status</b></p>
       </div>
-      <div class="itbkk-max-task flex flex-row">
+      <!-- <div class="itbkk-max-task flex flex-row">
         <p class="mr-5 mt-3"><b>Maximum tasks</b></p>
         <input
           type="text"
@@ -51,7 +69,7 @@ function isOnDisabled() {
           class="input input-bordered w-full max-w-xs"
           v-model="store.maxTask"
         />
-      </div>
+      </div> -->
       <br />
 
       <!-- Over maximum task limit alert -->
@@ -73,7 +91,7 @@ function isOnDisabled() {
       </div>
 
       <!-- On limit enable alert -->
-      <div v-if="isOnDisabled()" role="alert" class="alert alert-success">
+      <div v-if="isLimitSwitch()" role="alert" class="alert alert-success">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="stroke-current shrink-0 h-6 w-6"
@@ -91,7 +109,7 @@ function isOnDisabled() {
       </div>
 
       <!-- On limit disable alert -->
-      <div v-if="!isOnDisabled()" role="alert" class="alert alert-warning">
+      <div v-if="!isLimitSwitch()" role="alert" class="alert alert-warning">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="stroke-current shrink-0 h-6 w-6"
@@ -115,11 +133,11 @@ function isOnDisabled() {
         <button
           class="itbkk-button-confirm btn bg-green-600 text-white px-8"
           :disabled="validateInput()"
-          @click="goBack()"
+          @click="confirmLimit()"
         >
           Save
         </button>
-        <button class="itbkk-button-cancel btn bg-red-600 text-white px-8" @click="goBack()">
+        <button class="itbkk-button-cancel btn bg-red-600 text-white px-8" @click="goBack(true)">
           Cancel
         </button>
       </div>

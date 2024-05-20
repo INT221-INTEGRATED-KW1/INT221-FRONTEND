@@ -8,6 +8,7 @@ import StatusAdd from '@/views/StatusAdd.vue'
 import StatusEdit from '@/views/StatusEdit.vue'
 import StatusDelete from '@/views/StatusDelete.vue'
 import LimitModal from '@/views/LimitModal.vue'
+import ReachLimitModal from '@/views/ReachLimitModal.vue'
 const routes = [
   {
     path: '',
@@ -38,6 +39,11 @@ const routes = [
         path: 'limit',
         name: 'limitStatus',
         component: LimitModal
+      },
+      {
+        path: 'reach',
+        name: 'reachLimit',
+        component: ReachLimitModal
       }
     ]
   },

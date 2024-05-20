@@ -46,6 +46,8 @@ watch(
 const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
 )
+
+console.log()
 </script>
 
 <template>
@@ -140,6 +142,7 @@ const thead = ref(
                 {{ status.name }}
               </div>
             </td>
+
             <td class="text-center">{{ status.noOfTasks }}</td>
             <td
               v-if="status.name != 'No Status' && status.name != 'Done'"

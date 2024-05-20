@@ -44,6 +44,32 @@ const isSameDetail = computed(() => {
 async function editTask() {
   store.resStatus = ''
   isInValid.value = false
+
+  //Check if the status reached the limits
+  for (const index in store.limitInfo) {
+    if (
+      updateDetail.value.status.id === store.limitInfo[index].id &&
+      store.limitTrigger &&
+      store.limitSwitch &&
+      store.limitInfo[index].count > store.maxTask
+    ) {
+      store.ToastMessage = {
+        msg:
+          'The status ' +
+          store.limitInfo[index].name +
+          ' will have too many tasks. Please make progress and update statusof existing tasks',
+        color: 'red'
+      }
+      return
+    }
+    if (
+      this.TaskDetail.status === store.limitInfo[index].id &&
+      store.limitInfo[index].count === store.maxTask
+    ) {
+      router.push({ name: 'reachLimit' })
+    }
+  }
+
   if (isSameDetail.value) {
     return router.push({ name: 'task' })
   }
@@ -171,7 +197,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       </div>
 
       <!-- Enabled/Disabled State -->
-      <div v-if="store.onDisabled">
+      <div v-if="store.limitSwitch">
         <p class="text-center text-green-400"><b>Kaban board limits is enabled!</b></p>
         <br />
       </div>

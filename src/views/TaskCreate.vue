@@ -13,6 +13,8 @@ const TaskDetail = ref({
   description: null
 })
 
+const limitButton = null
+
 const store = useTaskStore()
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
@@ -21,6 +23,33 @@ const isInValid = ref(false)
 async function addNewTask() {
   store.resStatus = ''
   isInValid.value = false
+
+  //Check if the status reached the limits
+  for (const index in store.limitInfo) {
+    console.log(store.limitInfo[index].count)
+    if (
+      this.TaskDetail.status === store.limitInfo[index].id &&
+      store.limitTrigger &&
+      store.limitSwitch &&
+      store.limitInfo[index].count > store.maxTask
+    ) {
+      store.ToastMessage = {
+        msg:
+          'The status ' +
+          store.limitInfo[index].name +
+          ' will have too many tasks. Please make progress and update statusof existing tasks',
+        color: 'red'
+      }
+      return
+    }
+    if (
+      this.TaskDetail.status === store.limitInfo[index].id &&
+      store.limitInfo[index].count === store.maxTask
+    ) {
+      router.push({ name: 'reachLimit' })
+    }
+  }
+
   if (!TaskDetail.value.title) {
     return (isInValid.value = true)
   } else {
@@ -43,6 +72,7 @@ async function addNewTask() {
     // setInterval(store.resStatus = "", 5000)
   }
 }
+
 // console.log(TaskDetail.value);
 const inputField = 'p-2 col-span-3 hover:bg-slate-400 hover:bg-opacity-20 duration-150 rounded-md'
 const header = 'text-gray-900 text-opacity-50 font-semibold'
@@ -115,24 +145,25 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       </div>
 
       <!-- Enabled/Disabled State -->
-      <div v-if="store.onDisabled">
+      <div v-if="store.limitSwitch">
         <p class="text-center text-green-400"><b>Kaban board limits is enabled!</b></p>
-        <br />
       </div>
       <div v-else>
         <p class="text-center text-red-400"><b>Kaban board limits is disabled!</b></p>
-        <br />
       </div>
 
       <div class="right-0 m-12 mt-0 flex justify-center gap-4">
         <button
           @click="addNewTask()"
-          class="itbkk-button-confirm btn bg-green-400"
-          :disabled="!TaskDetail.title"
+          class="items-center itbkk-button-confirm btn bg-green-400"
+          :disabled="!TaskDetail.title || limitButton"
         >
           Save
         </button>
-        <button @click="router.push({ name: 'task' })" class="itbkk-button-cancel btn bg-grey-400">
+        <button
+          @click="router.push({ name: 'task' })"
+          class="items-center itbkk-button-cancel btn bg-grey-400"
+        >
           Cancel
         </button>
       </div>
