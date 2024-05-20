@@ -40,11 +40,6 @@ async function delTask(id) {
   let result
   try {
     result = await deleteMethod(id, 'tasks')
-    const findStatus = store.statusList.find((status) => status.id == result.data.status.id)
-    Object.assign(findStatus, {
-      noOfTasks: findStatus.noOfTasks - 1
-    })
-
     store.resStatus = 'deleteDone'
     store.ToastMessage = {
       msg: 'The task has been deleted',
@@ -126,8 +121,6 @@ watch(
 
 let sortByASC = true
 function sortMethod(source, property, nestedProperty = null) {
-  // console.log(...source)
-  // console.log(source.slice());
   source.sort((a, b) => {
     let itemA = a[property] ?? ''
     let itemB = b[property] ?? ''
@@ -159,7 +152,6 @@ const removeStatus = (index) => {
       <p class="text-base font-medium">Do something better than do nothing .</p>
     </div>
     <!-- {{ taskList }} -->
-    <div class="btn" @click="sortMethod(taskListDisplay, 'status', 'name')">sort</div>
     <div class="css-selector w-full h-1"></div>
     {{ filterList }}
     <div name="optionlist" class="w-full px-6 flex flex-row gap-0 items-center">
@@ -255,24 +247,73 @@ const removeStatus = (index) => {
         <thead class="border-b-[1px] border-opacity-10 bg-gray-600 bg-opacity-20">
           <tr>
             <td class="w-3/5 border-r-[1px] border-opacity-10">
-              <span :class="thead">
-                <ClipboardDocumentListIcon class="size-6" />
-                <p>Title</p>
+              <span class="flex justify-between">
+                <div>
+                  <ClipboardDocumentListIcon class="size-6" />
+                  <p>Title</p>
+                </div>
+                <div>
+                  <div
+                    class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-500 text-white"
+                    @click="sortMethod(taskListDisplay.title, 'title')"
+                  >
+                    S
+                  </div>
+                  <div
+                    class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-600 text-white"
+                    @click="sortMethod(taskListDisplay, 'title')"
+                  >
+                    R
+                  </div>
+                </div>
               </span>
             </td>
             <td class="w-1/5 border-r-[1px] border-opacity-10">
-              <span :class="thead">
-                <UserCircleIcon class="size-6" />
-                <p>Assignees</p>
+              <span class="flex justify-between">
+                <div>
+                  <UserCircleIcon class="size-6" />
+                  <p>Assignees</p>
+                </div>
+                <div>
+                  <div
+                    class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-500 text-white"
+                    @click="sortMethod(taskListDisplay, 'assignees')"
+                  >
+                    S
+                  </div>
+                  <div
+                    class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-600 text-white"
+                    @click="sortMethod(taskListDisplay, 'assignees')"
+                  >
+                    R
+                  </div>
+                </div>
               </span>
             </td>
             <td class="w-1/5">
-              <span :class="thead">
-                <FireIcon class="size-6" />
-                <p>Status</p>
+              <span class="flex justify-between">
+                <div>
+                  <FireIcon class="size-6" />
+                  <p>Status</p>
+                </div>
               </span>
             </td>
-            <td></td>
+            <td>
+              <div>
+                <div
+                  class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-500 text-white"
+                  @click="sortMethod(taskListDisplay, 'status', 'name')"
+                >
+                  S
+                </div>
+                <div
+                  class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-600 text-white"
+                  @click="sortMethod(taskListDisplay, 'status', 'name')"
+                >
+                  R
+                </div>
+              </div>
+            </td>
           </tr>
         </thead>
         <tbody>
