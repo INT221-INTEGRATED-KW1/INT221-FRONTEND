@@ -3,7 +3,7 @@ const url = import.meta.env.VITE_BASE_URL
 async function getMethod(path, sortBy = null, filterStatuses = []) {
   try {
     const params = new URLSearchParams()
-    console.log(filterStatuses)
+    // console.log(filterStatuses)
     if (sortBy) {
       params.append('sortBy', sortBy)
     }
@@ -91,17 +91,17 @@ async function deleteTranMethod(taskId, database, newId) {
   }
 }
 
-async function updateMethod(taskId, database, taskDetail) {
+async function updateMethod(Id, database, Detail) {
   try {
-    const response = await fetch(`${url}${database}/${taskId}`, {
+    const response = await fetch(`${url}${database}/${Id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(taskDetail)
+      body: JSON.stringify(Detail)
     })
     if (!response.ok) {
-      throw new Error(`Failed to update ${database} id: ${taskId}`)
+      throw new Error(`Failed to update ${database} id: ${Id}`)
     }
     const data = await response.json()
     return { resCode: response.status, data }
@@ -110,4 +110,23 @@ async function updateMethod(taskId, database, taskDetail) {
   }
 }
 
-export { getMethod, addMethod, deleteMethod, updateMethod, deleteTranMethod }
+async function patchMethod(Id, database, subfix ,  Detail) {
+  try {
+    const response = await fetch(`${url}${database}/${Id}/${subfix}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(Detail)
+    })
+    if (!response.ok) {
+      throw new Error(`Failed to update ${database} id: ${Id}`)
+    }
+    const data = await response.json()
+    return { resCode: response.status, data }
+  } catch (error) {
+    throw error
+  }
+}
+
+export { getMethod, addMethod, deleteMethod, updateMethod, deleteTranMethod , patchMethod}

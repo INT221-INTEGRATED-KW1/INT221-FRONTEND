@@ -1,22 +1,13 @@
 <script setup>
 import { useTaskStore } from '@/store/store'
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
 import router from '@/router/router'
-import { RouterLink, useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
+import { patchMethod, updateMethod } from '@/lib/fetchAPI'
 
 const store = useTaskStore()
 const route = useRoute()
-
-function goBack(isClear) {
-  if (isClear) {
-    store.limitSwitch = false
-    router.push({ name: route.matched[0].name }).then(() => {
-      location.reload()
-    })
-  } else {
-    router.push({ name: route.matched[0].name })
-  }
-}
+const updatedEnableLimit = ref(store.limitSwitch)
 
 function validateInput() {
   return store.maxTask > 10
@@ -26,17 +17,58 @@ function isLimitSwitch() {
   return store.limitSwitch
 }
 
-function confirmLimit() {
-  store.statusList.forEach((status, index) => {
-    if (status.noOfTasks <= store.maxTask || status.noOfTasks > store.maxTask) {
-      if (status.name != 'No Status' && status.name != 'Done') {
-        store.limitTrigger = true
-        store.limitInfo.push({ id: status.id, name: status.name, count: status.noOfTasks })
+// function confirmLimit() {
+//   store.statusList.forEach((status, index) => {
+//     if (status.noOfTasks <= store.maxTask || status.noOfTasks > store.maxTask) {
+//       if (status.name != 'No Status' && status.name != 'Done') {
+//         store.limitTrigger = true
+//         store.limitInfo.push({ id: status.id, name: status.name, count: status.noOfTasks })
+//       }
+//     }
+//   })
+// }
+
+const isHaveLimitTask = ref(false)
+async function confirmLimit() {
+  // console.log('store : ', store.limitSwitch)
+  // console.log('upd : ', updatedEnableLimit.value)
+  const obj = { statusLimit: updatedEnableLimit.value }
+  let result
+  try {
+    result = await patchMethod('1', 'statusesLimit', 'maximum-status', obj)
+    if (result.resCode == '200') {
+      store.limitSwitch = result.data.statusLimit
+      if (!result.data.statuses) {
+        goBack()
+        store.ToastMessage = {
+          msg: updatedEnableLimit.value
+            ? `The kanban board now limits 10 tasks in each status.`
+            : `The kanban board has disabled the task limit in each status.`,
+          color: updatedEnableLimit.value ? 'lime' : 'amber'
+        }
+      } else if (result.data.statuses) {
+        store.limitInfo = result.data.statuses
+        // console.log(store.limitInfo)
+        isHaveLimitTask.value = true
       }
     }
-  })
-  goBack(false)
+    // console.log(result.data)
+  } catch (error) {
+    console.error('Fail to limit status', error)
+  }
 }
+
+function goBack() {
+  if (isHaveLimitTask) {
+    store.ToastMessage = {
+      msg: `The kanban board now limits 10 tasks in each status.`,
+      color: 'lime'
+    }
+  }
+  // console.log(store.limitSwitch)
+  return router.push({ name: route.matched[0].name })
+}
+// console.log(store.limitSwitch)
 </script>
 
 <template>
@@ -47,6 +79,7 @@ function confirmLimit() {
     <div
       name="detail"
       class="fixed w-[640px] h-auto p-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center justify-center"
+      v-if="!isHaveLimitTask"
     >
       <h1 class="w-full text-left font-semibold text-xl">Status Setting</h1>
       <div class="divider"></div>
@@ -58,7 +91,12 @@ function confirmLimit() {
 
       <!-- Task function block -->
       <div class="itbkk-limit-task flex flex-row">
-        <input type="checkbox" class="toggle" v-model="store.limitSwitch" checked />
+        <input
+          type="checkbox"
+          class="toggle"
+          v-model="updatedEnableLimit"
+          :checked="updatedEnableLimit"
+        />
         <p class="ml-5"><b>Limit task in this status</b></p>
       </div>
       <!-- <div class="itbkk-max-task flex flex-row">
@@ -91,7 +129,7 @@ function confirmLimit() {
       </div>
 
       <!-- On limit enable alert -->
-      <div v-if="isLimitSwitch()" role="alert" class="alert alert-success">
+      <div v-if="updatedEnableLimit" role="alert" class="alert alert-success">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="stroke-current shrink-0 h-6 w-6"
@@ -109,7 +147,7 @@ function confirmLimit() {
       </div>
 
       <!-- On limit disable alert -->
-      <div v-if="!isLimitSwitch()" role="alert" class="alert alert-warning">
+      <div v-if="!updatedEnableLimit" role="alert" class="alert alert-warning">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="stroke-current shrink-0 h-6 w-6"
@@ -132,14 +170,37 @@ function confirmLimit() {
       <div class="w-full flex flex-row gap-4 justify-center items-center mt-2">
         <button
           class="itbkk-button-confirm btn bg-green-600 text-white px-8"
-          :disabled="validateInput()"
+          :disabled="updatedEnableLimit == store.limitSwitch"
           @click="confirmLimit()"
         >
           Save
         </button>
-        <button class="itbkk-button-cancel btn bg-red-600 text-white px-8" @click="goBack(true)">
+        <button class="itbkk-button-cancel btn bg-red-600 text-white px-8" @click="goBack()">
           Cancel
         </button>
+      </div>
+    </div>
+
+
+    <!-- Have limit task when enable -->
+    <div
+      name="detail"
+      class="fixed w-[640px] h-auto p-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center justify-center"
+      v-if="isHaveLimitTask"
+    >
+      <img src="/public/caution.png" alt="" class="size-24 mx-auto" />
+      <h1 class="w-full text-center font-semibold text-xl">Limit Task</h1>
+      <ul class="list-none list-inside w-full">
+        <li v-for="(status, index) in store.limitInfo" :key="index">
+          {{ status.name }} ( {{ status.noOfTasks }} )
+        </li>
+      </ul>
+      <p class="w-full">
+        These statuses that have reached the task limit. No additional tasks can be added to these
+        statuses at this time.
+      </p>
+      <div class="w-full flex flex-row gap-4 justify-center items-center mt-2">
+        <button class="itbkk-button-cancel btn bg-lime-300 px-8" @click="goBack()">OK</button>
       </div>
     </div>
   </div>

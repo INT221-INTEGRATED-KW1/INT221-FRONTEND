@@ -94,7 +94,7 @@ async function fetchTasksValidate() {
 watch(
   [() => filterList.value, () => sortBy.value],
   () => {
-    console.log('asd')
+    // console.log('asd')
     if (!filterList.value.length) {
       taskListDisplay.value = store.taskList
     } else {

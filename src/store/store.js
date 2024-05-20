@@ -13,7 +13,7 @@ export const useTaskStore = defineStore('task', () => {
   const isLoading = false
   
   //About the limit.
-  const maxTask = 5
+  const maxTask = 10
   const limitSwitch = false
   const limitTrigger = false
   const limitInfo = []

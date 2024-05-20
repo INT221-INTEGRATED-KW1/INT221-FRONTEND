@@ -3,7 +3,7 @@ import { updateMethod } from '@/lib/fetchAPI'
 import { formatStatusReverse, onMountSetup, colorStatus, statusColors } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
-import { compile, computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import ErrorModal from './ErrorModal.vue'
 const route = useRoute()
