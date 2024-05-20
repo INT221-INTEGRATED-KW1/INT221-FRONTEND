@@ -28,6 +28,10 @@ onMounted(async () => {
     // store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
     oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
     updateDetail.value = taskDetail.value
+    Object.assign(updateDetail.value, {
+      assignees: updateDetail.value.assignees ?? "",
+      description: updateDetail.value.description ?? ""
+    })
     // console.log(updateDetail.value.status.id);
     // console.log(oldDetail)
   } catch (error) {
