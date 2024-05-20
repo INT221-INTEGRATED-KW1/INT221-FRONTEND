@@ -34,6 +34,7 @@ async function addNewStatus() {
       Object.assign(result.data, {
         noOfTasks: 0
       })
+
       store.statusList.push(result.data)
       store.resStatus = 'addDone'
       router.push({ name: 'status' })
