@@ -3,7 +3,7 @@ import { updateMethod } from '@/lib/fetchAPI'
 import { formatStatusReverse, onMountSetup, colorStatus, statusColors } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ErrorModal from './ErrorModal.vue'
 const route = useRoute()
@@ -16,6 +16,8 @@ const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
 const statusDetail = ref({})
 let oldDetail = {}
 const updateDetail = ref({})
+
+const isTextOver = ref(false)
 
 onMounted(async () => {
   try {
@@ -93,6 +95,14 @@ async function editStatus() {
   }
 }
 
+watch([() => updateDetail.value.name, () => updateDetail.value.description], () => {
+  if (updateDetail.value.name.length > 50 || updateDetail.value.description.length > 200) {
+    return (isTextOver.value = true)
+  } else {
+    return (isTextOver.value = false)
+  }
+})
+
 const inputField = 'p-2 col-span-3 hover:bg-slate-400 hover:bg-opacity-20 duration-150 rounded-md'
 const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
@@ -128,22 +138,37 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       <div class="overflow-y-auto h-full m-12 my-0">
         <div class="w-full flex flex-col gap-2">
           <span class="w-full divider divider-start mb-0"><b>Name</b></span>
-          <input
-            type="text"
-            placeholder="Unname"
-            maxlength="50"
-            v-model="updateDetail.name"
-            class="itbkk-status-name w-full p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
-          />
+          <label class="form-control w-full">
+            <div class="label">
+              [{{ updateDetail.name.length }}/50]
+              <div v-if="updateDetail.name.length > 50">
+                <p class="text-red-500">Name cannot be more than 50 characters.</p>
+              </div>
+            </div>
+            <input
+              type="text"
+              placeholder="Unname"
+              v-model="updateDetail.name"
+              class="itbkk-status-name w-full p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
+            />
+          </label>
         </div>
         <div class="w-full flex flex-col gap-2">
           <span class="w-full divider divider-start mb-0"><b>Description</b></span>
-          <textarea
+
+          <label class="form-control w-full">
+            <div class="label">
+              [{{ updateDetail.description.length }}/200]
+              <div v-if="updateDetail.description.length > 200">
+                <p class="text-red-500">Description cannot be more than 200 characters.</p>
+              </div>
+            </div>
+            <textarea
             placeholder="Add some status ..."
-            maxlength="200"
             v-model="updateDetail.description"
             class="itbkk-status-description w-full max-h-28 min-h-28 p-2 rounded-md hover:bg-gray-500 hover:bg-opacity-20"
-          ></textarea>
+            ></textarea>
+          </label>
         </div>
         <span class="w-full divider divider-start mb-0"><b>Color</b></span>
         <div class="grid grid-cols-8 wrap gap-4 m-6 place-items-center">
@@ -173,7 +198,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         <button
           @click="editStatus()"
           class="itbkk-button-confirm btn bg-green-400"
-          :disabled="!updateDetail.name || isSameDetail"
+          :disabled="!updateDetail.name || (isSameDetail || isTextOver)"
         >
           Save
         </button>

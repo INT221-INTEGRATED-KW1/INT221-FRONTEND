@@ -3,13 +3,16 @@ import { updateMethod } from '@/lib/fetchAPI'
 import { formatStatusReverse, onMountSetup, colorStatus } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
-import { compile, computed, onMounted, ref } from 'vue'
+import { compile, computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ErrorModal from './ErrorModal.vue'
 import TaskDetail from './TaskDetail.vue'
 const route = useRoute()
 const store = useTaskStore()
 const id = router.currentRoute.value.params.id
+const statusName = ref('')
+const maxStatus = ref(false)
+const isTextOver = ref(false)
 
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
@@ -47,26 +50,9 @@ async function editTask() {
 
   //Check if the status reached the limits
   for (const index in store.limitInfo) {
-    if (
-      updateDetail.value.status.id === store.limitInfo[index].id &&
-      store.limitTrigger &&
-      store.limitSwitch &&
-      store.limitInfo[index].count > store.maxTask
-    ) {
-      store.ToastMessage = {
-        msg:
-          'The status ' +
-          store.limitInfo[index].name +
-          ' will have too many tasks. Please make progress and update statusof existing tasks',
-        color: 'red'
-      }
-      return
-    }
-    if (
-      this.TaskDetail.status === store.limitInfo[index].id &&
-      store.limitInfo[index].count === store.maxTask
-    ) {
-      router.push({ name: 'reachLimit' })
+    if (updateDetail.value.status.id === store.limitInfo[index].id && store.limitSwitch) {
+      statusName.value = store.limitInfo[index].name
+      return (maxStatus.value = true)
     }
   }
 
@@ -111,6 +97,25 @@ async function editTask() {
   }
 }
 
+watch(
+  [
+    () => updateDetail.value.title,
+    () => updateDetail.value.assignees,
+    () => updateDetail.value.description
+  ],
+  () => {
+    if (
+      updateDetail.value.title.length > 100 ||
+      updateDetail.value.assignees.length > 30 ||
+      updateDetail.value.description.length > 500
+    ) {
+      return (isTextOver.value = true)
+    } else {
+      return (isTextOver.value = false)
+    }
+  }
+)
+
 const inputField = 'p-2 col-span-3 hover:bg-slate-400 hover:bg-opacity-20 duration-150 rounded-md'
 const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
@@ -143,13 +148,20 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       </div>
       <div v-if="isInValid" class="kbd kbd-md mx-12 bg-red-300">invalid title required!!!!</div>
       <div class="overflow-y-auto h-full m-12 my-0 mb-4">
-        <input
-          type="text"
-          maxlength="100"
-          placeholder="Untitled"
-          v-model="updateDetail.title"
-          class="itbkk-title w-full h-auto text-2xl font-bold mb-4 break-words inline-block border border-none"
-        />
+        <label class="form-control w-full">
+          <div class="label">
+            [{{ updateDetail.title.length }}/100]
+            <div v-if="updateDetail.title.length > 100">
+              <p class="text-red-500">Title cannot be more than 100 characters.</p>
+            </div>
+          </div>
+          <input
+            type="text"
+            placeholder="Untitled"
+            v-model="updateDetail.title"
+            class="itbkk-title w-full h-auto text-2xl font-bold mb-4 break-words inline-block border border-none"
+          />
+        </label>
         <div class="grid grid-cols-4 gap-y-2 text-md items-center">
           <span :class="header"> Status </span>
           <select
@@ -169,14 +181,22 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
           </select>
           <!-- <input type="test" v-model="updateDetail.status" placeholder="Empty" :class="inputField" /> -->
           <span :class="header" class="col-span-1"> Assignees </span>
-          <input
-            type="test"
-            maxlength="30"
-            v-model="updateDetail.assignees"
-            placeholder="Empty"
-            class="itbkk-assignees"
-            :class="inputField"
-          />
+
+          <label class="form-control w-full">
+            <div class="label">
+              [{{ updateDetail.assignees.length }}/30]
+              <div v-if="updateDetail.assignees.length > 30">
+                <p class="text-red-500">Assignees cannot be more than 30 characters.</p>
+              </div>
+            </div>
+            <input
+              type="test"
+              v-model="updateDetail.assignees"
+              placeholder="Empty"
+              class="itbkk-assignees"
+              :class="inputField"
+            />
+          </label>
           <span :class="header" class="col-span-1"> Timezone </span>
           <div v-text="timezone" class="itbkk-timezone col-span-3 p-2"></div>
           <span :class="header" class="col-span-1">CreateOn</span>
@@ -186,13 +206,22 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         </div>
         <div class="w-full flex flex-col gap-2">
           <span :class="header" class="w-full divider divider-start">Description</span>
-          <textarea
-            placeholder="Hi"
-            maxlength="500"
-            v-model="updateDetail.description"
-            class="itbkk-description w-full max-h-48 min-h-48"
-            :class="inputField"
-          ></textarea>
+
+          <label class="form-control w-full">
+            <div class="label">
+              [{{ updateDetail.description.length }}/500]
+              <div v-if="updateDetail.description.length > 500">
+                <p class="text-red-500">Description cannot be more than 500 characters.</p>
+              </div>
+            </div>
+            <textarea
+              placeholder="Hi"
+              v-model="updateDetail.description"
+              class="itbkk-description w-full max-h-48 min-h-48"
+              :class="inputField"
+            >
+            </textarea>
+          </label>
         </div>
       </div>
 
@@ -206,10 +235,15 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         <br />
       </div>
 
+      <div v-if="maxStatus" class="mx-12 text-red-400">
+        The status {{ statusName }} will have too many tasks. Please make progress and update status
+        of existing tasks'
+      </div>
+
       <div class="right-0 m-12 mt-0 flex justify-center gap-4">
         <button
           @click="editTask()"
-          v-if="!isSameDetail"
+          v-if="!isSameDetail && !isTextOver"
           class="itbkk-button-confirm btn bg-green-400"
         >
           Save

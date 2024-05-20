@@ -44,6 +44,7 @@ onMounted(async () => {
   try {
     const limitresult = await getMethod('statusesLimit')
     store.limitSwitch = limitresult.data[0].statusLimit
+    store.limitInfo = limitresult.data[0].statuses
     // console.log(store.limitSwitch);
   } catch (error) {
     console.error('Error fetching :', error.message)

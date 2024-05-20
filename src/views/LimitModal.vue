@@ -17,17 +17,6 @@ function isLimitSwitch() {
   return store.limitSwitch
 }
 
-// function confirmLimit() {
-//   store.statusList.forEach((status, index) => {
-//     if (status.noOfTasks <= store.maxTask || status.noOfTasks > store.maxTask) {
-//       if (status.name != 'No Status' && status.name != 'Done') {
-//         store.limitTrigger = true
-//         store.limitInfo.push({ id: status.id, name: status.name, count: status.noOfTasks })
-//       }
-//     }
-//   })
-// }
-
 const isHaveLimitTask = ref(false)
 async function confirmLimit() {
   // console.log('store : ', store.limitSwitch)
@@ -47,8 +36,8 @@ async function confirmLimit() {
           color: updatedEnableLimit.value ? 'lime' : 'amber'
         }
       } else if (result.data.statuses) {
+        console.log(result.data.statuses)
         store.limitInfo = result.data.statuses
-        // console.log(store.limitInfo)
         isHaveLimitTask.value = true
       }
     }
@@ -59,7 +48,7 @@ async function confirmLimit() {
 }
 
 function goBack() {
-  if (isHaveLimitTask) {
+  if (isHaveLimitTask.value) {
     store.ToastMessage = {
       msg: `The kanban board now limits 10 tasks in each status.`,
       color: 'lime'
@@ -68,7 +57,6 @@ function goBack() {
   // console.log(store.limitSwitch)
   return router.push({ name: route.matched[0].name })
 }
-// console.log(store.limitSwitch)
 </script>
 
 <template>

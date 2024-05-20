@@ -78,7 +78,7 @@ const tranferStatus = async (currId, newId) => {
     (task) => task.status.name == store.statusList[index].name
   ).length
   store.taskList
-    .filter((task) => task.status.name == store.statusList[tranferId].name)
+    .filter((task) => task.status.name == store.statusList[index].name)
     .map((task) => (task.status.name = res.data.name))
   statusList[newindex].countTask = statusList[newindex].countTask + total
   statusList.splice(index, 1)
