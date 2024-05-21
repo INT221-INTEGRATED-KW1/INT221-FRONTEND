@@ -24,7 +24,7 @@ const store = useTaskStore()
 const taskList = store.taskList
 const route = useRoute()
 const statusList = ref(store.statusList)
-
+const SearchKey = ref('')
 const isDeleting = ref(false)
 const isComplete = ref(false)
 const currentId = ref(0)
@@ -176,8 +176,34 @@ const removeStatus = (index) => {
               </div>
             </div>
             <div class="divider w-full my-[1px]"></div>
+            <label class="input input-bordered flex items-center gap-2 w-[210px]">
+              <input type="text" class="" placeholder="Search" v-model="SearchKey" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 16 16"
+                fill="currentColor"
+                class="w-4 h-4 opacity-70"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </label>
             <li v-for="(status, index) in store.statusList" :key="index" class="w-full">
-              <label class="cursor-pointer w-full">
+              <label
+                class="cursor-pointer w-full"
+                v-show="
+                  status.name
+                    .toLowerCase()
+                    .trim()
+                    .replace(/\s/g, '')
+                    .includes(
+                      SearchKey.toLowerCase().trim().replace(/\s/g, '') ?? status.name.toLowerCase()
+                    )
+                "
+              >
                 <input
                   type="checkbox"
                   class="peer size-4"
@@ -192,7 +218,9 @@ const removeStatus = (index) => {
                     :class="statusColors[status.color]"
                     class="size-4 rounded-full shadow-inner"
                   ></div>
-                  <span class="text-base">{{ status.name }}</span>
+                  <span class="text-base text-start"
+                    >{{ status.name }} ({{ status.noOfTasks }})</span
+                  >
                 </div>
               </label>
             </li>

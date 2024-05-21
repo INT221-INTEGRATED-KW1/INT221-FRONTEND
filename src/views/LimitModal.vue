@@ -179,7 +179,7 @@ function goBack() {
       <img src="/public/caution.png" alt="" class="size-24 mx-auto" />
       <h1 class="w-full text-center font-semibold text-xl">Limit Task</h1>
       <ul class="list-none list-inside w-full">
-        <li v-for="(status, index) in store.limitInfo" :key="index">
+        <li v-for="(status, index) in store.limitInfo" :key="index" v-show="!['No Status', 'Done'].includes(status.name)">
           {{ status.name }} ( {{ status.noOfTasks }} )
         </li>
       </ul>

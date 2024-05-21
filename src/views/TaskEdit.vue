@@ -54,8 +54,13 @@ async function editTask() {
 
   //Check if the status reached the limits
   for (const index in store.limitInfo) {
-    if (updateDetail.value.status.id === store.limitInfo[index].id && store.limitSwitch) {
+    if (
+      updateDetail.value.status.id === store.limitInfo[index].id &&
+      store.limitSwitch &&
+      ['No Status', 'Done'].includes(updateDetail.value.status.name)
+    ) {
       statusName.value = store.limitInfo[index].name
+      console.log('limit')
       return (maxStatus.value = true)
     }
   }
@@ -80,7 +85,9 @@ async function editTask() {
       result = await updateMethod(taskDetail.value.id, 'tasks', updateDetail.value)
       Object.assign(store.taskList[store.findTaskIndexById(result.data.id)], result.data)
       const findResultStatus = store.statusList.find((status) => status.id == result.data.status.id)
-      const findOldStatus = store.statusList.find((status) => status.id == updateDetail.value.status)
+      const findOldStatus = store.statusList.find(
+        (status) => status.id == updateDetail.value.status
+      )
       if (updateDetail.value.status.id != result.data.status.id) {
         Object.assign(findResultStatus, {
           noOfTasks: findResultStatus.noOfTasks + 1

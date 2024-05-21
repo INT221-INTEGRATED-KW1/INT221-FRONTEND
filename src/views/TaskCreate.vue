@@ -26,7 +26,11 @@ async function addNewTask() {
 
   //Check if the status reached the limits
   for (const index in store.limitInfo) {
-    if (TaskDetail.value.status === store.limitInfo[index].id && store.limitSwitch) {
+    if (
+      TaskDetail.value.status === store.limitInfo[index].id &&
+      store.limitSwitch &&
+      ['No Status', 'Done'].includes(TaskDetail.value.status.name)
+    ) {
       statusName.value = store.limitInfo[index].name
       return (maxStatus.value = true)
     }
@@ -49,7 +53,7 @@ async function addNewTask() {
     Object.assign(findStatus, {
       noOfTasks: findStatus.noOfTasks + 1
     })
-    
+
     store.taskList.push(result.data)
     store.resStatus = 'addDone'
     router.push({ name: 'task' })
