@@ -54,12 +54,12 @@ async function editTask() {
 
   //Check if the status reached the limits
   for (const index in store.limitInfo) {
-    // console.log(updateDetail.value.status.id === store.limitInfo[index].id)
-    // console.log(store.limitSwitch);
-    // console.log(!['No Status', 'Done'].includes(updateDetail.value.status.name));
+    console.log(updateDetail.value.status.id === store.limitInfo[index].id)
+    console.log(store.limitSwitch);
+    console.log(!['No Status', 'Done'].includes(updateDetail.value.status.name));
     if (
       updateDetail.value.status.id === store.limitInfo[index].id &&
-      store.limitSwitch &&
+      store.limitSwitch ||
       !['No Status', 'Done'].includes(updateDetail.value.status.name)
     ) {
       console.log('limit');
