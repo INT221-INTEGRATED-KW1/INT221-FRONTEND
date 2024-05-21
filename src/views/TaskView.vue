@@ -14,7 +14,11 @@ import {
   Squares2X2Icon,
   SwatchIcon,
   UserCircleIcon,
-  AdjustmentsHorizontalIcon
+  AdjustmentsHorizontalIcon,
+  BarsArrowDownIcon,
+  BarsArrowUpIcon,
+  TruckIcon,
+  ArrowsUpDownIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import ErrorModal from '@/views/ErrorModal.vue'
@@ -119,8 +123,10 @@ watch(
 //   }
 // )
 
-let sortByASC = true
+const sortByASC = ref(true)
+const sortType = ref('')
 function sortMethod(source, property, nestedProperty = null) {
+  sortType.value = property
   source.sort((a, b) => {
     let itemA = a[property] ?? ''
     let itemB = b[property] ?? ''
@@ -130,9 +136,9 @@ function sortMethod(source, property, nestedProperty = null) {
     }
     let compare = 0
     compare = itemA.localeCompare(itemB)
-    return sortByASC ? compare : -compare
+    return sortByASC.value ? compare : -compare
   })
-  sortByASC = !sortByASC
+  sortByASC.value = !sortByASC.value
   // console.log(...source)
 }
 
@@ -259,12 +265,19 @@ const removeStatus = (index) => {
 
         <button
           @click="router.push({ name: 'limitStatus' })"
-          class="itbkk-status-setting btn px-4 h-9 min-h-9 shadow-inner bg-green-400 hover:bg-green-400 hover:border-green-400 border-none"
+          class="itbkk-status-setting btn px-4 h-9 min-h-9 shadow-inner bg-green-400 hover:bg-green-400 hover:border-green-400 border-none hover:shadow-inner"
         >
           <span :class="thead">
             <AdjustmentsHorizontalIcon class="size-6" />
           </span>
         </button>
+
+        <div
+          class="btn px-4 h-9 min-h-9 bg-opacity-80 hover:shadow-inner text-whit"
+          @click="router.go()"
+        >
+          <TruckIcon class="size-6 text-gray-700" />
+        </div>
       </div>
     </div>
     <div
@@ -277,21 +290,15 @@ const removeStatus = (index) => {
             <td class="w-3/5 border-r-[1px] border-opacity-10">
               <span class="flex justify-between items-center">
                 <div>
-                  <ClipboardDocumentListIcon class="size-6" />
-                  <p>Title</p>
+                  <UserCircleIcon class="size-6" />
+                  <p>Assignees</p>
                 </div>
-                <div>
+                <div class="flex gap-2 justify-center items-center">
                   <div
-                    class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-500 text-white"
+                    class="btn p-0 px-2 justify-center bg-opacity-80 hover:shadow-inner text-white"
                     @click="sortMethod(taskListDisplay, 'title')"
                   >
-                    S
-                  </div>
-                  <div
-                    class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-600 text-white"
-                    @click="router.go()"
-                  >
-                    R
+                    <ArrowsUpDownIcon class="size-6 text-gray-700" />
                   </div>
                 </div>
               </span>
@@ -302,18 +309,12 @@ const removeStatus = (index) => {
                   <UserCircleIcon class="size-6" />
                   <p>Assignees</p>
                 </div>
-                <div>
+                <div class="flex gap-2 justify-center items-center">
                   <div
-                    class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-500 text-white"
+                    class="btn p-0 px-2 justify-center bg-opacity-80 hover:shadow-inner text-white"
                     @click="sortMethod(taskListDisplay, 'assignees')"
                   >
-                    S
-                  </div>
-                  <div
-                    class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-600 text-white"
-                    @click="router.go()"
-                  >
-                    R
+                    <ArrowsUpDownIcon class="size-6 text-gray-700" />
                   </div>
                 </div>
               </span>
@@ -327,18 +328,14 @@ const removeStatus = (index) => {
               </span>
             </td>
             <td>
-              <div>
+              <div class="flex gap-2 justify-center items-center">
                 <div
-                  class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-500 text-white"
+                  class="btn p-0 px-2 justify-center bg-opacity-80 hover:shadow-inner text-white"
                   @click="sortMethod(taskListDisplay, 'status', 'name')"
                 >
-                  S
-                </div>
-                <div
-                  class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-600 text-white"
-                  @click="router.go()"
-                >
-                  R
+                  <!-- <BarsArrowDownIcon class="size-6 text-gray-700" v-show="sortByASC" />
+                  <BarsArrowUpIcon class="size-6 text-gray-700" v-show="!sortByASC" /> -->
+                  <ArrowsUpDownIcon class="size-6 text-gray-700" />
                 </div>
               </div>
             </td>
