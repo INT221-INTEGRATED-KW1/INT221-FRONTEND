@@ -18,7 +18,8 @@ import {
   BarsArrowDownIcon,
   BarsArrowUpIcon,
   TruckIcon,
-  ArrowsUpDownIcon
+  ArrowsUpDownIcon,
+  CloudIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import ErrorModal from '@/views/ErrorModal.vue'
@@ -289,9 +290,9 @@ const removeStatus = (index) => {
           <tr>
             <td class="w-3/5 border-r-[1px] border-opacity-10">
               <span class="flex justify-between items-center">
-                <div>
-                  <UserCircleIcon class="size-6" />
-                  <p>Assignees</p>
+                <div class="flex items-center gap-2">
+                  <CloudIcon class="size-6" />
+                  <p>Title</p>
                 </div>
                 <div class="flex gap-2 justify-center items-center">
                   <div
@@ -305,7 +306,7 @@ const removeStatus = (index) => {
             </td>
             <td class="w-1/5 border-r-[1px] border-opacity-10">
               <span class="flex justify-between items-center">
-                <div>
+                <div class="flex items-center gap-2">
                   <UserCircleIcon class="size-6" />
                   <p>Assignees</p>
                 </div>
@@ -321,7 +322,7 @@ const removeStatus = (index) => {
             </td>
             <td class="w-1/5">
               <span class="flex justify-between items-center">
-                <div>
+                <div class="flex items-center gap-2">
                   <FireIcon class="size-6" />
                   <p>Status</p>
                 </div>
