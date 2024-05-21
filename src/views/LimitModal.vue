@@ -36,7 +36,7 @@ async function confirmLimit() {
           color: updatedEnableLimit.value ? 'lime' : 'amber'
         }
       } else if (result.data.statuses) {
-        console.log(result.data.statuses)
+        // console.log(result.data.statuses)
         store.limitInfo = result.data.statuses
         isHaveLimitTask.value = true
       }
