@@ -26,7 +26,7 @@ async function addNewTask() {
 
   //Check if the status reached the limits
   for (const index in store.limitInfo) {
-    if (this.TaskDetail.status === store.limitInfo[index].id && store.limitSwitch) {
+    if (TaskDetail.value.status === store.limitInfo[index].id && store.limitSwitch) {
       statusName.value = store.limitInfo[index].name
       return (maxStatus.value = true)
     }
@@ -42,7 +42,7 @@ async function addNewTask() {
       status: TaskDetail.value.status ?? 1,
       description: !TaskDetail.value.description ? null : TaskDetail.value.description
     })
-    console.log(TaskDetail.value)
+    // console.log(TaskDetail.value)
     // let addMethod function and send out info into the main page :D
     const result = await addMethod(TaskDetail.value, 'tasks')
     const findStatus = store.statusList.find((status) => status.id == result.data.status.id)

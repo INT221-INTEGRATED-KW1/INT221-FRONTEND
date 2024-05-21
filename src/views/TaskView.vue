@@ -153,7 +153,7 @@ const removeStatus = (index) => {
     </div>
     <!-- {{ taskList }} -->
     <div class="css-selector w-full h-1"></div>
-    {{ filterList }}
+    <!-- {{ filterList }} -->
     <div name="optionlist" class="w-full px-6 flex flex-row gap-0 items-center">
       <div class="w-3/4 pr-20 h-auto flex justify-start gap-2">
         <div class="dropdown dropdown-bottom">
@@ -255,7 +255,7 @@ const removeStatus = (index) => {
                 <div>
                   <div
                     class="btn w-[3vw] h-[2vh] justify-center bg-opacity-80 bg-red-500 text-white"
-                    @click="sortMethod(taskListDisplay.title, 'title')"
+                    @click="sortMethod(taskListDisplay, 'title')"
                   >
                     S
                   </div>
