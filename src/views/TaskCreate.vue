@@ -34,7 +34,7 @@ async function addNewTask() {
       store.limitSwitch &&
       !['No Status', 'Done'].includes(TaskDetail.value.status.name)
     ) {
-      console.log('daaa');
+      // console.log('daaa');
       statusName.value = store.limitInfo[index].name
       return (maxStatus.value = true)
     }
