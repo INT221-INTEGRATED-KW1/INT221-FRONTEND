@@ -26,11 +26,15 @@ async function addNewTask() {
 
   //Check if the status reached the limits
   for (const index in store.limitInfo) {
+    // console.log(TaskDetail.value.status === store.limitInfo[index].id)
+    // console.log(store.limitSwitch);
+    // console.log(!['No Status', 'Done'].includes(TaskDetail.value.status.name));
     if (
       TaskDetail.value.status === store.limitInfo[index].id &&
       store.limitSwitch &&
-      ['No Status', 'Done'].includes(TaskDetail.value.status.name)
+      !['No Status', 'Done'].includes(TaskDetail.value.status.name)
     ) {
+      console.log('daaa');
       statusName.value = store.limitInfo[index].name
       return (maxStatus.value = true)
     }
