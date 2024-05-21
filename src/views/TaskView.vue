@@ -275,7 +275,7 @@ const removeStatus = (index) => {
         <thead class="border-b-[1px] border-opacity-10 bg-gray-600 bg-opacity-20">
           <tr>
             <td class="w-3/5 border-r-[1px] border-opacity-10">
-              <span class="flex justify-between">
+              <span class="flex justify-between items-center">
                 <div>
                   <ClipboardDocumentListIcon class="size-6" />
                   <p>Title</p>
@@ -297,7 +297,7 @@ const removeStatus = (index) => {
               </span>
             </td>
             <td class="w-1/5 border-r-[1px] border-opacity-10">
-              <span class="flex justify-between">
+              <span class="flex justify-between items-center">
                 <div>
                   <UserCircleIcon class="size-6" />
                   <p>Assignees</p>
@@ -319,7 +319,7 @@ const removeStatus = (index) => {
               </span>
             </td>
             <td class="w-1/5">
-              <span class="flex justify-between">
+              <span class="flex justify-between items-center">
                 <div>
                   <FireIcon class="size-6" />
                   <p>Status</p>
