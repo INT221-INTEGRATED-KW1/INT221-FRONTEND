@@ -54,15 +54,15 @@ async function editTask() {
 
   //Check if the status reached the limits
   for (const index in store.limitInfo) {
-    console.log(updateDetail.value.status.id === store.limitInfo[index].id)
-    console.log(store.limitSwitch)
-    console.log(!['No Status', 'Done'].includes(updateDetail.value.status.name))
+    // console.log(updateDetail.value.status.id === store.limitInfo[index].id)
+    // console.log(store.limitSwitch)
+    // console.log(!['No Status', 'Done'].includes(updateDetail.value.status.name))
     if (
       updateDetail.value.status.id === store.limitInfo[index].id &&
       store.limitSwitch &&
       !['No Status', 'Done'].includes(updateDetail.value.status.name)
     ) {
-      console.log('limit')
+      // console.log('limit')
       statusName.value = store.limitInfo[index].name
       return (maxStatus.value = true)
     }
@@ -95,7 +95,7 @@ async function editTask() {
         (status) => status.id == oldDetail.status.id
       )
       // if (updateDetail.value.status.id != result.data.status.id) {
-        console.log('cal new count')
+        // console.log('cal new count')
         Object.assign(findResultStatus, {
           noOfTasks: findResultStatus.noOfTasks + 1
         })
