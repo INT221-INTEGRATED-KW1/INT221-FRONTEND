@@ -171,13 +171,13 @@ const removeStatus = (index) => {
             tabindex="0"
             class="dropdown-content z-[1] menu shadow bg-slate-50 rounded-box w-64 flex flex-row p-6"
           >
-            <div class="w-full flex items-center">
+            <div class="itbkk-status-filter w-full flex items-center">
               <h1 class="w-3/4 font-semibold text-base">
                 Filter (selected {{ filterList.length }})
               </h1>
-              <div class="w-1/4 flex justify-end">
+              <div class="itbkk-filter-clear w-1/4 flex justify-end">
                 <ArchiveBoxXMarkIcon
-                  class="size-6 cursor-pointer hover:shadow-inner"
+                  class="itbkk-filter-clear size-6 cursor-pointer hover:shadow-inner"
                   @click="filterList = []"
                 />
               </div>
@@ -237,11 +237,11 @@ const removeStatus = (index) => {
           <div
             v-for="(status, index) in filterList"
             :key="index"
-            class="w-auto rounded-md px-[8px] py-[2px]"
+            class="itbkk-filter-item w-auto rounded-md px-[8px] py-[2px]"
             :class="matchColor(status)"
           >
             {{ status }}
-            <span @click="removeStatus(index)"> x </span>
+            <span class="itbkk-filter-item-clear" @click="removeStatus(index)"> x </span>
           </div>
         </div>
       </div>
@@ -331,7 +331,7 @@ const removeStatus = (index) => {
             <td>
               <div class="flex gap-2 justify-center items-center">
                 <div
-                  class="btn p-0 px-2 justify-center bg-opacity-80 hover:shadow-inner text-white"
+                  class="itbkk-status-sort btn p-0 px-2 justify-center bg-opacity-80 hover:shadow-inner text-white"
                   @click="sortMethod(taskListDisplay, 'status', 'name')"
                 >
                   <!-- <BarsArrowDownIcon class="size-6 text-gray-700" v-show="sortByASC" />
