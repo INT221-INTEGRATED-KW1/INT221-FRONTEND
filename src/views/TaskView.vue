@@ -164,14 +164,14 @@ const removeStatus = (index) => {
     <div name="optionlist" class="w-full px-6 flex flex-row gap-0 items-center">
       <div class="w-3/4 pr-20 h-auto flex justify-start gap-2">
         <div class="dropdown dropdown-bottom">
-          <div tabindex="0" role="button" class="btn m-1 hover:shadow-inner">
+          <div tabindex="0" role="button" class="itbkk-status-filter btn m-1 hover:shadow-inner">
             <SwatchIcon class="size-6 h-9" />
           </div>
           <div
             tabindex="0"
             class="dropdown-content z-[1] menu shadow bg-slate-50 rounded-box w-64 flex flex-row p-6"
           >
-            <div class="itbkk-status-filter w-full flex items-center">
+            <div class="w-full flex items-center">
               <h1 class="w-3/4 font-semibold text-base">
                 Filter (selected {{ filterList.length }})
               </h1>
@@ -206,7 +206,7 @@ const removeStatus = (index) => {
                     .toLowerCase()
                     .trim()
                     .replace(/\s/g, '')
-                    .includes(
+                    .includes( 
                       SearchKey.toLowerCase().trim().replace(/\s/g, '') ?? status.name.toLowerCase()
                     )
                 "
@@ -219,7 +219,7 @@ const removeStatus = (index) => {
                   :value="status.name"
                 />
                 <div
-                  class="rounded-md w-full px-[8px] py-[2px] ring-2 ring-transparent transition-all text-center content-center flex flex-row gap-2 items-center"
+                  class="itbkk-status-choice rounded-md w-full px-[8px] py-[2px] ring-2 ring-transparent transition-all text-center content-center flex flex-row gap-2 items-center"
                 >
                   <div
                     :class="statusColors[status.color]"
@@ -364,7 +364,7 @@ const removeStatus = (index) => {
             >
               {{ !task.assignees ? 'Unassigned' : task.assignees }}
             </td>
-            <td class="w-1/6">
+            <td class="itbkk-status w-1/6">
               <div
                 class="rounded-md px-[8px] py-[2px] w-fit"
                 :class="[matchColor(task.status.name), { 'itbkk-status': !route.params.id }]"
