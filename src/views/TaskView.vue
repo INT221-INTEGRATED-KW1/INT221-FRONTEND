@@ -164,7 +164,7 @@ const removeStatus = (index) => {
     <div name="optionlist" class="w-full px-6 flex flex-row gap-0 items-center">
       <div class="w-3/4 pr-20 h-auto flex justify-start gap-2">
         <div class="dropdown dropdown-bottom">
-          <div tabindex="0" role="button" class="btn m-1 hover:shadow-inner">
+          <div tabindex="0" role="button" class="itbkk-status-filter btn m-1 hover:shadow-inner">
             <SwatchIcon class="size-6 h-9" />
           </div>
           <div
@@ -175,9 +175,9 @@ const removeStatus = (index) => {
               <h1 class="w-3/4 font-semibold text-base">
                 Filter (selected {{ filterList.length }})
               </h1>
-              <div class="w-1/4 flex justify-end">
+              <div class="itbkk-filter-clear w-1/4 flex justify-end">
                 <ArchiveBoxXMarkIcon
-                  class="size-6 cursor-pointer hover:shadow-inner"
+                  class="itbkk-filter-clear size-6 cursor-pointer hover:shadow-inner"
                   @click="filterList = []"
                 />
               </div>
@@ -206,7 +206,7 @@ const removeStatus = (index) => {
                     .toLowerCase()
                     .trim()
                     .replace(/\s/g, '')
-                    .includes(
+                    .includes( 
                       SearchKey.toLowerCase().trim().replace(/\s/g, '') ?? status.name.toLowerCase()
                     )
                 "
@@ -219,7 +219,7 @@ const removeStatus = (index) => {
                   :value="status.name"
                 />
                 <div
-                  class="rounded-md w-full px-[8px] py-[2px] ring-2 ring-transparent transition-all text-center content-center flex flex-row gap-2 items-center"
+                  class="itbkk-status-choice rounded-md w-full px-[8px] py-[2px] ring-2 ring-transparent transition-all text-center content-center flex flex-row gap-2 items-center"
                 >
                   <div
                     :class="statusColors[status.color]"
@@ -237,11 +237,11 @@ const removeStatus = (index) => {
           <div
             v-for="(status, index) in filterList"
             :key="index"
-            class="w-auto rounded-md px-[8px] py-[2px]"
+            class="itbkk-filter-item w-auto rounded-md px-[8px] py-[2px]"
             :class="matchColor(status)"
           >
             {{ status }}
-            <span @click="removeStatus(index)"> x </span>
+            <span class="itbkk-filter-item-clear" @click="removeStatus(index)"> x </span>
           </div>
         </div>
       </div>
@@ -331,7 +331,7 @@ const removeStatus = (index) => {
             <td>
               <div class="flex gap-2 justify-center items-center">
                 <div
-                  class="btn p-0 px-2 justify-center bg-opacity-80 hover:shadow-inner text-white"
+                  class="itbkk-status-sort btn p-0 px-2 justify-center bg-opacity-80 hover:shadow-inner text-white"
                   @click="sortMethod(taskListDisplay, 'status', 'name')"
                 >
                   <!-- <BarsArrowDownIcon class="size-6 text-gray-700" v-show="sortByASC" />
@@ -364,7 +364,7 @@ const removeStatus = (index) => {
             >
               {{ !task.assignees ? 'Unassigned' : task.assignees }}
             </td>
-            <td class="w-1/6">
+            <td class="itbkk-status w-1/6">
               <div
                 class="rounded-md px-[8px] py-[2px] w-fit"
                 :class="[matchColor(task.status.name), { 'itbkk-status': !route.params.id }]"

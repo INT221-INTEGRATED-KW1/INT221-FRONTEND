@@ -78,10 +78,10 @@ function goBack() {
       <br />
 
       <!-- Task function block -->
-      <div class="itbkk-limit-task flex flex-row">
+      <div class="flex flex-row">
         <input
           type="checkbox"
-          class="toggle"
+          class="itbkk-limit-task toggle"
           v-model="updatedEnableLimit"
           :checked="updatedEnableLimit"
         />
