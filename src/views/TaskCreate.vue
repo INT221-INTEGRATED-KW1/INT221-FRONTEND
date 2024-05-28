@@ -4,8 +4,6 @@ import { colorStatus } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { ref, watch, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
-// console.log('add');
 const TaskDetail = ref({
   title: '',
   assignees: '',
@@ -16,8 +14,6 @@ const TaskDetail = ref({
 const isTextOver = ref(false)
 const statusName = ref('')
 const store = useTaskStore()
-const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
-const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
 
 const isInValid = ref(false)
 const maxStatus = ref(false)
@@ -26,15 +22,11 @@ async function addNewTask() {
 
   //Check if the status reached the limits
   for (const index in store.limitInfo) {
-    // console.log(TaskDetail.value.status === store.limitInfo[index].id)
-    // console.log(store.limitSwitch);
-    // console.log(!['No Status', 'Done'].includes(TaskDetail.value.status.name));
     if (
       TaskDetail.value.status === store.limitInfo[index].id &&
       store.limitSwitch &&
       !['No Status', 'Done'].includes(TaskDetail.value.status.name)
     ) {
-      // console.log('daaa');
       statusName.value = store.limitInfo[index].name
       return (maxStatus.value = true)
     }
@@ -43,15 +35,12 @@ async function addNewTask() {
   if (!TaskDetail.value.title) {
     return (isInValid.value = true)
   } else {
-    // console.log(TaskDetail.value);
     Object.assign(TaskDetail.value, {
       title: TaskDetail.value.title.trim(),
       assignees: !TaskDetail.value.assignees ? null : TaskDetail.value.assignees,
       status: TaskDetail.value.status ?? 1,
       description: !TaskDetail.value.description ? null : TaskDetail.value.description
     })
-    // console.log(TaskDetail.value)
-    // let addMethod function and send out info into the main page :D
     const result = await addMethod(TaskDetail.value, 'tasks')
     const findStatus = store.statusList.find((status) => status.id == result.data.status.id)
     Object.assign(findStatus, {
@@ -65,7 +54,6 @@ async function addNewTask() {
       msg: 'The task has been successfully added',
       color: 'green'
     }
-    // setInterval(store.resStatus = "", 5000)
   }
 }
 
@@ -93,7 +81,6 @@ watch(
   }
 )
 
-// console.log(TaskDetail.value);
 const inputField = 'p-2 col-span-3 hover:bg-slate-400 hover:bg-opacity-20 duration-150 rounded-md'
 const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
@@ -152,7 +139,6 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
               {{ status.name }}
             </option>
           </select>
-          <!-- <input type="test" v-model="TaskDetail.status" placeholder="Empty" :class="inputField" /> -->
           <span :class="header" class="col-span-1">
             Assignees
             <span :class="{ 'text-red-500': TaskDetail.assignees.length > 30 }"

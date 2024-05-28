@@ -1,19 +1,16 @@
 <script setup>
-import { onBeforeMount, onBeforeUnmount, onMounted, onUnmounted } from 'vue'
+import { onMounted } from 'vue'
 import { ref } from 'vue'
 import router from '@/router/router'
-import { formatStatus, colorStatus, onMountSetup } from '@/lib/util'
+import { colorStatus, onMountSetup } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import { useTaskStore } from '@/store/store'
 import ErrorModal from './ErrorModal.vue'
-// console.log('taskdetail');
 const store = useTaskStore()
 const route = useRoute()
 const taskDetail = ref({})
-// console.log(taskDetail.value)
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 
-// console.log(taskDetail.value , store.errorRes);
 onMounted(async () => {
   try {
     taskDetail.value = await onMountSetup("tasks")
@@ -26,12 +23,6 @@ onMounted(async () => {
     throw error
   }
 })
-
-function matchColor(statusName) {
-  const result = store.statusList.find((status) => status.name == statusName) ?? 'grey'
-  const color = colorStatus(result.color)
-  return color
-}
 
 const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>

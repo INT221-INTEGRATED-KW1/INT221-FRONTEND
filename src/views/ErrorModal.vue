@@ -1,6 +1,5 @@
 <script setup>
 import { useTaskStore } from '@/store/store'
-import { computed, ref, watch } from 'vue'
 import router from '@/router/router'
 import { useRoute } from 'vue-router'
 const store = useTaskStore()

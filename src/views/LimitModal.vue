@@ -1,6 +1,6 @@
 <script setup>
 import { useTaskStore } from '@/store/store'
-import { computed, onBeforeMount, onMounted, ref, watch } from 'vue'
+import { ref } from 'vue'
 import router from '@/router/router'
 import { useRoute } from 'vue-router'
 import { patchMethod, updateMethod } from '@/lib/fetchAPI'
@@ -13,14 +13,8 @@ function validateInput() {
   return store.maxTask > 10
 }
 
-function isLimitSwitch() {
-  return store.limitSwitch
-}
-
 const isHaveLimitTask = ref(false)
 async function confirmLimit() {
-  // console.log('store : ', store.limitSwitch)
-  // console.log('upd : ', updatedEnableLimit.value)
   const obj = { statusLimit: updatedEnableLimit.value }
   let result
   try {
@@ -36,12 +30,10 @@ async function confirmLimit() {
           color: updatedEnableLimit.value ? 'lime' : 'amber'
         }
       } else if (result.data.statuses) {
-        // console.log(result.data.statuses)
         store.limitInfo = result.data.statuses
         isHaveLimitTask.value = true
       }
     }
-    // console.log(result.data)
   } catch (error) {
     console.error('Fail to limit status', error)
   }
@@ -54,7 +46,6 @@ function goBack() {
       color: 'lime'
     }
   }
-  // console.log(store.limitSwitch)
   return router.push({ name: route.matched[0].name })
 }
 </script>
@@ -87,15 +78,6 @@ function goBack() {
         />
         <p class="ml-5"><b>Limit task in this status</b></p>
       </div>
-      <!-- <div class="itbkk-max-task flex flex-row">
-        <p class="mr-5 mt-3"><b>Maximum tasks</b></p>
-        <input
-          type="text"
-          maxlength="2"
-          class="input input-bordered w-full max-w-xs"
-          v-model="store.maxTask"
-        />
-      </div> -->
       <br />
 
       <!-- Over maximum task limit alert -->

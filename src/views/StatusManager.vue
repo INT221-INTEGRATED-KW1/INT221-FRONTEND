@@ -1,7 +1,7 @@
 <script setup>
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import router from '@/router/router'
-import { formatStatus, colorStatus, onMountSetup, alertMessage } from '@/lib/util'
+import { colorStatus, onMountSetup, alertMessage } from '@/lib/util'
 import {
   ClipboardDocumentListIcon,
   EllipsisHorizontalIcon,
@@ -16,11 +16,9 @@ import {
   ListBulletIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
-import { getMethod } from '@/lib/fetchAPI'
 import ToastMessage from './ToastMessage.vue'
 const store = useTaskStore()
 const statusList = store.statusList
-// console.log(store.statusList)
 function navToDeleteStatus(status) {
   store.currentItem = status
   router.push({
@@ -158,24 +156,6 @@ console.log()
                   >Delete</a
                 >
               </div>
-              <!-- <div tabindex="0" role="button" class="m-1">
-                <EllipsisVerticalIcon class="itbkk-button-action size-6 hover:scale-150" />
-              </div>
-              <ul
-                tabindex="0"
-                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
-              >
-                <li class="">
-                  <a
-                    @click="router.push({ name: 'editStatus', params: { id: status.id } })"
-                    class="itbkk-button-edit"
-                    >Edit</a
-                  >
-                </li>
-                <li class="text-red-500 hover:bg-red-300 bg-red-300 rounded-lg">
-                  <a @click="navToDeleteStatus(status)" class="itbkk-button-delete">Delete</a>
-                </li>
-              </ul> -->
             </td>
             <td v-else class="text-gray-500 italic text-center">default</td>
           </tr>

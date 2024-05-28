@@ -3,7 +3,6 @@ const url = import.meta.env.VITE_BASE_URL
 async function getMethod(path, sortBy = null, filterStatuses = []) {
   try {
     const params = new URLSearchParams()
-    // console.log(filterStatuses)
     if (sortBy) {
       params.append('sortBy', sortBy)
     }
@@ -14,10 +13,6 @@ async function getMethod(path, sortBy = null, filterStatuses = []) {
     }
 
     // If need in requirement (assign multiple params)
-    // filterStatuses.forEach((status) => {
-    //   params.append('filterStatuses', status)
-    // })
-
     const response = await fetch(`${url}${path}?${params.toString()}`, {
       method: 'GET',
       headers: {

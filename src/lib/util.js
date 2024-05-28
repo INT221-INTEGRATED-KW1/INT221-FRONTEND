@@ -37,21 +37,17 @@ const dataList = ref({})
 
 async function onMountSetup(database) {
   const mode = router.currentRoute.value.name ?? 'detail'
-  // console.log(mode);
   const id = router.currentRoute.value.params.id ?? ''
   try {
     const taskRes = await getMethod(`${database}/${id}`)
-    // console.log("taskRes")
     dataList.value = taskRes.data
     if (database == 'tasks') {
       dataList.value.createdOn = formatToLocalTime(dataList.value.createdOn)
       dataList.value.updatedOn = formatToLocalTime(dataList.value.updatedOn)
     }
-    // console.log(dataList.value);
     return dataList.value
   } catch (error) {
     throw error
-    // router.push('/task')
   }
 }
 

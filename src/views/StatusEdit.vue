@@ -1,17 +1,12 @@
 <script setup>
 import { updateMethod } from '@/lib/fetchAPI'
-import { formatStatusReverse, onMountSetup, colorStatus, statusColors } from '@/lib/util'
+import { onMountSetup, colorStatus, statusColors } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ErrorModal from './ErrorModal.vue'
-const route = useRoute()
 const store = useTaskStore()
-const id = router.currentRoute.value.params.id
-
-const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
-const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
 
 const statusDetail = ref({})
 let oldDetail = {}
@@ -22,8 +17,6 @@ const isTextOver = ref(false)
 onMounted(async () => {
   try {
     statusDetail.value = await onMountSetup('statuses')
-    // store.errorRes = (await statusDetail.value.getMode) ?? 'Done'
-    // console.log(statusDetail.value.name)
 
     Object.assign(statusDetail.value, {
       description: statusDetail.value.description ?? ''
@@ -39,10 +32,8 @@ onMounted(async () => {
     }
     oldDetail = JSON.parse(JSON.stringify(statusDetail.value))
     updateDetail.value = statusDetail.value
-    // console.log('a');
     store.isError = false
   } catch (error) {
-    // console.log('err');
     store.ErrorMessage = 'An error has occurred, the status does not exist'
     store.isError = true
     statusDetail.value = {}
@@ -60,7 +51,6 @@ async function editStatus() {
   store.resStatus = ''
   isInValid.value = false
   if (isSameDetail.value) {
-    // console.log('same');
     return router.push({ name: 'status' })
   }
   if (!updateDetail.value.name) {
@@ -72,8 +62,6 @@ async function editStatus() {
       description: !updateDetail.value.description ? null : updateDetail.value.description,
       color: updateDetail.value.color
     })
-    // console.log(updateDetail.value);
-    // let addtask function and send out info into the main page :D
     try {
       const result = await updateMethod(statusDetail.value.id, 'statuses', updateDetail.value)
       const index = store.statusList.findIndex((status) => status.id == result.data.id)
@@ -206,7 +194,6 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
               class="size-10 rounded-md py-auto ring-2 ring-transparent transition-all hover:shadow peer-checked:text-sky-600 peer-checked:ring-blue-400 peer-checked:ring-offset-2 text-center content-center"
               :class="[colorClass]"
             >
-              <!-- {{ colorName }} -->
             </div>
           </label>
         </div>

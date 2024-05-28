@@ -8,7 +8,6 @@ export const useTaskStore = defineStore('task', () => {
   const errorRes = 'Done'
   const isError = false
   const ErrorMessage = null
-  const isComplete = false
   const ToastMessage = null
   const isLoading = false
   

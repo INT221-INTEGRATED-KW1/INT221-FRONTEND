@@ -20,7 +20,6 @@ onMounted(() => {
     name: 'Done'
   }
   currentData.value = item
-  // console.log(currentData.value)
   hasTask = store.taskList.filter((task) => task.status.name == item.name)
 })
 store.isError = false
@@ -70,14 +69,12 @@ const tranferStatus = async (currId, newId) => {
     return (store.isError = true)
   }
   isHastask.value = false
-  // console.log(store.taskList);
   //delete item in status menu , map item in task menu
 
   const newindex = store.statusList.findIndex((status) => status.id == newId)
   const total = store.taskList.filter(
     (task) => task.status.name == store.statusList[index].name
   ).length
-  // const findStatus = store.statusList.find((status) => status.id == result.data.id)
   Object.assign(store.statusList[newindex], {
     noOfTasks: store.statusList[newindex].noOfTasks + total
   })

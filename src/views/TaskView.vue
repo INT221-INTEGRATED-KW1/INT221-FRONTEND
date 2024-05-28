@@ -1,8 +1,8 @@
 <script setup>
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { deleteMethod, getMethod } from '../lib/fetchAPI'
 import router from '@/router/router'
-import { formatStatus, colorStatus, alertMessage, statusColors } from '@/lib/util'
+import { colorStatus, alertMessage, statusColors } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import {
   ArchiveBoxXMarkIcon,
@@ -22,13 +22,10 @@ import {
   CloudIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
-import ErrorModal from '@/views/ErrorModal.vue'
 import ToastMessage from '@/views/ToastMessage.vue'
-import TaskDetail from './TaskDetail.vue'
 const store = useTaskStore()
 const taskList = store.taskList
 const route = useRoute()
-const statusList = ref(store.statusList)
 const SearchKey = ref('')
 const isDeleting = ref(false)
 const isComplete = ref(false)
@@ -56,8 +53,6 @@ async function delTask(id) {
   }
   isDeleting.value = false
   taskList.splice(store.findTaskIndexById(id), 1)
-  // console.log(result.data)
-  // console.log(store.statusList[result.data.status.id -1])
   store.statusList[result.data.status.id - 1].countTask =
     store.statusList[result.data.status.id - 1].countTask - 1
 }
@@ -71,16 +66,6 @@ function matchColor(statusName) {
   const color = colorStatus(result.color)
   return color
 }
-
-// CONFUSE SECTION HAPPEN !!!
-// const taskListDisplay = computed(() => {
-//   if (!filterList.value.length) {
-//     return store.taskList
-//   } else {
-//     return store.taskList.filter((task) => filterList.value.includes(task.status.name))
-//     // .sort((a, b) => a.status.name.localeCompare(b.status.name));
-//   }
-// })
 
 const filterList = ref([])
 const taskListDisplay = ref(store.taskList)
@@ -99,7 +84,6 @@ async function fetchTasksValidate() {
 watch(
   [() => filterList.value, () => sortBy.value],
   () => {
-    // console.log('asd')
     if (!filterList.value.length) {
       taskListDisplay.value = store.taskList
     } else {
@@ -108,21 +92,6 @@ watch(
   },
   { deep: true }
 )
-
-// FILTER and SORT frontend version
-// watch(
-//   () => filterList.value,
-//   () => {
-//     console.log('asd')
-//     if (!filterList.value.length) {
-//       taskListDisplay.value = store.taskList
-//     } else {
-//       taskListDisplay.value = store.taskList.filter((task) =>
-//         filterList.value.includes(task.status.name)
-//       )
-//     }
-//   }
-// )
 
 const sortByASC = ref(true)
 const sortType = ref('')
@@ -140,7 +109,6 @@ function sortMethod(source, property, nestedProperty = null) {
     return sortByASC.value ? compare : -compare
   })
   sortByASC.value = !sortByASC.value
-  // console.log(...source)
 }
 
 const removeStatus = (index) => {
@@ -158,9 +126,7 @@ const removeStatus = (index) => {
       <h2 class="text-3xl"></h2>
       <p class="text-base font-medium">Do something better than do nothing .</p>
     </div>
-    <!-- {{ taskList }} -->
     <div class="css-selector w-full h-1"></div>
-    <!-- {{ filterList }} -->
     <div name="optionlist" class="w-full px-6 flex flex-row gap-0 items-center">
       <div class="w-3/4 pr-20 h-auto flex justify-start gap-2">
         <div class="dropdown dropdown-bottom">
@@ -334,8 +300,6 @@ const removeStatus = (index) => {
                   class="itbkk-status-sort btn p-0 px-2 justify-center bg-opacity-80 hover:shadow-inner text-white"
                   @click="sortMethod(taskListDisplay, 'status', 'name')"
                 >
-                  <!-- <BarsArrowDownIcon class="size-6 text-gray-700" v-show="sortByASC" />
-                  <BarsArrowUpIcon class="size-6 text-gray-700" v-show="!sortByASC" /> -->
                   <ArrowsUpDownIcon class="size-6 text-gray-700" />
                 </div>
               </div>
