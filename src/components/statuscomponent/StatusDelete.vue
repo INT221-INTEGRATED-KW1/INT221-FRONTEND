@@ -5,7 +5,7 @@ import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import ErrorModal from './ErrorModal.vue'
+import ErrorModal from '../ErrorModal.vue'
 const store = useTaskStore()
 const statusList = store.statusList
 const route = useRoute()
@@ -28,21 +28,26 @@ const deleteStatus = async (statusId) => {
   isHastask.value = false
   if (hasTask.length == 0) {
     let res = null
-    try {
-      res = await deleteMethod(statusId, 'statuses')
-      if (res.resCode == '500') {
-        router.push({ name: 'status' })
-        store.ToastMessage = {
-          msg: `Cannot delete default status (${currentData.value.name})`,
-          color: 'red',
-          erroricon: true
-        }
-        return
-      } else if (res.resCode == '400') throw new error()
-    } catch (error) {
-      store.ErrorMessage = 'An error has occurred, the status does not exist.'
+    // try {
+    res = await deleteMethod(statusId, 'statuses')
+    console.log(res.resCode)
+    if (res.resCode == '500') {
+      router.push({ name: 'status' })
+      store.ToastMessage = {
+        msg: `Cannot delete default status (${currentData.value.name})`,
+        color: 'red',
+        erroricon: true
+      }
+      return
+    }
+    if (res.resCode != '200') {
+      store.ErrorMessage = res.data.message
       return (store.isError = true)
     }
+    // } catch (error) {
+    //   store.ErrorMessage = 'An error has occurred, the status does not exist.'
+    //   return (store.isError = true)
+    // }
     const index = statusList.findIndex((status) => status.id == res.data.id)
     statusList.splice(index, 1)
     router.push({ name: 'status' })
@@ -56,25 +61,29 @@ const deleteStatus = async (statusId) => {
   }
 }
 
+const total = store.taskList.filter(
+    (task) => task.status.name == store.statusList[store.statusList.findIndex((status) => status.id == router.currentRoute.value.params.id)].name
+  ).length
 const tranferStatus = async (currId, newId) => {
   let res = null
   const index = store.statusList.findIndex((status) => status.id == currId)
   const tindex = store.statusList.findIndex((status) => status.id == tranferId.value)
-  try {
-    res = await deleteTranMethod(currId, 'statuses', newId)
-    if (res.resCode == '404') throw new error()
-  } catch (error) {
-    store.ErrorMessage = `Cannot transfer to number of task in ${store.statusList[tindex].name} status since it will exceed the limit. Please choose another status to transfer to.`
+  // try {
+  res = await deleteTranMethod(currId, 'statuses', newId)
+  //   if (res.resCode == '404') throw new error()
+  // } catch (error) {
+  if (res.resCode != '200') {
+    // store.ErrorMessage = `Cannot transfer to number of task in ${store.statusList[tindex].name} status since it will exceed the limit. Please choose another status to transfer to.`
+    store.ErrorMessage = res.data.message
     isHastask.value = false
     return (store.isError = true)
   }
+  // }
   isHastask.value = false
   //delete item in status menu , map item in task menu
 
   const newindex = store.statusList.findIndex((status) => status.id == newId)
-  const total = store.taskList.filter(
-    (task) => task.status.name == store.statusList[index].name
-  ).length
+  
   Object.assign(store.statusList[newindex], {
     noOfTasks: store.statusList[newindex].noOfTasks + total
   })
@@ -135,7 +144,7 @@ const tranferStatus = async (currId, newId) => {
 
       <div class="w-full text-center font-semibold text-xl">Tranfer a Status</div>
       <p class="itbkk-message">
-        There is some task associated with the "<span class="font-semibold">{{
+        There are {{ total }} task  associated with the "<span class="font-semibold">{{
           currentData.name ?? 'No status'
         }}</span
         >" status.

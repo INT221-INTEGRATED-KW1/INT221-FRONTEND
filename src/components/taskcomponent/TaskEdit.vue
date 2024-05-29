@@ -5,7 +5,7 @@ import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import ErrorModal from './ErrorModal.vue'
+import ErrorModal from '../ErrorModal.vue'
 const route = useRoute()
 const store = useTaskStore()
 const statusName = ref('')

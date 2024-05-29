@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import TaskView from '@/views/TaskView.vue'
-import TaskDetail from '@/views/TaskDetail.vue'
-import TaskEdit from '@/views/TaskEdit.vue'
-import TaskCreate from '@/views/TaskCreate.vue'
+import TaskDetail from '@/components/taskcomponent/TaskDetail.vue'
+import TaskEdit from '@/components/taskcomponent/TaskEdit.vue'
+import TaskCreate from '@/components/taskcomponent/TaskCreate.vue'
 import StatusManager from '@/views/StatusManager.vue'
-import StatusAdd from '@/views/StatusAdd.vue'
-import StatusEdit from '@/views/StatusEdit.vue'
-import StatusDelete from '@/views/StatusDelete.vue'
-import LimitModal from '@/views/LimitModal.vue'
+import StatusAdd from '@/components/statuscomponent/StatusAdd.vue'
+import StatusEdit from '@/components/statuscomponent/StatusEdit.vue'
+import StatusDelete from '@/components/statuscomponent/StatusDelete.vue'
+import LimitModal from '@/components/LimitModal.vue'
 const routes = [
   {
     path: '',

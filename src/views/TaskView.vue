@@ -22,7 +22,7 @@ import {
   CloudIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
-import ToastMessage from '@/views/ToastMessage.vue'
+import ToastMessage from '@/components/ToastMessage.vue'
 const store = useTaskStore()
 const taskList = store.taskList
 const route = useRoute()

@@ -5,7 +5,7 @@ import router from '@/router/router'
 import { colorStatus, onMountSetup } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import { useTaskStore } from '@/store/store'
-import ErrorModal from './ErrorModal.vue'
+import ErrorModal from '../ErrorModal.vue'
 const store = useTaskStore()
 const route = useRoute()
 const taskDetail = ref({})

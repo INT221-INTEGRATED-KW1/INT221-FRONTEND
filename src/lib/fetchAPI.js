@@ -51,39 +51,40 @@ async function addMethod(detail, database) {
 }
 
 async function deleteMethod(taskId, database) {
-  try {
+  // try {
     const response = await fetch(`${url}${database}/${taskId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       }
     })
-    if (!response.ok) {
-      return { resCode: response.status }
-    }
     const data = await response.json()
+    if (!response.ok) {
+      return { resCode: response.status , data}
+    }
     return { resCode: response.status, data }
-  } catch (error) {
-    throw error
-  }
+  // } catch (error) {
+  //   throw error
+  // }
 }
 
 async function deleteTranMethod(taskId, database, newId) {
-  try {
+  // try {
     const response = await fetch(`${url}${database}/${taskId}/${newId}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json'
       }
     })
-    if (!response.ok) {
-      throw new Error(`Failed to delete task id: ${taskId}`)
-    }
     const data = await response.json()
+    // if (!response.ok) {
+      // throw new Error(`Failed to delete task id: ${taskId}`)
+    //   return { resCode: response.status, data }
+    // }
     return { resCode: response.status, data }
-  } catch (error) {
-    throw error
-  }
+  // } catch (error) {
+  //   throw error
+  // }
 }
 
 async function updateMethod(Id, database, Detail) {

@@ -5,7 +5,7 @@ import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import ErrorModal from './ErrorModal.vue'
+import ErrorModal from '../ErrorModal.vue'
 const store = useTaskStore()
 
 const statusDetail = ref({})
@@ -56,7 +56,7 @@ async function editStatus() {
   if (!updateDetail.value.name) {
     return (isInValid.value = true)
   } else {
-    Object.assign(updateDetail.value ,{
+    Object.assign(updateDetail.value, {
       id: updateDetail.value.id,
       name: updateDetail.value.name.trim(),
       description: !updateDetail.value.description ? null : updateDetail.value.description,
@@ -134,7 +134,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       </div>
       <div class="overflow-y-auto h-full m-12 my-0">
         <div class="w-full flex flex-col gap-2 font-semibold">
-          <span class="w-full divider divider-start mb-0 "
+          <span class="w-full divider divider-start mb-0"
             >Name<span :class="{ 'text-red-500': updateDetail.name.length > 50 }">
               ({{ updateDetail.name.length }}/50)</span
             ></span
@@ -193,8 +193,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             <div
               class="size-10 rounded-md py-auto ring-2 ring-transparent transition-all hover:shadow peer-checked:text-sky-600 peer-checked:ring-blue-400 peer-checked:ring-offset-2 text-center content-center"
               :class="[colorClass]"
-            >
-            </div>
+            ></div>
           </label>
         </div>
       </div>

@@ -16,7 +16,7 @@ import {
   ListBulletIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
-import ToastMessage from './ToastMessage.vue'
+import ToastMessage from '../components/ToastMessage.vue'
 const store = useTaskStore()
 const statusList = store.statusList
 function navToDeleteStatus(status) {
