@@ -4,7 +4,6 @@ import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
 import { ref, watch } from 'vue'
 import { colorStatus, statusColors } from '@/lib/util'
-// console.log('aaa')
 const StatusDetail = ref({
   name: '',
   description: '',
@@ -29,8 +28,6 @@ async function addNewStatus() {
     // let addtask function and send out info into the main page :D
     try {
       const result = await addMethod(StatusDetail.value, 'statuses')
-      // console.log(StatusDetail.value)
-      // console.log(store.statusList)
       Object.assign(result.data, {
         noOfTasks: 0
       })

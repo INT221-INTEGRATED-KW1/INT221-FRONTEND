@@ -68,7 +68,6 @@ const routes = [
     redirect: '/task'
   }
 ]
-//import.meta.env.BASE_URL
 const router = createRouter({
   history: createWebHistory("/kw1/"),
   routes

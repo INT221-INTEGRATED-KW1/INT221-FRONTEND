@@ -18,10 +18,6 @@ const initializeApp = async () => {
 
 
 onMounted(async () => {
-  // store.isLoading = true
-  // setTimeout(() => {
-  //   store.isLoading = false
-  // }, 2000)
   initializeApp()
   try {
     store.taskList.splice(0, store.taskList.length)
@@ -45,12 +41,9 @@ onMounted(async () => {
     const limitresult = await getMethod('statusesLimit')
     store.limitSwitch = limitresult.data[0].statusLimit
     store.limitInfo = limitresult.data[0].statuses
-    // console.log(store.limitSwitch);
   } catch (error) {
     console.error('Error fetching :', error.message)
   }
-  // console.log(store.taskList)
-  // console.log(store.statusList)
 })
 
 

@@ -1,39 +1,32 @@
 <script setup>
 import { updateMethod } from '@/lib/fetchAPI'
-import { formatStatusReverse, onMountSetup, colorStatus } from '@/lib/util'
+import { onMountSetup, colorStatus } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
-import { compile, computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import ErrorModal from './ErrorModal.vue'
-import TaskDetail from './TaskDetail.vue'
 const route = useRoute()
 const store = useTaskStore()
-const id = router.currentRoute.value.params.id
 const statusName = ref('')
 const maxStatus = ref(false)
 const isTextOver = ref(false)
 
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
-const date = ref(new Date().toLocaleString('en-GB').replace('T', ' '))
 
 const taskDetail = ref({})
-// console.log("edit")
 let oldDetail = {}
 const updateDetail = ref({})
 store.isError = false
 onMounted(async () => {
   try {
     taskDetail.value = await onMountSetup('tasks')
-    // store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
     oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
     updateDetail.value = taskDetail.value
     Object.assign(updateDetail.value, {
       assignees: updateDetail.value.assignees ?? '',
       description: updateDetail.value.description ?? ''
     })
-    // console.log(updateDetail.value.status.id);
-    // console.log(oldDetail)
   } catch (error) {
     store.ErrorMessage = 'The task does not exist'
     store.isError = true
@@ -54,15 +47,11 @@ async function editTask() {
 
   //Check if the status reached the limits
   for (const index in store.limitInfo) {
-    // // console.log(updateDetail.value.status.id === store.limitInfo[index].id)
-    // // console.log(store.limitSwitch)
-    // // console.log(!['No Status', 'Done'].includes(updateDetail.value.status.name))
     if (
       updateDetail.value.status.id === store.limitInfo[index].id &&
       store.limitSwitch &&
       !['No Status', 'Done'].includes(updateDetail.value.status.name)
     ) {
-      // // console.log('limit')
       statusName.value = store.limitInfo[index].name
       return (maxStatus.value = true)
     }
@@ -84,27 +73,18 @@ async function editTask() {
     // let addtask function and send out info into the main page :D
     let result
     try {
-      // console.log(taskDetail.value.id);
       result = await updateMethod(taskDetail.value.id, 'tasks', updateDetail.value)
       Object.assign(store.taskList[store.findTaskIndexById(result.data.id)], result.data)
-      // Object.assign(store.statusList)
-      // console.log('old : ', oldDetail)
-      // console.log('result : ', result.data.status)
       const findResultStatus = store.statusList.find((status) => status.id == result.data.status.id)
       const findOldStatus = store.statusList.find(
         (status) => status.id == oldDetail.status.id
       )
-      // if (updateDetail.value.status.id != result.data.status.id) {
-        // console.log('cal new count')
         Object.assign(findResultStatus, {
           noOfTasks: findResultStatus.noOfTasks + 1
         })
         Object.assign(findOldStatus, {
           noOfTasks: findOldStatus.noOfTasks - 1
         })
-      // }
-      // console.log(findOldStatus)
-      // console.log(findResultStatus)
       store.resStatus = 'editDone'
       router.push({ name: 'task' })
       store.ToastMessage = {
@@ -116,13 +96,9 @@ async function editTask() {
       throw error
     }
     const oldStatus = store.statusList.find((status) => status.id == oldDetail.status.id)
-    // console.log(oldStatus);
     oldStatus.countTask == 0 ? '' : --oldStatus.countTask
-    // console.log(oldStatus)
     const newStatus = store.statusList.find((status) => status.id == result.data.status.id)
-    // console.log(newStatus);
     newStatus.countTask = ++newStatus.countTask
-    // console.log(newStatus);
     router.push({ name: 'task' })
   }
 }
@@ -220,7 +196,6 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
               {{ status.name }}
             </option>
           </select>
-          <!-- <input type="test" v-model="updateDetail.status" placeholder="Empty" :class="inputField" /> -->
           <span :class="header" class="col-span-1">
             Assignees
             <span :class="{ 'text-red-500': updateDetail.assignees.length > 30 }"

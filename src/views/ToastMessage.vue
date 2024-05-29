@@ -4,7 +4,6 @@ import { ref, watch } from 'vue'
 import { CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { statusColors } from '@/lib/util'
 const store = useTaskStore()
-// console.log('a');
 const isShowing = ref(false)
 
 watch(
@@ -28,7 +27,6 @@ watch(
         <CheckCircleIcon v-if="!store.ToastMessage.erroricon" class="size-8"/>
         <ExclamationTriangleIcon v-if="store.ToastMessage.erroricon" class="size-8"/>
         <span class="itbkk-message">{{ store.ToastMessage.msg }}</span>
-        <!-- <XMarkIcon class="size-8 hover:scale-125" @click="store.resStatus = ''"></XMarkIcon> -->
       </div>
     </div>
   </transition>
