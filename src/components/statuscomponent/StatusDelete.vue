@@ -87,7 +87,7 @@ const tranferStatus = async (currId, newId) => {
     return (store.isError = true)
   }
   isHastask.value = false
-  
+
   //delete item in status menu , map item in task menu
   const newindex = store.statusList.findIndex((status) => status.id == newId)
   Object.assign(store.statusList[newindex], {
