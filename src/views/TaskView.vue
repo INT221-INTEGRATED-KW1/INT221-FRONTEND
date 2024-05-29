@@ -23,6 +23,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import ToastMessage from '@/components/ToastMessage.vue'
+import ErrorModal from '@/components/ErrorModal.vue'
 const store = useTaskStore()
 const taskList = store.taskList
 const route = useRoute()
@@ -40,19 +41,19 @@ function showDeleteModal(id) {
 async function delTask(id) {
   isComplete.value = false
   let result
-  try {
-    result = await deleteMethod(id, 'tasks')
-    store.resStatus = 'deleteDone'
-    store.ToastMessage = {
-      msg: 'The task has been deleted',
-      color: 'green'
-    }
-  } catch (error) {
-    store.resStatus = 'deleteError'
-    store.errorRes = 'delete'
+
+  result = await deleteMethod(id, 'tasks')
+  taskList.splice(store.findTaskIndexById(id), 1)
+  if (result.resCode != '200') {
+    store.ErrorMessage = `An error has occurred, the status does not exist.`
+    store.isError = true
+    return (isDeleting.value = false)
+  }
+  store.ToastMessage = {
+    msg: 'The task has been deleted',
+    color: 'green'
   }
   isDeleting.value = false
-  taskList.splice(store.findTaskIndexById(id), 1)
   store.statusList[result.data.status.id - 1].countTask =
     store.statusList[result.data.status.id - 1].countTask - 1
 }
@@ -172,7 +173,7 @@ const removeStatus = (index) => {
                     .toLowerCase()
                     .trim()
                     .replace(/\s/g, '')
-                    .includes( 
+                    .includes(
                       SearchKey.toLowerCase().trim().replace(/\s/g, '') ?? status.name.toLowerCase()
                     )
                 "
@@ -405,6 +406,10 @@ const removeStatus = (index) => {
     </transition>
   </div>
   <router-view />
+
+  <ErrorModal v-if="store.isError">
+    <template #message>{{ store.ErrorMessage }}</template>
+  </ErrorModal>
 </template>
 
 <style>

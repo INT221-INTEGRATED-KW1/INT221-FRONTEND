@@ -16,7 +16,7 @@ function goBack() {
 
 <template>
   <div
-    class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900 itbkk-menu-status"
+    class="fixed top-0 left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900 itbkk-menu-status z-40"
   >
     <div
       name="backdrop"
