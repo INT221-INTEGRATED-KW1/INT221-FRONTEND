@@ -4,32 +4,35 @@ import { ref, watch } from 'vue'
 import { CheckCircleIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
 import { statusColors } from '@/lib/util'
 const store = useTaskStore()
-const isShowing = ref(false)
 
 watch(
   () => store.ToastMessage,
-  (newStatus) => {
-    store.ToastMessage.color = statusColors[store.ToastMessage.color]
-    if (newStatus) {
-      isShowing.value = true
-      setTimeout(() => {
-        isShowing.value = false
-      }, 5000)
-    }
-  }
+  () => {
+    setTimeout(() => {
+      store.ToastMessage.shift()
+    }, 5000)
+  },
+  { deep: true }
 )
 </script>
 
 <template>
-  <transition name="alert">
-    <div class="fixed top-4 w-full" v-if="isShowing">
-      <div role="alert" class="alert w-fit mx-auto" :class="store.ToastMessage.color">
-        <CheckCircleIcon v-if="!store.ToastMessage.erroricon" class="size-8"/>
-        <ExclamationTriangleIcon v-if="store.ToastMessage.erroricon" class="size-8"/>
-        <span class="itbkk-message">{{ store.ToastMessage.msg }}</span>
+  <div class="fixed top-4 w-full">
+    <div class="flex flex-col gap-2"></div>
+    <transition-group name="alert">
+      <div
+        v-for="item in store.ToastMessage"
+        :key="item"
+        role="alert"
+        class="alert w-fit mx-auto"
+        :class="statusColors[item.color]"
+      >
+        <CheckCircleIcon v-if="!item.erroricon" class="size-8" />
+        <ExclamationTriangleIcon v-if="item.erroricon" class="size-8" />
+        <span class="itbkk-message">{{ item.msg }}</span>
       </div>
-    </div>
-  </transition>
+    </transition-group>
+  </div>
 </template>
 
 <style>

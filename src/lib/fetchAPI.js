@@ -32,6 +32,7 @@ async function getMethod(path, sortBy = null, filterStatuses = []) {
 }
 
 async function addMethod(detail, database) {
+  // eslint-disable-next-line no-useless-catch
   try {
     const response = await fetch(`${url}${database}`, {
       method: 'POST',
@@ -88,6 +89,7 @@ async function deleteTranMethod(taskId, database, newId) {
 }
 
 async function updateMethod(Id, database, Detail) {
+  // eslint-disable-next-line no-useless-catch
   try {
     const response = await fetch(`${url}${database}/${Id}`, {
       method: 'PUT',
@@ -107,6 +109,7 @@ async function updateMethod(Id, database, Detail) {
 }
 
 async function patchMethod(Id, database, subfix ,  Detail) {
+  // eslint-disable-next-line no-useless-catch
   try {
     const response = await fetch(`${url}${database}/${Id}/${subfix}`, {
       method: 'PATCH',
