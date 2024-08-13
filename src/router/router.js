@@ -8,11 +8,17 @@ import StatusAdd from '@/components/statuscomponent/StatusAdd.vue'
 import StatusEdit from '@/components/statuscomponent/StatusEdit.vue'
 import StatusDelete from '@/components/statuscomponent/StatusDelete.vue'
 import LimitModal from '@/components/LimitModal.vue'
+import LoginView from '@/views/LoginView.vue'
 const routes = [
   {
     path: '',
     name: 'home',
     redirect: '/task'
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView
   },
   {
     path: '/task',
