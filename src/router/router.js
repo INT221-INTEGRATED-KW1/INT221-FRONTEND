@@ -11,19 +11,25 @@ import LimitModal from '@/components/LimitModal.vue'
 import LoginView from '@/views/LoginView.vue'
 const routes = [
   {
-    path: '',
-    name: 'home',
-    redirect: '/task'
-  },
-  {
     path: '/login',
     name: 'login',
-    component: LoginView
+    component: LoginView,
+  },
+  {
+    path: '',
+    name: 'home',
+    redirect: '/task',
+    meta: {
+      requireAuth: true
+    }
   },
   {
     path: '/task',
     name: 'task',
     component: TaskView,
+    meta: {
+      requireAuth: true
+    },
     children: [
       {
         path: ':id',
