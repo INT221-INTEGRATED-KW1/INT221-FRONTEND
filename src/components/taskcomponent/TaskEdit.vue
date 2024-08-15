@@ -87,10 +87,10 @@ async function editTask() {
         })
       store.resStatus = 'editDone'
       router.push({ name: 'task' })
-      store.ToastMessage = {
+      store.ToastMessage.push({
         msg: 'The task has been updated',
         color: 'cyan'
-      }
+      })
     } catch (error) {
       store.resStatus = 'updateError'
       throw error
@@ -131,6 +131,7 @@ const inputField = 'p-2 col-span-3 hover:bg-slate-400 hover:bg-opacity-20 durati
 const header = 'text-gray-900 text-opacity-50 font-semibold'
 </script>
 <template>
+  <div>
   <div
     v-if="Object.keys(taskDetail).length !== 0 && !store.isError"
     class="fixed z-[2] top-0 left-0 w-full h-full flex justify-center items-center font-sans text-md text-slate-900"
@@ -151,7 +152,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
             >
               Task
             </li>
-            <li>{{ route.params.id }}</li>
+            <li>{{ route.params.id }}</li>w
             <li>Edit</li>
           </ul>
         </div>
@@ -279,8 +280,11 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
       </div>
     </div>
   </div>
+  
   <ErrorModal v-if="store.isError">
     <template #message>{{ store.ErrorMessage }}</template>
   </ErrorModal>
+</div>
 </template>
+
 <style></style>
