@@ -45,7 +45,7 @@ async function delTask(id) {
   result = await deleteMethod(id, 'tasks')
   taskList.splice(store.findTaskIndexById(id), 1)
   if (result.resCode != '200') {
-    store.ErrorMessage = `An error has occurred, the status does not exist.`
+    store.ErrorMessage = `An error has occurred, the task does not exist.`
     store.isError = true
     return (isDeleting.value = false)
   }
