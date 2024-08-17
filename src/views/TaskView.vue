@@ -49,10 +49,10 @@ async function delTask(id) {
     store.isError = true
     return (isDeleting.value = false)
   }
-  store.ToastMessage.push({
+  store.ToastMessage = {
     msg: 'The task has been deleted',
     color: 'green'
-  })
+  }
   isDeleting.value = false
   store.statusList[result.data.status.id - 1].countTask =
     store.statusList[result.data.status.id - 1].countTask - 1

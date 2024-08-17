@@ -23,12 +23,12 @@ async function confirmLimit() {
       store.limitSwitch = result.data.statusLimit
       if (!result.data.statuses || result.data.statuses.length == 0) {
         goBack()
-        store.ToastMessage.push({
+        store.ToastMessage = {
           msg: updatedEnableLimit.value
             ? `The kanban board now limits 10 tasks in each status.`
             : `The kanban board has disabled the task limit in each status.`,
           color: updatedEnableLimit.value ? 'lime' : 'amber'
-        })
+        }
       } else if (result.data.statuses) {
         store.limitInfo = result.data.statuses
         isHaveLimitTask.value = true
@@ -41,10 +41,10 @@ async function confirmLimit() {
 
 function goBack() {
   if (isHaveLimitTask.value) {
-    store.ToastMessage.push({
+    store.ToastMessage = {
       msg: `The kanban board now limits 10 tasks in each status.`,
       color: 'lime'
-    })
+    }
   }
   return router.push({ name: route.matched[0].name })
 }
