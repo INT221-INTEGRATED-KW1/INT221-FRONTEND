@@ -1,35 +1,117 @@
 <script setup>
-    function temp() {
-        
-    }
+import router from '@/router/router'
+import { ref } from 'vue'
+
+const url = import.meta.env.VITE_BASE_URL
+const isAlert = ref('')
+const msgAlert = ref('')
+const uname = ref('')
+const paswd = ref('')
+
+function JwtDecode(token) {
+  var base64url = token.split('.')[1]
+  var base64 = decodeURIComponent(
+    atob(base64url)
+      .split('')
+      .map((c) => {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
+      })
+      .join('')
+  )
+  return JSON.parse(base64)
+}
+
+async function clientFetch() {
+  const response = await fetch(`${url}users/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      username: uname.value,
+      password: paswd.value
+    })
+  })
+  const data = await response.json()
+
+  if (data.status === 401) {
+    isAlert.value = true
+    msgAlert.value = data.message + '.'
+  } else {
+    // const decodeData = JwtDecode(data.accessToken)
+    router.push('/tasks')
+  }
+}
 </script>
 
 <template>
-    <div class="card bg-primary text-primary-contentname w-96">
-        <div class="card-body">
-            <h2 class="card-title">Welcome To ITB-KK</h2><br>
-            <div>
-                <label class="itbkk-user input input-bordered flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
-                        class="h-4 w-4 opacity-70">
-                        <path
-                            d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM12.735 14c.618 0 1.093-.561.872-1.139a6.002 6.002 0 0 0-11.215 0c-.22.578.254 1.139.872 1.139h9.47Z" />
-                    </svg>
-                    <input type="text" class="grow" placeholder="Username"/>
-                </label>
-                <label class="itbkk-password input input-bordered flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"
-                        class="h-4 w-4 opacity-70">
-                        <path fill-rule="evenodd"
-                            d="M14 6a4 4 0 0 1-4.899 3.899l-1.955 1.955a.5.5 0 0 1-.353.146H5v1.5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1-.5-.5v-2.293a.5.5 0 0 1 .146-.353l3.955-3.955A4 4 0 1 1 14 6Zm-4-2a.75.75 0 0 0 0 1.5.5.5 0 0 1 .5.5.75.75 0 0 0 1.5 0 2 2 0 0 0-2-2Z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    <input type="password" class="grow" />
-                </label>
-            </div>
-            <div class="card-actions justify-end">
-                <button class="itbkk-button-sigin btn" @click="temp">Sign In</button>
-            </div>
-        </div>
+  <div v-if="isAlert">
+    <div role="alert" class="alert alert-error">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span class="itbkk-message">{{ msgAlert }}</span>
     </div>
+  </div>
+
+  <div class="flex items-center justify-center w-full h-screen">
+    <div class="card lg:card-side bg-white glass shadow-2xl">
+      <figure>
+        <img src="../../public/kanban.png" />
+      </figure>
+      <div class="card-body">
+        <h1 class="card-title text-5xl">KANBAN</h1>
+        <br />
+        <p class="text-xs">Easier Work, Easier Life. Use Kanban</p>
+        <div class="divider divider-info"></div>
+        <div>
+          <label class="itbkk-user input input-bordered flex items-center gap-2 bg-white">
+            <input
+              type="text"
+              class="grow itbkk-username"
+              placeholder="Username"
+              maxlength="50"
+              v-model="uname"
+            />
+          </label>
+          <br />
+          <label class="input input-bordered flex items-center gap-2 bg-white">
+            <input
+              type="password"
+              class="grow itbkk-password"
+              placeholder="Password"
+              maxlength="14"
+              v-model="paswd"
+            />
+          </label>
+        </div>
+        <br />
+        <div class="card-actions justify-center">
+          <button
+            :disabled="!uname || !paswd"
+            class="itbkk-button-signin btn btn-wide btn-circle bg-blue-500 text-white"
+            :class="!uname || !paswd ? 'disabled':''"
+            @click="clientFetch"
+          >
+            Sign In
+          </button>
+        </div>
+        <div class="card-actions justify-center">
+          <button class="btn btn-wide btn-circle bg-purple-700 text-white">
+            Sign in with Microsoft Team
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
