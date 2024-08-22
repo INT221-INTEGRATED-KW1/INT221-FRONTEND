@@ -32,6 +32,7 @@ const isDeleting = ref(false)
 const isComplete = ref(false)
 const currentId = ref(0)
 const currentTask = ref('')
+const fullName = localStorage.getItem('username')
 function showDeleteModal(id) {
   currentId.value = id
   currentTask.value = taskList[store.findTaskIndexById(id)]
@@ -213,6 +214,11 @@ const removeStatus = (index) => {
         </div>
       </div>
       <div class="w-1/4 h-auto flex justify-end gap-4">
+        <button
+          class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-red-600 border-none"
+        >
+          {{ fullName }}
+        </button>
         <button
           @click="router.push({ name: 'addTask' })"
           class="itbkk-button-add btn px-4 h-9 min-h-9 shadow-inner bg-sky-300 hover:bg-sky-400 hover:border-sky-400 border-none"

@@ -28,17 +28,19 @@ async function clientFetch() {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      username: uname.value,
+      userName: uname.value,
       password: paswd.value
     })
   })
   const data = await response.json()
+  console.log(data)
 
   if (data.status === 401) {
     isAlert.value = true
     msgAlert.value = data.message + '.'
   } else {
-    // const decodeData = JwtDecode(data.accessToken)
+    const decodeData = JwtDecode(data.accessToken)
+    localStorage.setItem('username', decodeData.name)
     router.push('/tasks')
   }
 }
