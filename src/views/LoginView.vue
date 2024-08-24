@@ -39,7 +39,7 @@ async function clientFetch() {
     isAlert.value = true
     msgAlert.value = data.message + '.'
   } else {
-    const decodeData = JwtDecode(data.accessToken)
+    const decodeData = JwtDecode(data.access_token)
     localStorage.setItem('username', decodeData.name)
     router.push('/tasks')
   }
