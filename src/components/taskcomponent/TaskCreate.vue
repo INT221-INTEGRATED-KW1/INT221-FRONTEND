@@ -50,10 +50,10 @@ async function addNewTask() {
     store.taskList.push(result.data)
     store.resStatus = 'addDone'
     router.push({ name: 'task' })
-    store.ToastMessage.push({
+    store.ToastMessage = {
       msg: 'The task has been successfully added',
       color: 'green'
-    })
+    }
   }
 }
 

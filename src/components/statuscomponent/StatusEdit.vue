@@ -24,11 +24,11 @@ onMounted(async () => {
 
     if (statusDetail.value.name == 'No Status' || statusDetail.value.name == 'Done') {
       router.push({ name: 'status' })
-      store.ToastMessage.push({
+      store.ToastMessage = {
         msg: `Cannot edit default status (${statusDetail.value.name})`,
         color: 'red',
         erroricon: true
-      })
+      }
     }
     oldDetail = JSON.parse(JSON.stringify(statusDetail.value))
     updateDetail.value = statusDetail.value
@@ -72,10 +72,10 @@ async function editStatus() {
         .map((task) => (task.status.name = updateDetail.value.name))
       store.resStatus = 'editDone'
       router.push({ name: 'status' })
-      store.ToastMessage.push({
+      store.ToastMessage = {
         msg: 'The status has been updated',
         color: 'lime'
-      })
+      }
     } catch (error) {
       isInValid.value = true
       setTimeout(() => {

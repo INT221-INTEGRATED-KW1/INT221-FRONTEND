@@ -8,15 +8,7 @@ export const useTaskStore = defineStore('task', () => {
   const errorRes = 'Done'
   const isError = false
   const ErrorMessage = null
-  const ToastMessage = [
-  //   {
-  //   msg: 'The task has been updated',
-  //   color: 'cyan'
-  // },{
-  //   msg: 'The task has been updated',
-  //   color: 'cyan'
-  // }
-]
+  const ToastMessage = null
   const isLoading = false
   
   //About the limit.
