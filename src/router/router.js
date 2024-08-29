@@ -9,6 +9,7 @@ import StatusEdit from '@/components/statuscomponent/StatusEdit.vue'
 import StatusDelete from '@/components/statuscomponent/StatusDelete.vue'
 import LimitModal from '@/components/LimitModal.vue'
 import LoginView from '@/views/LoginView.vue'
+
 const routes = [
   {
     path: '',
@@ -77,6 +78,14 @@ const routes = [
 const router = createRouter({
   history: createWebHistory("/kw1/"),
   routes
+})
+
+router.beforeEach(async (to, from, next) => {
+  const getLogin = localStorage.getItem("username")
+  if ((getLogin === null || getLogin.length === 0) && to.name !== 'login') {
+    return next({ name: "login" })
+  }
+  next()
 })
 
 export default router
