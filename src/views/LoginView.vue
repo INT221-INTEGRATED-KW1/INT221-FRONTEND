@@ -22,12 +22,12 @@ function JwtDecode(token) {
   return JSON.parse(base64)
 }
 
-async function clientFetch() {
+async function loginFetch() {
   try {
     const response = await fetch(`${url}users/login`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
         userName: uname.value,
@@ -40,13 +40,17 @@ async function clientFetch() {
     if (!response.ok && data.status !== 401) {
       throw new Error(`Error: ${response.statusText}`)
     }
+
     if (data.status === 401) {
       authAlert.value = true
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
       msgAlert.value = data.message + '.'
     } else {
       const decodeData = JwtDecode(data.access_token)
+      localStorage.setItem('token', data.access_token)
       localStorage.setItem('username', decodeData.name)
-      router.push('/tasks')
+      router.push('/board')
     }
   } catch (error) {
     serverAlert.value = true
@@ -131,7 +135,7 @@ async function clientFetch() {
             :disabled="!uname || !paswd"
             class="itbkk-button-signin btn btn-wide btn-circle bg-blue-500 text-white"
             :class="!uname || !paswd ? 'disabled' : ''"
-            @click="clientFetch"
+            @click="loginFetch()"
           >
             Sign In
           </button>

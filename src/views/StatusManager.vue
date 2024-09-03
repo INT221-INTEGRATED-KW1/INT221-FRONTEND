@@ -19,6 +19,7 @@ import { useTaskStore } from '@/store/store'
 import ToastMessage from '../components/ToastMessage.vue'
 const store = useTaskStore()
 const statusList = store.statusList
+const fullName = localStorage.getItem('username')
 function navToDeleteStatus(status) {
   store.currentItem = status
   router.push({
