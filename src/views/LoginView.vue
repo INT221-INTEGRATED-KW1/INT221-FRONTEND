@@ -3,7 +3,8 @@ import router from '@/router/router'
 import { ref } from 'vue'
 
 const url = import.meta.env.VITE_BASE_URL
-const isAlert = ref('')
+const authAlert = ref('')
+const serverAlert = ref('')
 const msgAlert = ref('')
 const uname = ref('')
 const paswd = ref('')
@@ -21,33 +22,45 @@ function JwtDecode(token) {
   return JSON.parse(base64)
 }
 
-async function clientFetch() {
-  const response = await fetch(`${url}users/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      userName: uname.value,
-      password: paswd.value
+async function loginFetch() {
+  try {
+    const response = await fetch(`${url}users/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        userName: uname.value,
+        password: paswd.value
+      })
     })
-  })
-  const data = await response.json()
-  console.log(data)
 
-  if (data.status === 401) {
-    isAlert.value = true
-    msgAlert.value = data.message + '.'
-  } else {
-    const decodeData = JwtDecode(data.access_token)
-    localStorage.setItem('username', decodeData.name)
-    router.push('/tasks')
+    const data = await response.json()
+
+    if (!response.ok && data.status !== 401) {
+      throw new Error(`Error: ${response.statusText}`)
+    }
+
+    if (data.status === 401) {
+      authAlert.value = true
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      msgAlert.value = data.message + '.'
+    } else {
+      const decodeData = JwtDecode(data.access_token)
+      localStorage.setItem('token', data.access_token)
+      localStorage.setItem('username', decodeData.name)
+      router.push('/board')
+    }
+  } catch (error) {
+    serverAlert.value = true
+    router.push('/login')
   }
 }
 </script>
 
 <template>
-  <div v-if="isAlert">
+  <div v-if="authAlert">
     <div role="alert" class="alert alert-error">
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -63,6 +76,25 @@ async function clientFetch() {
         />
       </svg>
       <span class="itbkk-message">{{ msgAlert }}</span>
+    </div>
+  </div>
+
+  <div v-if="serverAlert">
+    <div role="alert" class="alert alert-error">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6 shrink-0 stroke-current"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span class="itbkk-message">There is a problem. Please try again later.</span>
     </div>
   </div>
 
@@ -102,8 +134,8 @@ async function clientFetch() {
           <button
             :disabled="!uname || !paswd"
             class="itbkk-button-signin btn btn-wide btn-circle bg-blue-500 text-white"
-            :class="!uname || !paswd ? 'disabled':''"
-            @click="clientFetch"
+            :class="!uname || !paswd ? 'disabled' : ''"
+            @click="loginFetch()"
           >
             Sign In
           </button>

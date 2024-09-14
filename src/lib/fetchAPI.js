@@ -13,11 +13,12 @@ async function getMethod(path, sortBy = null, filterStatuses = []) {
     }
 
     // If need in requirement (assign multiple params)
-    const response = await fetch(`${url}${path}?${params.toString()}`, {
+    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${path}?${params.toString()}`, {
       method: 'GET',
       headers: {
         Accept: 'application/hal+json',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       }
     })
     if (!response.ok) {
@@ -33,10 +34,11 @@ async function getMethod(path, sortBy = null, filterStatuses = []) {
 
 async function addMethod(detail, database) {
   try {
-    const response = await fetch(`${url}${database}`, {
+    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${database}`, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       },
       body: JSON.stringify(detail)
     })
@@ -52,10 +54,11 @@ async function addMethod(detail, database) {
 
 async function deleteMethod(taskId, database) {
   // try {
-    const response = await fetch(`${url}${database}/${taskId}`, {
+    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${database}/${taskId}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       }
     })
     const data = await response.json()
@@ -70,10 +73,11 @@ async function deleteMethod(taskId, database) {
 
 async function deleteTranMethod(taskId, database, newId) {
   // try {
-    const response = await fetch(`${url}${database}/${taskId}/${newId}`, {
+    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${database}/${taskId}/${newId}`, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       }
     })
     const data = await response.json()
@@ -89,10 +93,11 @@ async function deleteTranMethod(taskId, database, newId) {
 
 async function updateMethod(Id, database, Detail) {
   try {
-    const response = await fetch(`${url}${database}/${Id}`, {
+    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${database}/${Id}`, {
       method: 'PUT',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       },
       body: JSON.stringify(Detail)
     })
@@ -108,10 +113,11 @@ async function updateMethod(Id, database, Detail) {
 
 async function patchMethod(Id, database, subfix ,  Detail) {
   try {
-    const response = await fetch(`${url}${database}/${Id}/${subfix}`, {
+    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${database}/${Id}/${subfix}`, {
       method: 'PATCH',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + localStorage.getItem('token')
       },
       body: JSON.stringify(Detail)
     })
