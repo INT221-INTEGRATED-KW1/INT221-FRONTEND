@@ -142,13 +142,13 @@ onMounted(async () => {
     }
   }
 
-  try {
-    const limitresult = await getMethod('statusesLimit')
-    store.limitSwitch = limitresult.data[0].statusLimit
-    store.limitInfo = limitresult.data[0].statuses
-  } catch (error) {
-    console.error('Error fetching :', error.message)
-  }
+  // try {
+  //   const limitresult = await getMethod('maximum-status')
+  //   store.limitSwitch = limitresult.data[0].statusLimit
+  //   store.limitInfo = limitresult.data[0].statuses
+  // } catch (error) {
+  //   console.error('Error fetching :', error.message)
+  // }
 })
 </script>
 

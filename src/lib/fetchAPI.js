@@ -13,14 +13,17 @@ async function getMethod(path, sortBy = null, filterStatuses = []) {
     }
 
     // If need in requirement (assign multiple params)
-    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${path}?${params.toString()}`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/hal+json',
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-        Authorization: 'Bearer ' + localStorage.getItem('token')
+    const response = await fetch(
+      `${url}boards/${localStorage.getItem('uid')}/${path}?${params.toString()}`,
+      {
+        method: 'GET',
+        headers: {
+          Accept: 'application/hal+json',
+          'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
       }
-    })
+    )
     if (!response.ok) {
       throw new Error(`Failed to get method ${path}`)
     }
@@ -34,7 +37,7 @@ async function getMethod(path, sortBy = null, filterStatuses = []) {
 
 async function addMethod(detail, database) {
   try {
-    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${database}`, {
+    const response = await fetch(`${url}boards/${localStorage.getItem('uid')}/${database}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -54,18 +57,21 @@ async function addMethod(detail, database) {
 
 async function deleteMethod(taskId, database) {
   // try {
-    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${database}/${taskId}`, {
+  const response = await fetch(
+    `${url}boards/${localStorage.getItem('uid')}/${database}/${taskId}`,
+    {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
-    })
-    const data = await response.json()
-    if (!response.ok) {
-      return { resCode: response.status , data}
     }
+  )
+  const data = await response.json()
+  if (!response.ok) {
     return { resCode: response.status, data }
+  }
+  return { resCode: response.status, data }
   // } catch (error) {
   //   throw error
   // }
@@ -73,19 +79,22 @@ async function deleteMethod(taskId, database) {
 
 async function deleteTranMethod(taskId, database, newId) {
   // try {
-    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${database}/${taskId}/${newId}`, {
+  const response = await fetch(
+    `${url}boards/${localStorage.getItem('uid')}/${database}/${taskId}/${newId}`,
+    {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
-    })
-    const data = await response.json()
-    // if (!response.ok) {
-      // throw new Error(`Failed to delete task id: ${taskId}`)
-    //   return { resCode: response.status, data }
-    // }
-    return { resCode: response.status, data }
+    }
+  )
+  const data = await response.json()
+  // if (!response.ok) {
+  // throw new Error(`Failed to delete task id: ${taskId}`)
+  //   return { resCode: response.status, data }
+  // }
+  return { resCode: response.status, data }
   // } catch (error) {
   //   throw error
   // }
@@ -93,7 +102,7 @@ async function deleteTranMethod(taskId, database, newId) {
 
 async function updateMethod(Id, database, Detail) {
   try {
-    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${database}/${Id}`, {
+    const response = await fetch(`${url}boards/${localStorage.getItem('uid')}/${database}/${Id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -111,18 +120,21 @@ async function updateMethod(Id, database, Detail) {
   }
 }
 
-async function patchMethod(Id, database, subfix ,  Detail) {
+async function patchMethod(subfix, Detail) {
   try {
-    const response = await fetch(`${url}boards/${localStorage.getItem("uid")}/${database}/${Id}/${subfix}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      },
-      body: JSON.stringify(Detail)
-    })
+    const response = await fetch(
+      `${url}boards/${localStorage.getItem('uid')}/${subfix}`,
+      {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        },
+        body: JSON.stringify(Detail)
+      }
+    )
     if (!response.ok) {
-      throw new Error(`Failed to update ${database} id: ${Id}`)
+      throw new Error(`Failed to update ${subfix}`)
     }
     const data = await response.json()
     return { resCode: response.status, data }
@@ -131,4 +143,4 @@ async function patchMethod(Id, database, subfix ,  Detail) {
   }
 }
 
-export { getMethod, addMethod, deleteMethod, updateMethod, deleteTranMethod , patchMethod}
+export { getMethod, addMethod, deleteMethod, updateMethod, deleteTranMethod, patchMethod }
