@@ -42,11 +42,6 @@ watch(
   }
 )
 
-onMounted(async () => {
-  if (localStorage.getItem("uid") === null) {
-    router.push('/login')
-  }
-})
 const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
 )
