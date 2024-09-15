@@ -32,7 +32,7 @@ async function boardFetch() {
     }
   } catch (error) {
     console.log(error)
-    router.push('/login')
+    router.push({name: 'login'})
   }
 }
 
@@ -54,10 +54,13 @@ async function boardPost() {
 
     if (!response.ok && data.status !== 401) {
       throw new Error(`Error: ${response.statusText}`)
+    } 
+    if (data.status === 401) {
+      router.push({name: 'login'})
     }
   } catch (error) {
     console.log(error)
-    router.push('/board')
+    router.push({name: 'login'})
   }
 }
 
