@@ -9,11 +9,13 @@ import StatusEdit from '@/components/statuscomponent/StatusEdit.vue'
 import StatusDelete from '@/components/statuscomponent/StatusDelete.vue'
 import LimitModal from '@/components/LimitModal.vue'
 import LoginView from '@/views/LoginView.vue'
+import BoardView from '@/views/BoardView.vue'
+
 const routes = [
   {
     path: '',
     name: 'home',
-    redirect: '/task'
+    redirect: '/login'
   },
   {
     path: '/login',
@@ -21,7 +23,12 @@ const routes = [
     component: LoginView
   },
   {
-    path: '/task',
+    path: '/board',
+    name: 'board',
+    component: BoardView
+  },
+  {
+    path: '/board/:uid/task',
     name: 'task',
     component: TaskView,
     children: [
@@ -48,7 +55,7 @@ const routes = [
     ]
   },
   {
-    path: '/status',
+    path: '/board/:uid/status',
     name: 'status',
     component: StatusManager,
     children: [
@@ -66,7 +73,7 @@ const routes = [
         path: ':id/delete',
         name: 'deleteStatus',
         component: StatusDelete
-      },
+      }
     ]
   },
   {
@@ -75,8 +82,16 @@ const routes = [
   }
 ]
 const router = createRouter({
-  history: createWebHistory("/kw1/"),
+  history: createWebHistory('/kw1/'),
   routes
+})
+
+router.beforeEach(async (to, from, next) => {
+  const getLogin = localStorage.getItem('username')
+  if ((getLogin === null || getLogin.length === 0) && to.name !== 'login') {
+    return next({ name: 'login' })
+  }
+  next()
 })
 
 export default router

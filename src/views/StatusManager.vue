@@ -1,6 +1,7 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import router from '@/router/router'
+import { getMethod } from '../lib/fetchAPI'
 import { colorStatus, onMountSetup, alertMessage } from '@/lib/util'
 import {
   ClipboardDocumentListIcon,
@@ -19,7 +20,6 @@ import { useTaskStore } from '@/store/store'
 import ToastMessage from '../components/ToastMessage.vue'
 const store = useTaskStore()
 const statusList = store.statusList
-const fullName = localStorage.getItem('username')
 function navToDeleteStatus(status) {
   store.currentItem = status
   router.push({
@@ -42,6 +42,11 @@ watch(
   }
 )
 
+onMounted(async () => {
+  if (localStorage.getItem("uid") === null) {
+    router.push('/login')
+  }
+})
 const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
 )

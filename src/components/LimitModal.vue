@@ -15,10 +15,10 @@ function validateInput() {
 
 const isHaveLimitTask = ref(false)
 async function confirmLimit() {
-  const obj = { statusLimit: updatedEnableLimit.value }
+  const obj = { limitMaximumStatus: updatedEnableLimit.value }
   let result
   try {
-    result = await patchMethod('1', 'statusesLimit', 'maximum-status', obj)
+    result = await patchMethod('maximum-status', obj)
     if (result.resCode == '200') {
       store.limitSwitch = result.data.statusLimit
       if (!result.data.statuses || result.data.statuses.length == 0) {

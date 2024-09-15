@@ -6,48 +6,44 @@ import { getMethod } from './lib/fetchAPI'
 
 const store = useTaskStore()
 
-const isAppReady = ref(false);
+const isAppReady = ref(false)
 
 const initializeApp = async () => {
   // Perform any setup or async operations here
-  await new Promise((resolve) => setTimeout(resolve, 200)); // Example delay
+  await new Promise((resolve) => setTimeout(resolve, 200)) // Example delay
 
   // Set the flag to true after initialization
-  isAppReady.value = true;
-};
-
+  isAppReady.value = true
+}
 
 onMounted(async () => {
   initializeApp()
-  try {
-    store.taskList.splice(0, store.taskList.length)
-    const taskRes = await getMethod('tasks')
-    store.taskList.push(...taskRes.data)
-  } catch (error) {
-    console.error('Error fetching :', error.message)
-  }
+  //   try {
+  //     store.taskList.splice(0, store.taskList.length)
+  //     const taskRes = await getMethod('tasks', store.userBoardId)
+  //     store.taskList.push(...taskRes.data)
+  //   } catch (error) {
+  //     console.error('Error fetching :', error.message)
+  //   }
 
-  if (store.statusList.length == 0) {
-    try {
-      const statusRes = await getMethod('statuses')
-      store.statusList.splice(0, store.taskList.length)
-      store.statusList.push(...statusRes.data)
-    } catch (error) {
-      console.error('Fail to get status', error)
-    }
-  }
+  // if (store.statusList.length == 0) {
+  //   try {
+  //     const statusRes = await getMethod('statuses', store.userBoardId)
+  //     store.statusList.splice(0, store.taskList.length)
+  //     store.statusList.push(...statusRes.data)
+  //   } catch (error) {
+  //     console.error('Fail to get status', error)
+  //   }
+  // }
 
-  try {
-    const limitresult = await getMethod('statusesLimit')
-    store.limitSwitch = limitresult.data[0].statusLimit
-    store.limitInfo = limitresult.data[0].statuses
-  } catch (error) {
-    console.error('Error fetching :', error.message)
-  }
+  // try {
+  //   const limitresult = await getMethod('statusesLimit')
+  //   store.limitSwitch = limitresult.data[0].statusLimit
+  //   store.limitInfo = limitresult.data[0].statuses
+  // } catch (error) {
+  //   console.error('Error fetching :', error.message)
+  // }
 })
-
-
-
 </script>
 
 <template>
@@ -57,7 +53,7 @@ onMounted(async () => {
   >
     <div class="loader"></div>
   </div>
-  <router-view v-if="isAppReady"/>
+  <router-view v-if="isAppReady" />
 </template>
 
 <style>

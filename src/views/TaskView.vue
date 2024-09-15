@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { deleteMethod, getMethod } from '../lib/fetchAPI'
 import router from '@/router/router'
 import { colorStatus, alertMessage, statusColors } from '@/lib/util'
@@ -33,6 +33,7 @@ const isComplete = ref(false)
 const currentId = ref(0)
 const currentTask = ref('')
 const fullName = localStorage.getItem('username')
+
 function showDeleteModal(id) {
   currentId.value = id
   currentTask.value = taskList[store.findTaskIndexById(id)]
@@ -72,6 +73,17 @@ function matchColor(statusName) {
 const filterList = ref([])
 const taskListDisplay = ref(store.taskList)
 const sortBy = ref(null)
+
+async function fetchUserTask() {
+  try {
+    store.taskList.splice(0, store.taskList.length)
+    const taskRes = await getMethod('tasks')
+    store.taskList.push(...taskRes.data)
+  } catch (error) {
+    console.error('Error fetching :', error.message)
+    router.push('/login')
+  }
+}
 
 async function fetchTasksValidate() {
   try {
@@ -117,6 +129,27 @@ const removeStatus = (index) => {
   filterList.value.splice(index, 1)
   filterList.value = filterList.value.slice()
 }
+
+onMounted(async () => {
+  await fetchUserTask()
+  if (store.statusList.length == 0) {
+    try {
+      const statusRes = await getMethod('statuses')
+      store.statusList.splice(0, store.taskList.length)
+      store.statusList.push(...statusRes.data)
+    } catch (error) {
+      console.error('Fail to get status', error)
+    }
+  }
+
+  // try {
+  //   const limitresult = await getMethod('maximum-status')
+  //   store.limitSwitch = limitresult.data[0].statusLimit
+  //   store.limitInfo = limitresult.data[0].statuses
+  // } catch (error) {
+  //   console.error('Error fetching :', error.message)
+  // }
+})
 </script>
 
 <template>
@@ -214,9 +247,7 @@ const removeStatus = (index) => {
         </div>
       </div>
       <div class="w-1/4 h-auto flex justify-end gap-4">
-        <button
-          class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-red-600 border-none"
-        >
+        <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-red-600 border-none">
           {{ fullName }}
         </button>
         <button
