@@ -23,7 +23,7 @@ async function boardFetch() {
     boardInfo.value = data
 
     //temp
-    if (boardInfo.value.length < 2) {
+    if (boardInfo.value.length === 1) {
       handleClick(boardInfo.value[0].id)
     }
 
