@@ -132,6 +132,11 @@ const removeStatus = (index) => {
 
 onMounted(async () => {
   await fetchUserTask()
+  
+  if (localStorage.getItem('uid') == undefined) {
+    router.push({name: 'login'})
+  }
+
   if (store.statusList.length == 0) {
     try {
       const statusRes = await getMethod('statuses')

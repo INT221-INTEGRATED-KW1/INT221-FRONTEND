@@ -108,9 +108,9 @@ router.beforeEach((to, from, next) => {
 
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (isAuthenticated) {
-      next(); // Redirect to login if not authenticated
+      next() // Redirect to login if not authenticated
     } else {
-      next("/login"); // Proceed to the route
+      next('/login') // Proceed to the route
     }
   } else {
     next() // If the route doesn't require authentication, always allow

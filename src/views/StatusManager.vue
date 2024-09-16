@@ -47,6 +47,12 @@ const thead = ref(
 )
 
 console.log()
+
+onMounted(async () => {
+  if (localStorage.getItem('uid') == undefined) {
+    router.push({name: 'login'})
+  }
+})
 </script>
 
 <template>
