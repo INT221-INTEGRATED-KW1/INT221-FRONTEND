@@ -79,13 +79,9 @@ async function fetchUserTask() {
     store.taskList.splice(0, store.taskList.length)
     const taskRes = await getMethod('tasks')
     store.taskList.push(...taskRes.data)
-
-    if(localStorage.getItem("uid") === null) {
-      router.push('/login')
-    }
-
   } catch (error) {
     console.error('Error fetching :', error.message)
+    router.push('/login')
   }
 }
 
