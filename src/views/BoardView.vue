@@ -30,6 +30,9 @@ async function boardFetch() {
     if (!response.ok && data.status !== 401) {
       throw new Error(`Error: ${response.statusText}`)
     }
+    if (data.status === 401) {
+      router.push({name: 'login'})
+    }
   } catch (error) {
     console.log(error)
     router.push({name: 'login'})
