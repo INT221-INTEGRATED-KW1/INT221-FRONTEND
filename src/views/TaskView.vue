@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 import { deleteMethod, getMethod } from '../lib/fetchAPI'
 import router from '@/router/router'
-import { colorStatus, alertMessage, statusColors } from '@/lib/util'
+import { colorStatus, alertMessage, statusColors, signOut } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import {
   ArchiveBoxXMarkIcon,
@@ -133,9 +133,9 @@ const removeStatus = (index) => {
 
 onMounted(async () => {
   await fetchUserTask()
-  
+
   if (localStorage.getItem('uid') == undefined) {
-    router.push({name: 'login'})
+    router.push({ name: 'login' })
   }
 
   if (store.statusList.length == 0) {
@@ -254,7 +254,13 @@ onMounted(async () => {
         </div>
       </div>
       <div class="w-1/4 h-auto flex justify-end gap-4">
-        <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-red-600 border-none">
+        <button
+          @click="signOut()"
+          class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-red-600 border-none"
+        >
+          Sign Out
+        </button>
+        <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-lime-400 border-none">
           {{ fullName }}
         </button>
         <button

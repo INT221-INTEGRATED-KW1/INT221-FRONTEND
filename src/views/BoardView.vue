@@ -2,6 +2,7 @@
 import router from '@/router/router'
 import { onMounted, ref } from 'vue'
 import { useTaskStore } from '../store/store'
+import { signOut } from '@/lib/util';
 
 const url = import.meta.env.VITE_BASE_URL
 const store = useTaskStore()
@@ -85,6 +86,7 @@ onMounted(async () => {
       <a class="itbkk-button-add btn btn-outline ml-2" onclick="createBoardModal.showModal()"
         >Create personal board</a
       >
+      <a class="itbkk-sign-out btn btn-outline ml-2" @click="signOut()">Sign Out</a>
     </div>
     <div class="flex-none">
       <p class="itbkk-fullname">{{ boardUser }}</p>
