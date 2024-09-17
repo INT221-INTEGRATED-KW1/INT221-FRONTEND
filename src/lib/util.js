@@ -117,6 +117,11 @@ function JwtDecode(token) {
   return JSON.parse(base64)
 }
 
+function signOut() {
+  localStorage.clear()
+  router.push({name: 'login'})
+}
+
 export {
   formatStatus,
   formatStatusReverse,
@@ -126,5 +131,6 @@ export {
   onMountSetup,
   statusColors,
   alertMessage,
-  JwtDecode
+  JwtDecode,
+  signOut
 }
