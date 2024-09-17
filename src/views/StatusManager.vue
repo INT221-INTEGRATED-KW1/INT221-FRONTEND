@@ -49,7 +49,7 @@ const thead = ref(
 console.log()
 
 onMounted(async () => {
-  if (localStorage.getItem('uid') == undefined) {
+  if (localStorage.getItem('uid') == null) {
     router.push({name: 'login'})
   }
 })

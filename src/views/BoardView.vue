@@ -5,7 +5,7 @@ import { useTaskStore } from '../store/store'
 
 const url = import.meta.env.VITE_BASE_URL
 const store = useTaskStore()
-const boardName = ref('')
+const boardName = ref('Name')
 const boardInfo = ref({})
 const boardUser = localStorage.getItem('username')
 
@@ -23,9 +23,9 @@ async function boardFetch() {
     boardInfo.value = data
 
     //temp
-    if (boardInfo.value.length === 1) {
-      handleClick(boardInfo.value[0].id)
-    }
+    // if (boardInfo.value.length === 1) {
+    //   handleClick(boardInfo.value[0].id)
+    // }
 
     if (!response.ok && data.status !== 401) {
       throw new Error(`Error: ${response.statusText}`)
@@ -67,8 +67,9 @@ async function boardPost() {
   }
 }
 
-function handleClick(id) {
+function handleClick(id, bname) {
   localStorage.setItem('uid', id)
+  localStorage.setItem('bname', bname)
   router.push({ name: 'task', params: { uid: id } })
 }
 
@@ -81,7 +82,7 @@ onMounted(async () => {
   <div class="navbar bg-base-100 glass shadow-2xl">
     <div class="flex-1">
       <a class="itbkk-home btn btn-outline text-xl" @click="router.push('/boards')">Home</a>
-      <a class="itbkk-button-create btn btn-outline ml-2" onclick="createBoardModal.showModal()"
+      <a class="itbkk-button-add btn btn-outline ml-2" onclick="createBoardModal.showModal()"
         >Create personal board</a
       >
     </div>
@@ -102,6 +103,7 @@ onMounted(async () => {
         <input
           maxlength="120"
           type="text"
+          value="Name"
           v-model="boardName"
           class="itbkk-board-name input input-bordered input-sm w-full"
         />
@@ -129,7 +131,7 @@ onMounted(async () => {
           </tr>
         </thead>
         <tbody>
-          <tr class="hover" @click="handleClick(boardCell.id)">
+          <tr class="hover" @click="handleClick(boardCell.id, boardCell.name)">
             <th>{{ index+1 }}</th>
             <th>{{ boardCell.name }}</th>
           </tr>

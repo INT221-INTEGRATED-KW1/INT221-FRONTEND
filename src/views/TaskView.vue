@@ -33,6 +33,7 @@ const isComplete = ref(false)
 const currentId = ref(0)
 const currentTask = ref('')
 const fullName = localStorage.getItem('username')
+const boardName = localStorage.getItem('bname')
 
 function showDeleteModal(id) {
   currentId.value = id
@@ -165,6 +166,7 @@ onMounted(async () => {
       <h1 class="">IT-Bangmod Kradan Kanban</h1>
       <h2 class="text-3xl"></h2>
       <p class="text-base font-medium">Do something better than do nothing .</p>
+      <p class="text-xs">{{ boardName }}</p>
     </div>
     <div class="css-selector w-full h-1"></div>
     <div name="optionlist" class="w-full px-6 flex flex-row gap-0 items-center">
