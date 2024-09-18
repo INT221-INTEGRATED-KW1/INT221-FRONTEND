@@ -2,10 +2,11 @@
 import router from '@/router/router'
 import { onMounted, ref } from 'vue'
 import { useTaskStore } from '../store/store'
+import { signOut } from '@/lib/util';
 
 const url = import.meta.env.VITE_BASE_URL
 const store = useTaskStore()
-const boardName = ref('')
+const boardName = ref('Name')
 const boardInfo = ref({})
 const boardUser = localStorage.getItem('username')
 
@@ -21,15 +22,18 @@ async function boardFetch() {
     const data = await response.json()
     boardInfo.value = data
     //temp
-    if (boardInfo.value.length < 2) {
-      handleClick(boardInfo.value[0].id)
-    }
+    // if (boardInfo.value.length === 1) {
+    //   handleClick(boardInfo.value[0].id)
+    // }
     if (!response.ok && data.status !== 401) {
       throw new Error(`Error: ${response.statusText}`)
     }
+    if (data.status === 401) {
+      router.push({name: 'login'})
+    }
   } catch (error) {
     console.log(error)
-    router.push('/login')
+    router.push({name: 'login'})
   }
 }
 
@@ -51,15 +55,19 @@ async function boardPost() {
 
     if (!response.ok && data.status !== 401) {
       throw new Error(`Error: ${response.statusText}`)
+    } 
+    if (data.status === 401) {
+      router.push({name: 'login'})
     }
   } catch (error) {
     console.log(error)
-    router.push('/board')
+    router.push({name: 'login'})
   }
 }
 
-function handleClick(id) {
+function handleClick(id, bname) {
   localStorage.setItem('uid', id)
+  localStorage.setItem('bname', bname)
   router.push({ name: 'task', params: { uid: id } })
 }
 
@@ -72,9 +80,10 @@ onMounted(async () => {
   <div class="navbar bg-base-100 glass shadow-2xl">
     <div class="flex-1">
       <a class="itbkk-home btn btn-outline text-xl" @click="router.push('/boards')">Home</a>
-      <a class="itbkk-button-create btn btn-outline ml-2" onclick="createBoardModal.showModal()"
+      <a class="itbkk-button-add btn btn-outline ml-2" onclick="createBoardModal.showModal()"
         >Create personal board</a
       >
+      <a class="itbkk-sign-out btn btn-outline ml-2" @click="signOut()">Sign Out</a>
     </div>
     <div class="flex-none">
       <p class="itbkk-fullname">{{ boardUser }}</p>
@@ -93,6 +102,7 @@ onMounted(async () => {
         <input
           maxlength="120"
           type="text"
+          value="Name"
           v-model="boardName"
           class="itbkk-board-name input input-bordered input-sm w-full"
         />
@@ -120,7 +130,7 @@ onMounted(async () => {
           </tr>
         </thead>
         <tbody>
-          <tr class="hover" @click="handleClick(boardCell.id)">
+          <tr class="hover" @click="handleClick(boardCell.id, boardCell.name)">
             <th>{{ index+1 }}</th>
             <th>{{ boardCell.name }}</th>
           </tr>

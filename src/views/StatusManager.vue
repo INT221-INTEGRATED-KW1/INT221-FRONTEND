@@ -2,7 +2,7 @@
 import { onMounted, ref, watch } from 'vue'
 import router from '@/router/router'
 import { getMethod } from '../lib/fetchAPI'
-import { colorStatus, onMountSetup, alertMessage } from '@/lib/util'
+import { colorStatus, onMountSetup, alertMessage, signOut } from '@/lib/util'
 import {
   ClipboardDocumentListIcon,
   EllipsisHorizontalIcon,
@@ -42,16 +42,17 @@ watch(
   }
 )
 
-onMounted(async () => {
-  if (localStorage.getItem("uid") === null) {
-    router.push('/login')
-  }
-})
 const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
 )
 
 console.log()
+
+onMounted(async () => {
+  if (localStorage.getItem('uid') == null) {
+    router.push({name: 'login'})
+  }
+})
 </script>
 
 <template>
@@ -86,6 +87,12 @@ console.log()
         >
           <SquaresPlusIcon class="size-6" />
           Add Status
+        </button>
+        <button
+          @click="signOut()"
+          class="itbkk-button-add btn px-4 h-9 min-h-9 bg-red-600 border-none"
+        >
+          Sign Out
         </button>
       </div>
     </div>

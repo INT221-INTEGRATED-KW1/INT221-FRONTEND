@@ -10,6 +10,7 @@ import StatusDelete from '@/components/statuscomponent/StatusDelete.vue'
 import LimitModal from '@/components/LimitModal.vue'
 import LoginView from '@/views/LoginView.vue'
 import BoardView from '@/views/BoardView.vue'
+import { JwtDecode } from '@/lib/util'
 
 const routes = [
   {
@@ -25,17 +26,19 @@ const routes = [
   {
     path: '/board',
     name: 'board',
-    component: BoardView
+    component: BoardView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/board/:uid/task',
     name: 'task',
     component: TaskView,
+    meta: { requiresAuth: true },
     children: [
       {
         path: ':id',
         name: 'taskDetail',
-        component: TaskDetail,
+        component: TaskDetail
       },
       {
         path: 'add',
@@ -58,6 +61,7 @@ const routes = [
     path: '/board/:uid/status',
     name: 'status',
     component: StatusManager,
+    meta: { requiresAuth: true },
     children: [
       {
         path: 'add',
@@ -86,12 +90,31 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach(async (to, from, next) => {
-  const getLogin = localStorage.getItem('username')
-  if ((getLogin === null || getLogin.length === 0) && to.name !== 'login') {
-    return next({ name: 'login' })
+function isTokenValid(token) {
+  if (!token) return false
+  try {
+    const decodedToken = JwtDecode(token)
+    const currentTime = Date.now() / 1000 // Current time in seconds
+    return decodedToken.exp > currentTime
+  } catch (error) {
+    return false
   }
-  next()
+}
+
+// Navigation guard
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token') // Assuming token is stored in localStorage
+  const isAuthenticated = isTokenValid(token)
+
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (isAuthenticated) {
+      next() // Redirect to login if not authenticated
+    } else {
+      next('/login') // Proceed to the route
+    }
+  } else {
+    next() // If the route doesn't require authentication, always allow
+  }
 })
 
 export default router
