@@ -150,6 +150,14 @@ onMounted(async () => {
   //   console.error('Error fetching :', error.message)
   // }
 })
+
+function playandre() {
+  const audio = new Audio('/src/assets/soundtest.mp3')
+  console.log(audio);
+  audio.play()
+  setTimeout(() => {router.go()}, 4000)
+  
+}
 </script>
 
 <template>
@@ -279,7 +287,7 @@ onMounted(async () => {
 
         <div
           class="btn px-4 h-9 min-h-9 bg-opacity-80 hover:shadow-inner text-whit"
-          @click="router.go()"
+          @click="playandre()"
         >
           <TruckIcon class="size-6 text-gray-700" />
         </div>

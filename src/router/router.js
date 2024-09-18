@@ -78,7 +78,7 @@ const routes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/task'
+    redirect: {name: 'login'}
   }
 ]
 const router = createRouter({

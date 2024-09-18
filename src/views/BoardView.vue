@@ -18,15 +18,12 @@ async function boardFetch() {
         Authorization: 'Bearer ' + localStorage.getItem('token')
       }
     })
-
     const data = await response.json()
     boardInfo.value = data
-
     //temp
     if (boardInfo.value.length < 2) {
       handleClick(boardInfo.value[0].id)
     }
-
     if (!response.ok && data.status !== 401) {
       throw new Error(`Error: ${response.statusText}`)
     }
