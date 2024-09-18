@@ -158,7 +158,7 @@ onMounted(async () => {
 })
 
 function playandre() {
-  const audio = new Audio('/src/assets/soundtest.mp3')
+  const audio = new Audio('/public/soundtest.mp3')
   console.log(audio);
   audio.play()
   setTimeout(() => {router.go()}, 4000)
