@@ -82,7 +82,7 @@ const routes = [
   },
   {
     path: '/:pathMatch(.*)*',
-    redirect: '/login'
+    redirect: {name: 'login'}
   }
 ]
 const router = createRouter({
