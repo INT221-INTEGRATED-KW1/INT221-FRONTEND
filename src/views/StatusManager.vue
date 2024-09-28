@@ -28,6 +28,15 @@ function navToDeleteStatus(status) {
   })
 }
 
+async function loadInfo() {
+  const result = await getMethod('statuses')
+  if (result.resCode == '403') router.push({name: "forbidden"})
+  if (result.resCode == '404') router.push({name: "notFound"})
+  if (result.resCode == '200') {
+    store.statusList.push(...result.data)
+  }
+}
+
 const msg = ref({})
 watch(
   () => store.resStatus,
@@ -49,16 +58,30 @@ const thead = ref(
 console.log()
 
 onMounted(async () => {
-  if (localStorage.getItem('uid') == null) {
-    router.push({name: 'login'})
-  }
+  console.log(store.statusList);
+  if (!store.statusList.length){console.log('a');
+   loadInfo()}
+    
 })
+
+const fullName = ref(localStorage.getItem('username'))
 </script>
 
 <template>
   <div
     class="w-full h-auto min-h-screen p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white"
   >
+  <div class="fixed top-4 right-4 flex flex-col gap-2">
+      <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-lime-400 border-none">
+        {{ fullName }}
+      </button>
+      <button
+        @click="signOut()"
+        class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-red-600 border-none"
+      >
+        Sign Out
+      </button>
+    </div>
     <div class="w-full h-28 font-bold text-4xl flex flex-col justify-center gap-1">
       <h1 class="">IT-Bangmod Kradan Kanban</h1>
       <h2 class="text-3xl"></h2>

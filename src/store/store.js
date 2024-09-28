@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export const useTaskStore = defineStore('task', () => {
-  const taskList = []
-  const statusList = []
+  const taskList = ref([])
+  const statusList = ref([])
+  const boardList= ref([])
   const currentItem = {}
   const resStatus = ''
   const errorRes = 'Done'
@@ -29,6 +31,7 @@ export const useTaskStore = defineStore('task', () => {
   return {
     taskList,
     statusList,
+    boardList,
     findTaskIndexById,
     resStatus,
     errorRes,

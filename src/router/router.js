@@ -11,6 +11,9 @@ import LimitModal from '@/components/LimitModal.vue'
 import LoginView from '@/views/LoginView.vue'
 import BoardView from '@/views/BoardView.vue'
 import { JwtDecode } from '@/lib/util'
+import ForbiddenView from '@/views/ForbiddenView.vue'
+import NotFoundView from '@/views/NotFoundView.vue'
+import { refreshToken } from '@/lib/fetchAPI'
 
 const routes = [
   {
@@ -81,8 +84,14 @@ const routes = [
     ]
   },
   {
+    path: '/forbidden',
+    name: 'forbidden',
+    component: ForbiddenView
+  },
+  {
     path: '/:pathMatch(.*)*',
-    redirect: {name: 'login'}
+    name: 'notFound',
+    component: NotFoundView
   }
 ]
 const router = createRouter({
@@ -102,19 +111,25 @@ function isTokenValid(token) {
 }
 
 // Navigation guard
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem('token') // Assuming token is stored in localStorage
-  const isAuthenticated = isTokenValid(token)
-
-  if (to.matched.some((record) => record.meta.requiresAuth)) {
-    if (isAuthenticated) {
-      next() // Redirect to login if not authenticated
-    } else {
-      next('/login') // Proceed to the route
-    }
-  } else {
-    next() // If the route doesn't require authentication, always allow
-  }
-})
+// router.beforeEach(async (to, from, next) => {
+//   const token = localStorage.getItem('token')
+//   const isAuthenticated = isTokenValid(token)
+  
+//   if (to.matched.some((record) => record.meta.requiresAuth)) {
+//     if (isAuthenticated) {
+//       next() // Redirect to login if not authenticated
+//     } else {
+//       const refreshed = await refreshToken()
+//       if (refreshed) {
+//         router.replace(to.path)
+//       } else {
+//         next('/login')
+//       }
+//       // Proceed to the route
+//     }
+//   } else {
+//     next() // If the route doesn't require authentication, always allow
+//   }
+// })
 
 export default router

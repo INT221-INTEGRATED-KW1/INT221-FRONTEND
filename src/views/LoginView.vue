@@ -1,6 +1,6 @@
 <script setup>
 import router from '@/router/router'
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { JwtDecode } from '@/lib/util';
 
 const url = import.meta.env.VITE_BASE_URL
@@ -12,7 +12,7 @@ const paswd = ref('')
 
 async function loginFetch() {
   try {
-    const response = await fetch(`${url}users/login`, {
+    const response = await fetch(`${url}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -38,13 +38,20 @@ async function loginFetch() {
       const decodeData = JwtDecode(data.access_token)
       localStorage.setItem('token', data.access_token)
       localStorage.setItem('username', decodeData.name)
-      router.push('/board')
+      localStorage.setItem('refresh_token', data.refresh_token)
+      router.push({name: 'board'})
     }
   } catch (error) {
     serverAlert.value = true
     router.push('/login')
   }
 }
+
+onMounted(()=> {
+  if (localStorage.getItem('token')) {
+    router.push({name: 'board'})
+  }
+})
 </script>
 
 <template>

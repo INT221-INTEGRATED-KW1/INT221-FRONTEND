@@ -28,6 +28,7 @@ async function addNewStatus() {
     // let addtask function and send out info into the main page :D
     try {
       const result = await addMethod(StatusDetail.value, 'statuses')
+      if (result.resCode != '200') { return }
       Object.assign(result.data, {
         noOfTasks: 0
       })

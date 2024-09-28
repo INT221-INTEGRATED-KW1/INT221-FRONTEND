@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue'
-import { deleteMethod, getMethod } from '../lib/fetchAPI'
+import { boardFetch, deleteMethod, getMethod, patchMethod, refreshToken } from '../lib/fetchAPI'
 import router from '@/router/router'
 import { colorStatus, alertMessage, statusColors, signOut } from '@/lib/util'
 import { useRoute } from 'vue-router'
@@ -19,7 +19,9 @@ import {
   BarsArrowUpIcon,
   TruckIcon,
   ArrowsUpDownIcon,
-  CloudIcon
+  CloudIcon,
+  EyeSlashIcon,
+  EyeIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import ToastMessage from '@/components/ToastMessage.vue'
@@ -75,15 +77,37 @@ const filterList = ref([])
 const taskListDisplay = ref(store.taskList)
 const sortBy = ref(null)
 
-async function fetchUserTask() {
+async function fetchUserInfo() {
   try {
-    store.taskList.splice(0, store.taskList.length)
     const taskRes = await getMethod('tasks')
+    const statusRes = await getMethod('statuses')
+
+    if (taskRes.resCode != '200' || statusRes.resCode != '200') {
+      if (taskRes.resCode == '403' || statusRes.resCode == '403') {
+        return router.push({ name: 'forbidden' })
+      }
+      if (taskRes.resCode == '404' || statusRes.resCode == '404') {
+        return router.push({ name: 'notFound' })
+      }
+      if (taskRes.resCode == '401' || statusRes.resCode == '401') {
+        console.log('401')
+      }
+    }
+    store.statusList.splice(0, store.taskList.length)
+    store.statusList.push(...statusRes.data)
     store.taskList.push(...taskRes.data)
+    console.log('end')
   } catch (error) {
     console.error('Error fetching :', error.message)
-    router.push('/login')
   }
+}
+
+async function loadBoard() {
+  const result = await boardFetch()
+  if (result.status === 401) {
+    router.push({ name: 'login' })
+  }
+  store.boardList = result.data
 }
 
 async function fetchTasksValidate() {
@@ -131,47 +155,81 @@ const removeStatus = (index) => {
   filterList.value = filterList.value.slice()
 }
 
+const boardId = router.currentRoute.value.params.uid
+const isPublic = ref()
 onMounted(async () => {
-  await fetchUserTask()
+  localStorage.setItem('uid', boardId)
+  await fetchUserInfo()
+  await loadBoard()
+  const boardIndex = store.boardList.findIndex((board) => board.id == boardId)
+  isPublic.value = store.boardList[boardIndex].visibility == 'public' ? true : false
+})
 
-  if (localStorage.getItem('uid') == undefined) {
-    router.push({ name: 'login' })
-  }
+const msg = ref('')
+const isPrivacyConfirm = ref(false)
+function privacyModalHandler() {
+  isPublic.value == true
+    ? (msg.value =
+        'In private, only board owner can access/control board. Do you want to change the visibility to Private?')
+    : (msg.value =
+        'In public, anyone can view the board, task list and task detail of tasks in the board. Do you want to change the visibility to Public ?')
+  isPrivacyConfirm.value = true
+}
 
-  if (store.statusList.length == 0) {
-    try {
-      const statusRes = await getMethod('statuses')
-      store.statusList.splice(0, store.taskList.length)
-      store.statusList.push(...statusRes.data)
-    } catch (error) {
-      console.error('Fail to get status', error)
+async function updatePrivacy() {
+  const visibility = isPublic.value ? 'public' : 'private'
+  const result = await patchMethod('', { visibility })
+  if (result.resCode == '200') {
+    store.ToastMessage = {
+      msg: `The board invisibility is now updated to : ${result.data.visibility}`,
+      color: 'orange'
     }
   }
 
-  // try {
-  //   const limitresult = await getMethod('maximum-status')
-  //   store.limitSwitch = limitresult.data[0].statusLimit
-  //   store.limitInfo = limitresult.data[0].statuses
-  // } catch (error) {
-  //   console.error('Error fetching :', error.message)
-  // }
-})
+  isPrivacyConfirm.value = false
+}
+
+function cancelPrivacy() {
+  isPublic.value = !isPublic.value
+  isPrivacyConfirm.value = false
+}
+
+// watch(
+//   () => isPublic.value,
+//   () => {
+//     console.log(isPublic.value)
+//   }
+// )
 
 function playandre() {
   const audio = new Audio('/public/soundtest.mp3')
-  console.log(audio);
+  console.log(audio)
   audio.play()
-  setTimeout(() => {router.go()}, 4000)
-  
+  setTimeout(() => {
+    router.go()
+  }, 4000)
 }
+console.log('a')
 </script>
 
 <template>
   <div
     class="w-full h-auto min-h-screen p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white"
   >
+    <div class="fixed top-4 right-4 flex flex-col gap-2">
+      <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-lime-400 border-none">
+        {{ fullName }}
+      </button>
+      <button
+        @click="signOut()"
+        class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-red-600 border-none"
+      >
+        Sign Out
+      </button>
+    </div>
+
     <div class="w-full h-28 font-bold text-4xl flex flex-col justify-center gap-1">
-      <h1 class="">IT-Bangmod Kradan Kanban</h1>
+      <h1 class="" @click="refreshToken()">IT-Bangmod Kradan Kanban</h1>
       <h2 class="text-3xl"></h2>
       <p class="text-base font-medium">Do something better than do nothing .</p>
       <p class="text-xs">{{ boardName }}</p>
@@ -262,15 +320,21 @@ function playandre() {
         </div>
       </div>
       <div class="w-1/4 h-auto flex justify-end gap-4">
-        <button
-          @click="signOut()"
-          class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-red-600 border-none"
-        >
-          Sign Out
-        </button>
-        <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-lime-400 border-none">
-          {{ fullName }}
-        </button>
+        <div class="form-control">
+          <label class="label cursor-pointer">
+            <span class="label-text mr-2"
+              ><EyeIcon class="size-6" v-if="isPublic" /><EyeSlashIcon v-else class="size-6"
+            /></span>
+            <input
+              type="checkbox"
+              v-model="isPublic"
+              @click="privacyModalHandler()"
+              class="toggle"
+              :class="{ isPublic: 'border-blue-500 bg-blue-500 hover:bg-blue-700' }"
+            />
+          </label>
+        </div>
+
         <button
           @click="router.push({ name: 'addTask' })"
           class="itbkk-button-add btn px-4 h-9 min-h-9 shadow-inner bg-sky-300 hover:bg-sky-400 hover:border-sky-400 border-none"
@@ -285,13 +349,13 @@ function playandre() {
         >
           <span :class="thead"
             ><Squares2X2Icon class="size-6" />
-            <p>Status M.</p></span
-          >
+            <p>Status M.</p>
+          </span>
         </button>
 
         <button
           @click="router.push({ name: 'limitStatus' })"
-          class="itbkk-status-setting btn px-4 h-9 min-h-9 shadow-inner bg-green-400 hover:bg-green-400 hover:border-green-400 border-none hover:shadow-inner"
+          class="itbkk-status-setting btn px-2 h-9 min-h-9 shadow-inner bg-green-400 hover:bg-green-400 hover:border-green-400 border-none hover:shadow-inner"
         >
           <span :class="thead">
             <AdjustmentsHorizontalIcon class="size-6" />
@@ -299,7 +363,7 @@ function playandre() {
         </button>
 
         <div
-          class="btn px-4 h-9 min-h-9 bg-opacity-80 hover:shadow-inner text-whit"
+          class="btn px-2 h-9 min-h-9 bg-opacity-80 hover:shadow-inner text-whit"
           @click="playandre()"
         >
           <TruckIcon class="size-6 text-gray-700" />
@@ -463,6 +527,37 @@ function playandre() {
       </div>
     </transition>
   </div>
+
+  <div
+    v-if="isPrivacyConfirm"
+    class="fixed top-0 z-[1] left-0 w-full h-full flex justify-center items-center font-sans text-sm text-slate-900"
+  >
+    <div
+      name="backdrop"
+      class="w-lvw h-lvh bg-black bg-opacity-40 itbkk-button"
+      @click="cancelPrivacy()"
+    ></div>
+    <transition>
+      <div
+        name="detail"
+        class="fixed w-[640px] h-auto p-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center justify-center"
+      >
+        <h1 class="w-full text-center font-semibold text-xl">Board Visibility changed!</h1>
+        <p class="itbkk-message w-full text-center text-lg break-words inline-block">
+          {{ msg }}
+        </p>
+        <div class="w-full flex flex-row gap-4 justify-center items-center mt-4">
+          <button class="itbkk-button-confirm btn bg-green-400" @click="updatePrivacy()">
+            Confirm
+          </button>
+          <button class="itbkk-button-cancel btn bg-slate-300" @click="cancelPrivacy()">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </transition>
+  </div>
+
   <router-view />
 
   <ErrorModal v-if="store.isError">

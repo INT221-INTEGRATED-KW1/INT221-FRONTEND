@@ -2,44 +2,30 @@
 import router from '@/router/router'
 import { onMounted, ref } from 'vue'
 import { useTaskStore } from '../store/store'
-import { signOut } from '@/lib/util';
+import { signOut } from '@/lib/util'
+import { boardFetch, refreshToken } from '@/lib/fetchAPI'
+console.log('eee');
 
-const url = import.meta.env.VITE_BASE_URL
+const SERVER_URL = import.meta.env.VITE_BASE_URL
+const VERSION = 'v3'
+const url = `${SERVER_URL}/${VERSION}`
+
 const store = useTaskStore()
 const boardName = ref('Name')
 const boardInfo = ref({})
 const boardUser = localStorage.getItem('username')
 
-async function boardFetch() {
-  try {
-    const response = await fetch(`${url}boards`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      }
-    })
-    const data = await response.json()
-    boardInfo.value = data
-    //temp
-    // if (boardInfo.value.length === 1) {
-    //   handleClick(boardInfo.value[0].id)
-    // }
-    if (!response.ok && data.status !== 401) {
-      throw new Error(`Error: ${response.statusText}`)
-    }
-    if (data.status === 401) {
-      router.push({name: 'login'})
-    }
-  } catch (error) {
-    console.log(error)
-    router.push({name: 'login'})
+async function loadBoard() {
+  const result = await boardFetch()
+  if (result.status === 401) {
+    router.push({ name: 'login' })
   }
+  store.boardList = result.data
 }
 
 async function boardPost() {
   try {
-    const response = await fetch(`${url}boards`, {
+    const response = await fetch(`${url}/boards`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -51,17 +37,17 @@ async function boardPost() {
     })
 
     const data = await response.json()
-    boardInfo.value.push(data)
+    store.boardList.push(data)
 
     if (!response.ok && data.status !== 401) {
       throw new Error(`Error: ${response.statusText}`)
-    } 
+    }
     if (data.status === 401) {
-      router.push({name: 'login'})
+      await refreshToken()
     }
   } catch (error) {
     console.log(error)
-    router.push({name: 'login'})
+    router.push({ name: 'login' })
   }
 }
 
@@ -72,8 +58,9 @@ function handleClick(id, bname) {
 }
 
 onMounted(async () => {
-  await boardFetch()
+  await loadBoard()
 })
+
 </script>
 
 <template>
@@ -122,7 +109,7 @@ onMounted(async () => {
     </dialog>
 
     <div class="w-full h-auto min-h-screen p-24 flex flex-col overflow-x-auto">
-      <table v-for="(boardCell, index) in boardInfo" class="table table-zebra">
+      <table class="table table-zebra">
         <thead>
           <tr>
             <th>No</th>
@@ -130,8 +117,12 @@ onMounted(async () => {
           </tr>
         </thead>
         <tbody>
-          <tr class="hover" @click="handleClick(boardCell.id, boardCell.name)">
-            <th>{{ index+1 }}</th>
+          <tr
+            v-for="(boardCell, index) in store.boardList"
+            class="hover"
+            @click="handleClick(boardCell.id, boardCell.name)"
+          >
+            <th>{{ index + 1 }}</th>
             <th>{{ boardCell.name }}</th>
           </tr>
         </tbody>
