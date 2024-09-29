@@ -12,14 +12,14 @@ export const useTaskStore = defineStore('task', () => {
   const ErrorMessage = null
   const ToastMessage = null
   const isLoading = false
-
+  const isLogin = ref(localStorage.getItem('token')? true : false)
   //About the limit.
   const maxTask = 10
   const limitSwitch = false
   const limitInfo = null
 
   function findTaskIndexById(id) {
-    const index = taskList.findIndex((task) => task.id == id)
+    const index = taskList.value.findIndex((task) => task.id == id)
     return index
   }
   function findIndexById(data, id) {
@@ -44,5 +44,6 @@ export const useTaskStore = defineStore('task', () => {
     maxTask,
     limitSwitch,
     limitInfo,
+    isLogin
   }
 })

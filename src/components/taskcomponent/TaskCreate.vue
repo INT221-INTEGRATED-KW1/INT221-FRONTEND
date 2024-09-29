@@ -31,7 +31,8 @@ async function addNewTask() {
       return (maxStatus.value = true)
     }
   }
-
+  // console.log(maxStatus.value);
+  
   if (!TaskDetail.value.title) {
     return (isInValid.value = true)
   } else {
@@ -42,6 +43,7 @@ async function addNewTask() {
       description: !TaskDetail.value.description ? null : TaskDetail.value.description
     })
     const result = await addMethod(TaskDetail.value, 'tasks')
+    if(result.resCode =='201') {
     const findStatus = store.statusList.find((status) => status.id == result.data.status.id)
     Object.assign(findStatus, {
       noOfTasks: findStatus.noOfTasks + 1
@@ -53,7 +55,7 @@ async function addNewTask() {
     store.ToastMessage = {
       msg: 'The task has been successfully added',
       color: 'green'
-    }
+    }}
   }
 }
 

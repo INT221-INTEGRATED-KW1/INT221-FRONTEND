@@ -13,7 +13,6 @@ const id = route.params.id
 const currentData = ref({})
 const tranferId = ref(0)
 let total = 0
-let hasTask = []
 onBeforeMount(() => {
   if (!store.statusList.find((status) => status.id == id)) {
     store.ErrorMessage = `An error has occurred, the status does not exist.`
@@ -28,23 +27,31 @@ onMounted(() => {
     name: 'Done'
   }
   currentData.value = item
-  hasTask = store.taskList.filter((task) => task.status.name == item.name)
-  if (store.statusList.find((status) => status.id == id)) {
-    total = store.taskList.filter(
-      (task) =>
-        task.status.name ==
-        store.statusList[store.statusList.findIndex((status) => status.id == id)].name
-    ).length
-  }
+  // console.log(currentData.value)
+
+  // if (store.statusList.find((status) => status.id == id)) {
+  //   total = store.taskList.filter(
+  //     (task) =>
+  //       task.status.name ==
+  //       store.statusList[store.statusList.findIndex((status) => status.id == id)].name
+  //   ).length
+
+  //   console.log(total);
+    
+  // }
 })
+
 store.isError = false
 const isHastask = ref(false)
 const deleteStatus = async (statusId) => {
   isHastask.value = false
-  if (hasTask.length == 0) {
+  if (currentData.value.noOfTasks > 0) {
+    isHastask.value = true
+  }
+  if (currentData.value.noOfTasks == 0) {
     let res = null
     res = await deleteMethod(statusId, 'statuses')
-    console.log(res.resCode)
+    // console.log(res.resCode)
     if (res.resCode == '500') {
       router.push({ name: 'status' })
       store.ToastMessage = {
@@ -66,16 +73,13 @@ const deleteStatus = async (statusId) => {
       color: 'yellow'
     }
     store.resStatus = 'deleteDone'
-  } else if (hasTask.length >= 0) {
-    isHastask.value = true
   }
 }
 
 const tranferStatus = async (currId, newId) => {
-  let res = null
   const index = store.statusList.findIndex((status) => status.id == currId)
   const tindex = store.statusList.findIndex((status) => status.id == tranferId.value)
-  res = await deleteTranMethod(currId, 'statuses', newId)
+  const res = await deleteTranMethod(currId, 'statuses', newId)
   if (res.resCode != '200') {
     if (res.resCode == '400') {
       store.ErrorMessage = `Cannot transfer to ${store.statusList[tindex].name} status since it will exceed the limit. Please choose another status to tranfer to.`
@@ -86,24 +90,23 @@ const tranferStatus = async (currId, newId) => {
     isHastask.value = false
     return (store.isError = true)
   }
-  isHastask.value = false
-
   //delete item in status menu , map item in task menu
-  const newindex = store.statusList.findIndex((status) => status.id == newId)
-  Object.assign(store.statusList[newindex], {
-    noOfTasks: store.statusList[newindex].noOfTasks + total
-  })
-  store.taskList
-    .filter((task) => task.status.name == store.statusList[index].name)
-    .map((task) => (task.status.name = res.data.name))
-  statusList[newindex].countTask = statusList[newindex].countTask + total
-  statusList.splice(index, 1)
-  router.push({ name: 'status' })
-  store.ToastMessage = {
-    msg: `The ${total} task(s) have been transferred and the status has been deleted`,
-    color: 'yellow'
+  else {
+    const newindex = store.statusList.findIndex((status) => status.id == newId)
+    store.statusList[newindex].noOfTasks = store.statusList[newindex].noOfTasks + currentData.value.noOfTasks 
+    
+    store.taskList
+      .filter((task) => task.status.name == store.statusList[index].name)
+      .map((task) => (task.status = res.data))
+    statusList[newindex].countTask = statusList[newindex].countTask + total
+    statusList.splice(index, 1)
+    router.push({ name: 'status' })
+    store.ToastMessage = {
+      msg: `The ${currentData.value.noOfTasks} task(s) have been transferred and the status has been deleted`,
+      color: 'yellow'
+    }
   }
-  store.resStatus = 'deleteDone'
+  isHastask.value = false
 }
 </script>
 

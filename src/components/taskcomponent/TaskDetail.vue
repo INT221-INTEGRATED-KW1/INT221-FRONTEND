@@ -2,26 +2,40 @@
 import { onMounted } from 'vue'
 import { ref } from 'vue'
 import router from '@/router/router'
-import { colorStatus, onMountSetup } from '@/lib/util'
+import { colorStatus, formatToLocalTime, onMountSetup } from '@/lib/util'
 import { useRoute } from 'vue-router'
 import { useTaskStore } from '@/store/store'
 import ErrorModal from '../ErrorModal.vue'
+import { getMethod } from '@/lib/fetchAPI'
 const store = useTaskStore()
 const route = useRoute()
 const taskDetail = ref({})
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
+const taskId = router.currentRoute.value.params.id
+async function loadTaskDetail() {
+  const res = await getMethod(`tasks/${taskId}`)
+  if (res.resCode != '200'){
+      store.ErrorMessage = "The requested task does not exist"
+      store.isError = true 
+  } else {
+    taskDetail.value = res.data
+    taskDetail.value.createdOn = formatToLocalTime(res.data.createdOn)
+    taskDetail.value.updatedOn = formatToLocalTime(res.data.updatedOn)
+  }
+}
 
 onMounted(async () => {
-  try {
-    taskDetail.value = await onMountSetup("tasks")
-    store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
-  } catch (error) {
-    console.log('errqq');
-    store.ErrorMessage = "The requested task does not exist"
-    store.isError = true
-    taskDetail.value = {}
-    throw error
-  }
+  await loadTaskDetail()
+  // try {
+  //   taskDetail.value = await onMountSetup("tasks")
+  //   store.errorRes = (await taskDetail.value.getMode) ?? 'Done'
+  // } catch (error) {
+  //   console.log('errqq');
+  //   store.ErrorMessage = "The requested task does not exist"
+  //   store.isError = true
+  //   taskDetail.value = {}
+  //   throw error
+  // }
 })
 
 const header = 'text-gray-900 text-opacity-50 font-semibold'
