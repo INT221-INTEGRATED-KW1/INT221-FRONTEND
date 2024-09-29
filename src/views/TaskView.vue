@@ -101,10 +101,11 @@ async function fetchUserInfo() {
     console.error('Error fetching :', error.message)
   }
 }
+
 const isPublic = ref()
 async function loadBoard() {
   const result = await boardFetch()
-  if (result.status === 401) {
+  if (result.status == "401") {
     router.push({ name: 'login' })
   } else {
     store.boardList = result.data
@@ -169,12 +170,14 @@ onMounted(async () => {
 const msg = ref('')
 const isPrivacyConfirm = ref(false)
 function privacyModalHandler() {
+  isPublic.value = !isPublic.value
   isPublic.value == true
     ? (msg.value =
         'In private, only board owner can access/control board. Do you want to change the visibility to Private?')
     : (msg.value =
         'In public, anyone can view the board, task list and task detail of tasks in the board. Do you want to change the visibility to Public ?')
   isPrivacyConfirm.value = true
+  // console.log(isPublic.value);
 }
 
 async function updatePrivacy() {
@@ -197,12 +200,12 @@ function cancelPrivacy() {
   isPrivacyConfirm.value = false
 }
 
-// watch(
-//   () => isPublic.value,
-//   () => {
-//     console.log(isPublic.value)
-//   }
-// )
+watch(
+  () => isPublic.value,
+  () => {
+    console.log(isPublic.value)
+  }
+)
 
 function playandre() {
   const audio = new Audio('/public/soundtest.mp3')
