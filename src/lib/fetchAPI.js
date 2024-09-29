@@ -22,17 +22,19 @@ async function validateToken() {
   const isAuthenticated = isTokenValid(token)
   if (isAuthenticated) {
     return // Redirect to login if not authenticated
-  } else if(localStorage.getItem('refresh_token')) {
+  } else if (localStorage.getItem('refresh_token')) {
     const refreshed = await refreshToken()
     if (refreshed.response.ok) {
-      return console.log('refresh');      
+      return console.log('refresh')
     } else {
-      router.push({name: 'login'})
+      router.push({ name: 'login' })
     }
     // Proceed to the route
-  }else { return }
+  } else {
+    return
+  }
 }
-let boardId = ""
+let boardId = ''
 async function getMethod(path, sortBy = null, filterStatuses = []) {
   try {
     await validateToken()
@@ -47,19 +49,22 @@ async function getMethod(path, sortBy = null, filterStatuses = []) {
     }
     boardId = router.currentRoute.value.params.uid
     // If need in requirement (assign multiple params)
-    const response = await fetch(`${url}/boards/${localStorage.getItem('uid')}/${path}?${params.toString()}`, {
-      method: 'GET',
-      headers: localStorage.getItem('token')
-        ? {
-            Accept: 'application/hal+json',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-            Authorization: 'Bearer ' + localStorage.getItem('token')
-          }
-        : {
-            Accept: 'application/hal+json',
-            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-          }
-    })
+    const response = await fetch(
+      `${url}/boards/${localStorage.getItem('uid')}/${path}?${params.toString()}`,
+      {
+        method: 'GET',
+        headers: localStorage.getItem('token')
+          ? {
+              Accept: 'application/hal+json',
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+              Authorization: 'Bearer ' + localStorage.getItem('token')
+            }
+          : {
+              Accept: 'application/hal+json',
+              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+            }
+      }
+    )
     const data = await response.json()
     return { resCode: response.status, data }
   } catch (error) {
@@ -73,10 +78,14 @@ async function addMethod(detail, database) {
   try {
     const response = await fetch(`${url}/boards/${localStorage.getItem('uid')}/${database}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      },
+      headers: localStorage.getItem('token')
+        ? {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+        : {
+            'Content-Type': 'application/json'
+          },
       body: JSON.stringify(detail)
     })
     if (!response.ok) {
@@ -96,10 +105,14 @@ async function deleteMethod(taskId, database) {
     `${url}/boards/${localStorage.getItem('uid')}/${database}/${taskId}`,
     {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      }
+      headers: localStorage.getItem('token')
+        ? {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+        : {
+            'Content-Type': 'application/json'
+          }
     }
   )
   const data = await response.json()
@@ -119,10 +132,14 @@ async function deleteTranMethod(taskId, database, newId) {
     `${url}/boards/${localStorage.getItem('uid')}/${database}/${taskId}/${newId}`,
     {
       method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      }
+      headers: localStorage.getItem('token')
+        ? {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+        : {
+            'Content-Type': 'application/json'
+          }
     }
   )
   const data = await response.json()
@@ -140,10 +157,14 @@ async function updateMethod(Id, database, Detail) {
   try {
     const response = await fetch(`${url}/boards/${localStorage.getItem('uid')}/${database}/${Id}`, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      },
+      headers: localStorage.getItem('token')
+        ? {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+        : {
+            'Content-Type': 'application/json'
+          },
       body: JSON.stringify(Detail)
     })
     if (!response.ok) {

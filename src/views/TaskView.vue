@@ -96,7 +96,6 @@ async function fetchUserInfo() {
     store.statusList.splice(0, store.taskList.length)
     store.statusList.push(...statusRes.data)
     store.taskList.push(...taskRes.data)
-    console.log('end')
   } catch (error) {
     console.error('Error fetching :', error.message)
   }
@@ -209,7 +208,6 @@ function playandre() {
     router.go()
   }, 4000)
 }
-console.log('a')
 </script>
 
 <template>
