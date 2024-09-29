@@ -19,33 +19,28 @@ async function addNewStatus() {
   isInValid.value = false
   if (!StatusDetail.value.name) {
     return (isInValid.value = true)
-  } else {
-    Object.assign(StatusDetail.value, {
-      name: StatusDetail.value.name.trim(),
-      description: !StatusDetail.value.description ? null : StatusDetail.value.description,
-      color: StatusDetail.value.color ?? 'grey'
-    })
-    // let addtask function and send out info into the main page :D
-    try {
-      const result = await addMethod(StatusDetail.value, 'statuses')
-      if (result.resCode != '200') { return }
-      Object.assign(result.data, {
-        noOfTasks: 0
-      })
+  }
 
-      store.statusList.push(result.data)
-      store.resStatus = 'addDone'
-      router.push({ name: 'status' })
-      store.ToastMessage = {
-        msg: 'The status has been added',
-        color: 'green'
-      }
-    } catch (error) {
-      isInValid.value = true
-      setTimeout(() => {
-        isInValid.value = false
-      }, 8000)
-      console.error('fail to post : ', error)
+  Object.assign(StatusDetail.value, {
+    name: StatusDetail.value.name.trim(),
+    description: !StatusDetail.value.description ? null : StatusDetail.value.description,
+    color: StatusDetail.value.color ?? 'grey'
+  })
+  // let addtask function and send out info into the main page :D
+
+  const result = await addMethod(StatusDetail.value, 'statuses')
+  if (result.resCode != '201') {
+    isInValid.value = true
+    setTimeout(() => {
+      isInValid.value = false
+    }, 8000)
+  } else {
+    store.statusList.push(result.data)
+    store.resStatus = 'addDone'
+    router.push({ name: 'status' })
+    store.ToastMessage = {
+      msg: 'The status has been added',
+      color: 'green'
     }
   }
 }

@@ -11,7 +11,9 @@ const store = useTaskStore()
 const statusName = ref('')
 const maxStatus = ref(false)
 const isTextOver = ref(false)
-
+const currentBoard = ref(store.boardList.find((board) => board.id == localStorage.getItem('uid')))
+console.log(currentBoard.value);
+const isLimit = ref(currentBoard.value.limitMaximumStatus)
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 
 const taskDetail = ref({})
@@ -56,7 +58,6 @@ async function editTask() {
       return (maxStatus.value = true)
     }
   }
-
   if (isSameDetail.value) {
     return router.push({ name: 'task' })
   }
@@ -253,7 +254,7 @@ const header = 'text-gray-900 text-opacity-50 font-semibold'
         </div>
 
         <!-- Enabled/Disabled State -->
-        <div v-if="store.limitSwitch">
+        <div v-if="isLimit">
           <p class="text-center text-green-400"><b>Kaban board limits is enabled!</b></p>
           <br />
         </div>

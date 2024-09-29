@@ -68,7 +68,7 @@ async function getMethod(path, sortBy = null, filterStatuses = []) {
     const data = await response.json()
     return { resCode: response.status, data }
   } catch (error) {
-    console.error('Error fetching data:', error)
+    // console.error('Error fetching data:', error)
     return
   }
 }
@@ -89,6 +89,7 @@ async function addMethod(detail, database) {
       body: JSON.stringify(detail)
     })
     if (!response.ok) {
+      if (response.status == '401') router.push({ name: 'login' })
       if (response.status == '403') router.push({ name: 'forbidden' })
     }
     const data = await response.json()
@@ -117,6 +118,7 @@ async function deleteMethod(taskId, database) {
   )
   const data = await response.json()
   if (!response.ok) {
+    if (response.status == '401') router.push({ name: 'login' })
     if (response.status == '403') router.push({ name: 'forbidden' })
   }
   return { resCode: response.status, data }
@@ -144,6 +146,7 @@ async function deleteTranMethod(taskId, database, newId) {
   )
   const data = await response.json()
   if (!response.ok) {
+    if (response.status == '401') router.push({ name: 'login' })
     if (response.status == '403') router.push({ name: 'forbidden' })
   }
   return { resCode: response.status, data }
@@ -158,16 +161,17 @@ async function updateMethod(Id, database, Detail) {
     const response = await fetch(`${url}/boards/${localStorage.getItem('uid')}/${database}/${Id}`, {
       method: 'PUT',
       headers: localStorage.getItem('token')
-        ? {
-            'Content-Type': 'application/json',
-            Authorization: 'Bearer ' + localStorage.getItem('token')
-          }
-        : {
-            'Content-Type': 'application/json'
-          },
+      ? {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + localStorage.getItem('token')
+        }
+      : {
+          'Content-Type': 'application/json'
+        },
       body: JSON.stringify(Detail)
     })
     if (!response.ok) {
+      if (response.status == '401') router.push({ name: 'login' })
       if (response.status == '403') router.push({ name: 'forbidden' })
     }
     const data = await response.json()
@@ -184,16 +188,15 @@ async function patchMethod(subfix, Detail) {
       `${url}/boards/${localStorage.getItem('uid')}${subfix ? `/${subfix}` : ''}`,
       {
         method: 'PATCH',
-        headers: localStorage.getItem('token') ? {
+        headers: {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + localStorage.getItem('token')
-        } : {
-          'Content-Type': 'application/json',
         },
         body: JSON.stringify(Detail)
       }
     )
     if (!response.ok) {
+      if (response.status == '401') router.push({ name: 'login' })
       if (response.status == '403') router.push({ name: 'forbidden' })
     }
     const data = await response.json()
