@@ -39,7 +39,7 @@ const boardName = localStorage.getItem('bname')
 
 function showDeleteModal(id) {
   currentId.value = id
-  currentTask.value = taskList[store.findTaskIndexById(id)]
+  currentTask.value = store.taskList[store.findTaskIndexById(id)]
   isDeleting.value = true
   store.errorRes = 'Done'
 }
@@ -48,7 +48,7 @@ async function delTask(id) {
   let result
 
   result = await deleteMethod(id, 'tasks')
-  taskList.splice(store.findTaskIndexById(id), 1)
+  store.taskList.splice(store.findTaskIndexById(id), 1)
   if (result.resCode != '200') {
     store.ErrorMessage = `An error has occurred, the task does not exist.`
     store.isError = true
