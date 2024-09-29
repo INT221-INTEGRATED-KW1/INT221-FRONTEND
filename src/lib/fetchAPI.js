@@ -184,9 +184,11 @@ async function patchMethod(subfix, Detail) {
       `${url}/boards/${localStorage.getItem('uid')}${subfix ? `/${subfix}` : ''}`,
       {
         method: 'PATCH',
-        headers: {
+        headers: localStorage.getItem('token') ? {
           'Content-Type': 'application/json',
           Authorization: 'Bearer ' + localStorage.getItem('token')
+        } : {
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(Detail)
       }
