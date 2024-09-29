@@ -4,7 +4,6 @@ import { onMounted, ref } from 'vue'
 import { useTaskStore } from '../store/store'
 import { signOut } from '@/lib/util'
 import { boardFetch, refreshToken } from '@/lib/fetchAPI'
-console.log('eee');
 
 const SERVER_URL = import.meta.env.VITE_BASE_URL
 const VERSION = 'v3'

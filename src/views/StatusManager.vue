@@ -30,10 +30,10 @@ function navToDeleteStatus(status) {
 
 async function loadInfo() {
   const result = await getMethod('statuses')
-  if (result.resCode == '403') router.push({name: "forbidden"})
-  if (result.resCode == '404') router.push({name: "notFound"})
+  if (result.resCode == '403') router.push({ name: 'forbidden' })
+  if (result.resCode == '404') router.push({ name: 'notFound' })
   if (result.resCode == '200') {
-    store.statusList.push(...result.data)
+    store.statusList = result.data
   }
 }
 
@@ -58,10 +58,9 @@ const thead = ref(
 console.log()
 
 onMounted(async () => {
-  console.log(store.statusList);
-  if (!store.statusList.length){console.log('a');
-   loadInfo()}
-    
+  if (!store.statusList.length) {
+    loadInfo()
+  }
 })
 
 const fullName = ref(localStorage.getItem('username'))
@@ -71,15 +70,23 @@ const fullName = ref(localStorage.getItem('username'))
   <div
     class="w-full h-auto min-h-screen p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white"
   >
-  <div class="fixed top-4 right-4 flex flex-col gap-2">
+    <div class="fixed top-4 right-4 flex flex-col gap-2">
       <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-lime-400 border-none">
-        {{ fullName }}
+        {{ fullName ?? "Guest User"}}
       </button>
       <button
+        v-if="store.isLogin"
         @click="signOut()"
         class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-red-600 border-none"
       >
         Sign Out
+      </button>
+      <button
+        v-else
+        @click="router.push({name: 'login'})"
+        class="itbkk-fullname btn px-4 h-9 min-h-9 hover:underline"
+      >
+        Sign in
       </button>
     </div>
     <div class="w-full h-28 font-bold text-4xl flex flex-col justify-center gap-1">
@@ -110,12 +117,6 @@ const fullName = ref(localStorage.getItem('username'))
         >
           <SquaresPlusIcon class="size-6" />
           Add Status
-        </button>
-        <button
-          @click="signOut()"
-          class="itbkk-button-add btn px-4 h-9 min-h-9 bg-red-600 border-none"
-        >
-          Sign Out
         </button>
       </div>
     </div>

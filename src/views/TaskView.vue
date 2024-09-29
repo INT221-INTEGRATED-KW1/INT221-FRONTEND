@@ -92,22 +92,25 @@ async function fetchUserInfo() {
       if (taskRes.resCode == '401' || statusRes.resCode == '401') {
         console.log('401')
       }
+    } else {
+      store.taskList = taskRes.data
+      store.statusList = statusRes.data
+      taskListDisplay.value = store.taskList
     }
-    store.statusList.splice(0, store.taskList.length)
-    store.statusList.push(...statusRes.data)
-    store.taskList.push(...taskRes.data)
-    console.log('end')
   } catch (error) {
     console.error('Error fetching :', error.message)
   }
 }
-
+const isPublic = ref()
 async function loadBoard() {
   const result = await boardFetch()
   if (result.status === 401) {
     router.push({ name: 'login' })
+  } else {
+    store.boardList = result.data
+    const boardIndex = store.boardList.findIndex((board) => board.id == boardId)
+    isPublic.value = store.boardList[boardIndex].visibility == 'public' ? true : false
   }
-  store.boardList = result.data
 }
 
 async function fetchTasksValidate() {
@@ -156,13 +159,11 @@ const removeStatus = (index) => {
 }
 
 const boardId = router.currentRoute.value.params.uid
-const isPublic = ref()
+
 onMounted(async () => {
   localStorage.setItem('uid', boardId)
   await fetchUserInfo()
   await loadBoard()
-  const boardIndex = store.boardList.findIndex((board) => board.id == boardId)
-  isPublic.value = store.boardList[boardIndex].visibility == 'public' ? true : false
 })
 
 const msg = ref('')
@@ -184,6 +185,8 @@ async function updatePrivacy() {
       msg: `The board invisibility is now updated to : ${result.data.visibility}`,
       color: 'orange'
     }
+  } else if (result.resCode == '401') {
+    router.push({ name: 'login' })
   }
 
   isPrivacyConfirm.value = false
@@ -209,7 +212,6 @@ function playandre() {
     router.go()
   }, 4000)
 }
-console.log('a')
 </script>
 
 <template>
@@ -218,18 +220,26 @@ console.log('a')
   >
     <div class="fixed top-4 right-4 flex flex-col gap-2">
       <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-lime-400 border-none">
-        {{ fullName }}
+        {{ fullName ?? 'Guest User' }}
       </button>
       <button
+        v-if="store.isLogin"
         @click="signOut()"
         class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-red-600 border-none"
       >
         Sign Out
       </button>
+      <button
+        v-else
+        @click="router.push({name: 'login'})"
+        class="itbkk-fullname btn px-4 h-9 min-h-9 hover:underline"
+      >
+        Sign in
+      </button>
     </div>
 
     <div class="w-full h-28 font-bold text-4xl flex flex-col justify-center gap-1">
-      <h1 class="" @click="refreshToken()">IT-Bangmod Kradan Kanban</h1>
+      <h1 class="">IT-Bangmod Kradan Kanban</h1>
       <h2 class="text-3xl"></h2>
       <p class="text-base font-medium">Do something better than do nothing .</p>
       <p class="text-xs">{{ boardName }}</p>

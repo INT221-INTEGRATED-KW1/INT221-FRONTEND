@@ -1,4 +1,6 @@
 <script setup>
+import router from '@/router/router';
+
 
 </script>
 
@@ -8,7 +10,7 @@
         <span class="text-6xl font-bold">403</span>
         <span class="text-2xl font-semibold">Forbidden</span>        
         <span class="text-lg">Access denied, you do not have permission to view this page.</span>
-        <!-- <span class="font-semibold hover:underline hover:cursor-pointer">Back to the page</span> -->
+        <span class="font-semibold hover:underline hover:cursor-pointer" @click="router.go(-1)">Back to the page</span>
     </div>
 </template>
 
