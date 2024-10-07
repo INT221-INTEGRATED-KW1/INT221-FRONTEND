@@ -5,6 +5,7 @@ export const useTaskStore = defineStore('task', () => {
   const taskList = ref([])
   const statusList = ref([])
   const boardList= ref([])
+  const collabList = ref([])
   const currentItem = {}
   const resStatus = ''
   const errorRes = 'Done'
@@ -32,6 +33,7 @@ export const useTaskStore = defineStore('task', () => {
     taskList,
     statusList,
     boardList,
+    collabList,
     findTaskIndexById,
     resStatus,
     errorRes,

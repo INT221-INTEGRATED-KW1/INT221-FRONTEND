@@ -14,6 +14,10 @@ import { JwtDecode } from '@/lib/util'
 import ForbiddenView from '@/views/ForbiddenView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
 import { refreshToken } from '@/lib/fetchAPI'
+import CollabView from '@/views/CollabView.vue'
+import CollabAdd from '@/components/collabcomponent/CollabAdd.vue'
+import CollabAccess from '@/components/collabcomponent/CollabAccess.vue'
+import CollabRemove from '@/components/collabcomponent/CollabRemove.vue'
 
 const routes = [
   {
@@ -80,6 +84,28 @@ const routes = [
         path: ':id/delete',
         name: 'deleteStatus',
         component: StatusDelete
+      }
+    ]
+  },
+  {
+    path: '/board/:uid/collab',
+    name: 'collab',
+    component: CollabView,
+    children: [
+      {
+        path: 'add',
+        name: 'addCollab',
+        component: CollabAdd
+      },
+      {
+        path: 'change',
+        name: 'changeCollabAccess',
+        component: CollabAccess
+      },
+      {       
+        path: 'remove',
+        name: 'removeCollab',
+        component: CollabRemove
       }
     ]
   },
