@@ -242,7 +242,7 @@ function playandre() {
       </button>
     </div>
 
-    <div class="w-full h-28 font-bold text-4xl flex flex-col justify-center gap-1">
+    <div class="w-full font-bold text-4xl flex flex-col justify-center gap-1">
       <h1 class="">IT-Bangmod Kradan Kanban</h1>
       <h2 class="text-3xl"></h2>
       <p class="text-base font-medium">Do something better than do nothing .</p>

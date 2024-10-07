@@ -176,13 +176,15 @@ onMounted(async () => {
           <tr
             v-for="(boardCell, index) in store.boardList.collabBoards"
             @click="handleClick(boardCell.id, boardCell.name)"
-            class="hover:cursor-pointer hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 itbkk-item"
+            class="itbkk-item hover:cursor-pointer hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 border-bottom"
           >
             <td class="px-6 py-4 font-extrabold text-center">{{ index + 1 }}</td>
             <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
               {{ boardCell.name }}
             </th>
-            <td class="px-6 py-4">{{ boardCell.visibility }}</td>
+            <td class="px-6 py-4">{{ boardCell.owner.name }}</td>
+            <td class="px-6 py-4">{{ boardCell.access_right }}</td>
+            <td class="px-6 py-4"> Leave </td>
           </tr>
         </tbody>
       </table>
