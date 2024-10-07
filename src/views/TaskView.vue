@@ -21,7 +21,8 @@ import {
   ArrowsUpDownIcon,
   CloudIcon,
   EyeSlashIcon,
-  EyeIcon
+  EyeIcon,
+  UsersIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import ToastMessage from '@/components/ToastMessage.vue'
@@ -108,7 +109,7 @@ async function loadBoard() {
   if (result.status == "401") {
     router.push({ name: 'login' })
   } else {
-    store.boardList = result.data
+    store.boardList = result.data.personalBoards
     const boardIndex = store.boardList.findIndex((board) => board.id == boardId)
     isPublic.value = store.boardList[boardIndex].visibility == 'public' ? true : false
   }
@@ -350,7 +351,7 @@ function playandre() {
 
         <button
           @click="router.push({ name: 'addTask' })"
-          class="itbkk-button-add btn px-4 h-9 min-h-9 shadow-inner bg-sky-300 hover:bg-sky-400 hover:border-sky-400 border-none"
+          class="itbkk-button-add btn px-3 h-9 min-h-9 shadow-inner bg-green-300 hover:bg-green-400 border-none"
         >
           <PlusIcon class="size-6"></PlusIcon>
           Add
@@ -358,7 +359,7 @@ function playandre() {
 
         <button
           @click="router.push({ name: 'status' })"
-          class="itbkk-manage-status btn px-4 h-9 min-h-9 shadow-inner bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
+          class="itbkk-manage-status btn px-3 h-9 min-h-9 shadow-inner bg-yellow-300 hover:bg-yellow-400  border-none"
         >
           <span :class="thead"
             ><Squares2X2Icon class="size-6" />
@@ -367,8 +368,18 @@ function playandre() {
         </button>
 
         <button
+          @click="router.push({ name: 'collab' })"
+          class="itbkk- btn px-3 h-9 min-h-9 hover:shadow-inner bg-orange-300 hover:bg-orange-400 border-none"
+        >
+          <span :class="thead"
+            ><UsersIcon class="size-6" />
+            <p>Collabs M.</p>
+          </span>
+        </button>
+
+        <button
           @click="router.push({ name: 'limitStatus' })"
-          class="itbkk-status-setting btn px-2 h-9 min-h-9 shadow-inner bg-green-400 hover:bg-green-400 hover:border-green-400 border-none hover:shadow-inner"
+          class="hidden itbkk-status-setting btn px-2 h-9 min-h-9 shadow-inner bg-green-400 hover:bg-green-400 border-none hover:shadow-inner"
         >
           <span :class="thead">
             <AdjustmentsHorizontalIcon class="size-6" />
