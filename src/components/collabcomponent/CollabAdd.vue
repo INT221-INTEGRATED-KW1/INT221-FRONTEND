@@ -16,16 +16,15 @@ async function addCollabHandler() {
   const result = await addMethod(newCollab.value, 'collabs')
   if (result.resCode == '201') {
     store.collabList.push(result.data)
-    store.ToastMessage ={
-        msg: 'Add collaborator complete',
-        color: 'green'
-    }
-  }else {
-    
-    store.ToastMessage ={
-        msg: result.data.message,
-        color: 'red'
-    }
+    store.ToastMessage.push({
+      msg: 'Add collaborator complete',
+      color: 'green'
+    })
+  } else {
+    store.ToastMessage.push({
+      msg: result.data.message,
+      color: 'red'
+    })
   }
 
   router.push({ name: 'collab' })

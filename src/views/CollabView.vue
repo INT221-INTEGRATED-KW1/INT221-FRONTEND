@@ -18,7 +18,11 @@ const isLoading = ref(true)
 const store = useTaskStore()
 async function loadCollab() {
   const result = await getMethod('collabs')
-  store.collabList = result.data
+  if (result.resCode == '403') {
+    router.push({name: 'forbidden'})
+  }else {
+    store.collabList = result.data
+  }
 }
 
 const boardUser = localStorage.getItem('username')
@@ -35,8 +39,8 @@ function removeCollabhandle(data) {
 }
 
 function changeAccessHandler(data) {
-    currentItem.value = data
-    router.push({name: 'changeCollabAccess'})
+  currentItem.value = data
+  router.push({ name: 'changeCollabAccess' })
 }
 
 const temp = {
@@ -141,7 +145,7 @@ const temp = {
             </th>
             <td class="px-6 py-4">{{ collab.email }}</td>
             <td class="px-6 py-4">
-              <select                
+              <select
                 id="collab-access"
                 v-model="collab.accessRight"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"

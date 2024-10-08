@@ -11,9 +11,8 @@ const store = useTaskStore()
 const statusName = ref('')
 const maxStatus = ref(false)
 const isTextOver = ref(false)
-const currentBoard = ref(store.boardList.find((board) => board.id == localStorage.getItem('uid')))
-console.log(currentBoard.value);
-const isLimit = ref(currentBoard.value.limitMaximumStatus)
+const currentBoard = ref()
+const isLimit = ref()
 const timezone = ref(Intl.DateTimeFormat().resolvedOptions().timeZone)
 
 const taskDetail = ref({})
@@ -23,12 +22,14 @@ store.isError = false
 onMounted(async () => {
   try {
     taskDetail.value = await onMountSetup('tasks')
-    oldDetail = JSON.parse(JSON.stringify(taskDetail.value))
     updateDetail.value = taskDetail.value
     Object.assign(updateDetail.value, {
-      assignees: updateDetail.value.assignees ?? '',
-      description: updateDetail.value.description ?? ''
+      assignees: updateDetail.value.assignees ?? "",
+      description: updateDetail.value.description ?? ""
     })
+    oldDetail = JSON.parse(JSON.stringify(updateDetail.value))
+    currentBoard.value = await taskDetail.value.status.board
+    isLimit.value = currentBoard.value.limitMaximumStatus
   } catch (error) {
     store.ErrorMessage = 'The task does not exist'
     store.isError = true
@@ -88,10 +89,10 @@ async function editTask() {
         })
       store.resStatus = 'editDone'
       router.push({ name: 'task' })
-      store.ToastMessage = {
+      store.ToastMessage.push({
         msg: 'The task has been updated',
         color: 'cyan'
-      }
+      })
     } catch (error) {
       store.resStatus = 'updateError'
       throw error

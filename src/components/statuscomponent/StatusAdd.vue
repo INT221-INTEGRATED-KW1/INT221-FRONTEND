@@ -38,10 +38,10 @@ async function addNewStatus() {
     store.statusList.push(result.data)
     store.resStatus = 'addDone'
     router.push({ name: 'status' })
-    store.ToastMessage = {
+    store.ToastMessage.push({
       msg: 'The status has been added',
       color: 'green'
-    }
+    })
   }
 }
 

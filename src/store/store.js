@@ -1,19 +1,19 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 export const useTaskStore = defineStore('task', () => {
   const taskList = ref([])
   const statusList = ref([])
-  const boardList= ref([])
+  const boardList = ref([])
   const collabList = ref([])
   const currentItem = {}
   const resStatus = ''
   const errorRes = 'Done'
   const isError = false
   const ErrorMessage = null
-  const ToastMessage = null
+  const ToastMessage = ref([])
   const isLoading = false
-  const isLogin = ref(localStorage.getItem('token')? true : false)
+  const isLogin = ref(localStorage.getItem('token') ? true : false)
   //About the limit.
   const maxTask = 10
   const limitSwitch = false

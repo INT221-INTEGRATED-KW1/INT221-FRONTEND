@@ -32,7 +32,7 @@ async function addNewTask() {
     }
   }
   // console.log(maxStatus.value);
-  
+
   if (!TaskDetail.value.title) {
     return (isInValid.value = true)
   } else {
@@ -43,19 +43,20 @@ async function addNewTask() {
       description: !TaskDetail.value.description ? null : TaskDetail.value.description
     })
     const result = await addMethod(TaskDetail.value, 'tasks')
-    if(result.resCode =='201') {
-    const findStatus = store.statusList.find((status) => status.id == result.data.status.id)
-    Object.assign(findStatus, {
-      noOfTasks: findStatus.noOfTasks + 1
-    })
+    if (result.resCode == '201') {
+      const findStatus = store.statusList.find((status) => status.id == result.data.status.id)
+      Object.assign(findStatus, {
+        noOfTasks: findStatus.noOfTasks + 1
+      })
 
-    store.taskList.push(result.data)
-    store.resStatus = 'addDone'
-    router.push({ name: 'task' })
-    store.ToastMessage = {
-      msg: 'The task has been successfully added',
-      color: 'green'
-    }}
+      store.taskList.push(result.data)
+      store.resStatus = 'addDone'
+      router.push({ name: 'task' })
+      store.ToastMessage.push({
+        msg: 'The task has been successfully added',
+        color: 'green'
+      })
+    }
   }
 }
 

@@ -34,7 +34,7 @@ async function validateToken() {
     return
   }
 }
-let boardId = ''
+
 async function getMethod(path, sortBy = null, filterStatuses = []) {
   try {
     await validateToken()
@@ -47,24 +47,21 @@ async function getMethod(path, sortBy = null, filterStatuses = []) {
       const filterStatusesString = filterStatuses.join(',')
       params.append('filterStatuses', filterStatusesString)
     }
-    boardId = router.currentRoute.value.params.uid
+    const boardId = router.currentRoute.value.params.uid
     // If need in requirement (assign multiple params)
-    const response = await fetch(
-      `${url}/boards/${localStorage.getItem('uid')}/${path}?${params.toString()}`,
-      {
-        method: 'GET',
-        headers: localStorage.getItem('token')
-          ? {
-              Accept: 'application/hal+json',
-              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-              Authorization: 'Bearer ' + localStorage.getItem('token')
-            }
-          : {
-              Accept: 'application/hal+json',
-              'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
-            }
-      }
-    )
+    const response = await fetch(`${url}/boards/${boardId}/${path}?${params.toString()}`, {
+      method: 'GET',
+      headers: localStorage.getItem('token')
+        ? {
+            Accept: 'application/hal+json',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+        : {
+            Accept: 'application/hal+json',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+          }
+    })
     const data = await response.json()
     return { resCode: response.status, data }
   } catch (error) {
@@ -161,13 +158,13 @@ async function updateMethod(Id, database, Detail) {
     const response = await fetch(`${url}/boards/${localStorage.getItem('uid')}/${database}/${Id}`, {
       method: 'PUT',
       headers: localStorage.getItem('token')
-      ? {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + localStorage.getItem('token')
-        }
-      : {
-          'Content-Type': 'application/json'
-        },
+        ? {
+            'Content-Type': 'application/json',
+            Authorization: 'Bearer ' + localStorage.getItem('token')
+          }
+        : {
+            'Content-Type': 'application/json'
+          },
       body: JSON.stringify(Detail)
     })
     if (!response.ok) {
@@ -181,11 +178,12 @@ async function updateMethod(Id, database, Detail) {
   }
 }
 
-async function patchMethod(subfix, Detail) {
+async function patchMethod(subfix, Detail, detailId) {
   await validateToken()
   try {
+    const boardId = router.currentRoute.value.params.uid
     const response = await fetch(
-      `${url}/boards/${localStorage.getItem('uid')}${subfix ? `/${subfix}` : ''}`,
+      `${url}/boards/${boardId}${subfix ? `/${subfix}` : ''}${detailId ? `/${detailId}` : ''}`,
       {
         method: 'PATCH',
         headers: {
