@@ -1,10 +1,7 @@
 <script setup>
 import { useTaskStore } from '@/store/store'
 import router from '@/router/router'
-import { useRoute } from 'vue-router'
-import { EnvelopeIcon, LockClosedIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
-import { ref } from 'vue'
-import { updateMethod } from '@/lib/fetchAPI'
+import { patchMethod } from '@/lib/fetchAPI'
 const store = useTaskStore()
 const props = defineProps({
   currentItem: {
@@ -14,32 +11,35 @@ const props = defineProps({
 })
 
 async function changeAccessHandler() {
-    const newAccess =  props.currentItem.accessRight 
-  const result = await updateMethod(props.currentItem.oid, 'collabs', {newAccess} )
+  const newAccess = { access_right: props.currentItem.accessRight }
+  const result = await patchMethod('collabs', newAccess, props.currentItem.oid)
   if (result.resCode == '200') {
-    store.collabList.push(result.data)
-    store.ToastMessage = {
-      msg: 'Remove collaborator complete',
+    const resultIndex = store.collabList.findIndex((collab) => collab.oid == result.data.oid)
+    store.collabList[resultIndex] = result.data
+    store.ToastMessage.push({
+      msg: `Change ${result.data.name} collaborator to ${result.data.accessRight} complete`,
       color: 'green'
-    }
+    })
   } else {
-    store.ToastMessage = {
+    store.ToastMessage.push({
       msg: result.data.message,
       color: 'red'
-    }
+    })
   }
 
   router.push({ name: 'collab' })
 }
-console.log(store.collabList.find((list) => list.oid == props.currentItem.oid));
+// console.log(store.collabList.find((list) => list.oid == props.currentItem.oid))
 
-function cancelHandler() {    
-    const index = store.collabList.findIndex((list) => list.oid == props.currentItem.oid)
-    const access = store.collabList[index].accessRight == "READ" ? "WRITE" : "READ"
+function cancelHandler() {
+  const index = store.collabList.findIndex((list) => list.oid == props.currentItem.oid)
+
+  if (index > -1) {
+    const access = store.collabList[index].accessRight == 'READ' ? 'WRITE' : 'READ'
     store.collabList[index].accessRight = access
-    router.push({ name: 'collab' })
+  }
+  router.push({ name: 'collab' })
 }
-
 </script>
 
 <template>

@@ -55,10 +55,10 @@ async function delTask(id) {
     store.isError = true
     return (isDeleting.value = false)
   }
-  store.ToastMessage = {
+  store.ToastMessage.push({
     msg: 'The task has been deleted',
     color: 'green'
-  }
+  })
   isDeleting.value = false
   store.statusList[result.data.status.id - 1].countTask =
     store.statusList[result.data.status.id - 1].countTask - 1
@@ -185,10 +185,10 @@ async function updatePrivacy() {
   const visibility = isPublic.value ? 'public' : 'private'
   const result = await patchMethod('', { visibility })
   if (result.resCode == '200') {
-    store.ToastMessage = {
+    store.ToastMessage.push({
       msg: `The board invisibility is now updated to : ${result.data.visibility}`,
       color: 'orange'
-    }
+    })
   } else if (result.resCode == '401') {
     router.push({ name: 'login' })
   }
@@ -200,13 +200,6 @@ function cancelPrivacy() {
   isPublic.value = !isPublic.value
   isPrivacyConfirm.value = false
 }
-
-watch(
-  () => isPublic.value,
-  () => {
-    console.log(isPublic.value)
-  }
-)
 
 function playandre() {
   const audio = new Audio('/public/soundtest.mp3')

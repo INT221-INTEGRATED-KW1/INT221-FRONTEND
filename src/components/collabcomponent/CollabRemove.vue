@@ -17,16 +17,17 @@ const props = defineProps({
 async function removeCollabHandler() {
   const result = await deleteMethod(props.currentItem.oid, 'collabs')
   if (result.resCode == '200') {
-    store.collabList.push(result.data)
-    store.ToastMessage = {
+    const resultIndex = store.collabList.findIndex((collab) => collab.oid == result.data.oid)
+    store.collabList.splice(resultIndex, 1)
+    store.ToastMessage.push({
       msg: 'Remove collaborator complete',
       color: 'green'
-    }
+    })
   } else {
-    store.ToastMessage = {
+    store.ToastMessage.push({
       msg: result.data.message,
       color: 'red'
-    }
+    })
   }
 
   router.push({ name: 'collab' })

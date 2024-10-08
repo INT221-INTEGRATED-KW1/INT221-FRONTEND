@@ -54,11 +54,11 @@ const deleteStatus = async (statusId) => {
     // console.log(res.resCode)
     if (res.resCode == '500') {
       router.push({ name: 'status' })
-      store.ToastMessage = {
+      store.ToastMessage.push({
         msg: `Cannot delete default status (${currentData.value.name})`,
         color: 'red',
         erroricon: true
-      }
+      })
       return
     }
     if (res.resCode != '200') {
@@ -68,10 +68,10 @@ const deleteStatus = async (statusId) => {
     const index = statusList.findIndex((status) => status.id == res.data.id)
     statusList.splice(index, 1)
     router.push({ name: 'status' })
-    store.ToastMessage = {
+    store.ToastMessage.push({
       msg: 'The status has been deleted',
       color: 'yellow'
-    }
+    })
     store.resStatus = 'deleteDone'
   }
 }
@@ -101,10 +101,10 @@ const tranferStatus = async (currId, newId) => {
     statusList[newindex].countTask = statusList[newindex].countTask + total
     statusList.splice(index, 1)
     router.push({ name: 'status' })
-    store.ToastMessage = {
+    store.ToastMessage.push({
       msg: `The ${currentData.value.noOfTasks} task(s) have been transferred and the status has been deleted`,
       color: 'yellow'
-    }
+    })
   }
   isHastask.value = false
 }
