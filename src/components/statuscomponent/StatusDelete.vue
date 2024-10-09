@@ -52,6 +52,7 @@ const deleteStatus = async (statusId) => {
     let res = null
     res = await deleteMethod(statusId, 'statuses')
     // console.log(res.resCode)
+    if (res.resCode == '403') router.push({ name: 'forbidden' })
     if (res.resCode == '500') {
       router.push({ name: 'status' })
       store.ToastMessage.push({
