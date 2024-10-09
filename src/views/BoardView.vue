@@ -35,26 +35,26 @@ async function loadBoard() {
 }
 
 async function boardPost() {
-    const response = await fetch(`${url}/boards`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer ' + localStorage.getItem('token')
-      },
-      body: JSON.stringify({
-        name: boardName.value
-      })
+  const response = await fetch(`${url}/boards`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    },
+    body: JSON.stringify({
+      name: boardName.value
     })
+  })
 
-    const data = await response.json()
-    store.boardList.personalBoards.push(data)
+  const data = await response.json()
+  store.boardList.personalBoards.push(data)
 
-    if (!response.ok && data.status !== 401) {
-      throw new Error(`Error: ${response.statusText}`)
-    }
-    if (data.status === 401) {
-      await refreshToken()
-    }
+  if (!response.ok && data.status !== 401) {
+    throw new Error(`Error: ${response.statusText}`)
+  }
+  if (data.status === 401) {
+    await refreshToken()
+  }
 }
 
 function handleClick(id, bname) {
@@ -112,7 +112,7 @@ onMounted(async () => {
       </button>
     </div>
 
-    <div class="relative overflow-x-auto shadow-md ">
+    <div class="relative overflow-x-auto shadow-md">
       <table class="w-full text-sm text-left rtl:text-right text-gray-600">
         <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
           <tr>
@@ -141,55 +141,65 @@ onMounted(async () => {
             </th>
             <td class="px-6 py-4">{{ boardCell.visibility }}</td>
           </tr>
+          <tr v-if="store.boardList.personalBoards?.length == 0">
+            <td colspan="5" class="text-center italic py-4">
+              🕊️ No Board
+              <span
+                class="font-semibold hover:underline hover:cursor-pointer"
+                onclick="createBoardModal.showModal()"
+                >Create New Board
+              </span>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
 
     <div name="Collab_Board" v-if="collabLength > 0">
-    <h1>Callabs Board</h1>
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg" >
-      <table class="w-full text-sm text-left rtl:text-right text-gray-600">
-        <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
-          <tr>
-            <th scope="col" class="py-3">
-              <div class="flex items-center gap-1 justify-center">
-                <GlobeAsiaAustraliaIcon class="size-6" />No
-              </div>
-            </th>
-            <th scope="col" class="py-3">
-              <div class="flex items-center gap-1"><ClipboardIcon class="size-6" />BoardName</div>
-            </th>
-            <th scope="col" class="py-3">
-              <div class="flex items-center gap-1"><EyeIcon class="size-6" />Owner</div>
-            </th>
-            <th scope="col" class="py-3">
-              <div class="flex items-center gap-1">
-                <PencilSquareIcon class="size-6" />Access right
-              </div>
-            </th>
-            <th scope="col" class="py-3">
-              <div class="flex items-center gap-1"><FaceSmileIcon class="size-6" />Action</div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(boardCell, index) in store.boardList.collabBoards"
-            @click="handleClick(boardCell.id, boardCell.name)"
-            class="itbkk-item hover:cursor-pointer hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 border-bottom"
-          >
-            <td class="px-6 py-4 font-extrabold text-center">{{ index + 1 }}</td>
-            <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
-              {{ boardCell.name }}
-            </th>
-            <td class="px-6 py-4">{{ boardCell.owner.name }}</td>
-            <td class="px-6 py-4">{{ boardCell.access_right }}</td>
-            <td class="px-6 py-4"> Leave </td>
-          </tr>
-        </tbody>
-      </table>
+      <h1>Callabs Board</h1>
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-600">
+          <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
+            <tr>
+              <th scope="col" class="py-3">
+                <div class="flex items-center gap-1 justify-center">
+                  <GlobeAsiaAustraliaIcon class="size-6" />No
+                </div>
+              </th>
+              <th scope="col" class="py-3">
+                <div class="flex items-center gap-1"><ClipboardIcon class="size-6" />BoardName</div>
+              </th>
+              <th scope="col" class="py-3">
+                <div class="flex items-center gap-1"><EyeIcon class="size-6" />Owner</div>
+              </th>
+              <th scope="col" class="py-3">
+                <div class="flex items-center gap-1">
+                  <PencilSquareIcon class="size-6" />Access right
+                </div>
+              </th>
+              <th scope="col" class="py-3">
+                <div class="flex items-center gap-1"><FaceSmileIcon class="size-6" />Action</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(boardCell, index) in store.boardList.collabBoards"
+              @click="handleClick(boardCell.id, boardCell.name)"
+              class="itbkk-item hover:cursor-pointer hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 border-bottom"
+            >
+              <td class="px-6 py-4 font-extrabold text-center">{{ index + 1 }}</td>
+              <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
+                {{ boardCell.name }}
+              </th>
+              <td class="px-6 py-4">{{ boardCell.owner.name }}</td>
+              <td class="px-6 py-4">{{ boardCell.access_right }}</td>
+              <td class="px-6 py-4">Leave</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
 
     <dialog id="createBoardModal" class="modal">
       <div class="modal-box">
@@ -238,6 +248,6 @@ onMounted(async () => {
 }
 
 .border-bottom:not(:last-child) {
-    border-bottom: 1px solid rgba(196, 200, 209, 0.5);
-  }
+  border-bottom: 1px solid rgba(196, 200, 209, 0.5);
+}
 </style>
