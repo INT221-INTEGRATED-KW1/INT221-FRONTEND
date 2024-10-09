@@ -4,6 +4,7 @@ import { onMounted, ref } from 'vue'
 import { useTaskStore } from '../store/store'
 import { signOut } from '@/lib/util'
 import { boardFetch, deleteMethod, refreshToken } from '@/lib/fetchAPI'
+import ToastMessage from '@/components/ToastMessage.vue'
 import {
   ClipboardIcon,
   DocumentIcon,
@@ -298,6 +299,7 @@ onMounted(async () => {
       </div>
     </dialog>
   </div>
+  <ToastMessage></ToastMessage>
 </template>
 
 <style scoped>
