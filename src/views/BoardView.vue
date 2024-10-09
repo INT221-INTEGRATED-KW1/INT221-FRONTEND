@@ -60,8 +60,6 @@ async function boardPost() {
 
 const currentItem = ref()
 async function leaveCollab() {
-  console.log(currentItem.value)
-
   const response = await fetch(
     `${url}/boards/${currentItem.value.id}/collabs/${localStorage.getItem('oid')}`,
     {
@@ -93,6 +91,8 @@ async function leaveCollab() {
       })
       console.log('b')
   }
+  console.log(store.boardList.collabBoards);
+  
 }
 
 function handleClick(id, bname) {
@@ -199,7 +199,7 @@ onMounted(async () => {
     </div>
 
     <div name="Collab_Board" v-if="collabLength > 0">
-      <h1>Callabs Board</h1>
+      <h1 class="text-gray-600 text-xl font-bold pb-2">Callabs Board</h1>
       <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
         <table class="w-full text-sm text-left rtl:text-right text-gray-600">
           <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
