@@ -3,7 +3,7 @@ import router from '@/router/router'
 import { onMounted, ref } from 'vue'
 import { useTaskStore } from '../store/store'
 import { signOut } from '@/lib/util'
-import { boardFetch, refreshToken } from '@/lib/fetchAPI'
+import { boardFetch, deleteMethod, refreshToken } from '@/lib/fetchAPI'
 import {
   ClipboardIcon,
   DocumentIcon,
@@ -35,32 +35,74 @@ async function loadBoard() {
 }
 
 async function boardPost() {
-    const response = await fetch(`${url}/boards`, {
-      method: 'POST',
+  const response = await fetch(`${url}/boards`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + localStorage.getItem('token')
+    },
+    body: JSON.stringify({
+      name: boardName.value
+    })
+  })
+
+  const data = await response.json()
+  store.boardList.personalBoards.push(data)
+
+  if (!response.ok && data.status !== 401) {
+    throw new Error(`Error: ${response.statusText}`)
+  }
+  if (data.status === 401) {
+    await refreshToken()
+  }
+}
+
+const currentItem = ref()
+async function leaveCollab() {
+  console.log(currentItem.value)
+
+  const response = await fetch(
+    `${url}/boards/${currentItem.value.id}/collabs/${localStorage.getItem('oid')}`,
+    {
+      method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Bearer ' + localStorage.getItem('token')
-      },
-      body: JSON.stringify({
-        name: boardName.value
+      }
+    }
+  )
+  const result = { resCode: response.status, data: await response.json() }
+
+  switch (result.resCode) {
+    case 200:
+      const index = store.boardList.collabBoards.findIndex((list) => list.id == currentItem.value.id)
+      store.boardList.collabBoards.splice(index, 1)
+      store.ToastMessage.push({
+        msg: 'Leave complete',
+        color: 'orange'
       })
-    })
-
-    const data = await response.json()
-    store.boardList.personalBoards.push(data)
-
-    if (!response.ok && data.status !== 401) {
-      throw new Error(`Error: ${response.statusText}`)
-    }
-    if (data.status === 401) {
-      await refreshToken()
-    }
+      console.log('a')
+      router.push({ name: 'board' })
+      break
+    default:
+      store.ToastMessage.push({
+        msg: 'There is a problem. Please try again later.',
+        color: 'red',
+        erroricon: true
+      })
+      console.log('b')
+  }
 }
 
 function handleClick(id, bname) {
   localStorage.setItem('uid', id)
   localStorage.setItem('bname', bname)
   router.push({ name: 'task', params: { uid: id } })
+}
+
+function handleLeaveClick(item) {
+  currentItem.value = item
+  leaveCollabModal.showModal()
 }
 
 onMounted(async () => {
@@ -112,7 +154,7 @@ onMounted(async () => {
       </button>
     </div>
 
-    <div class="relative overflow-x-auto shadow-md ">
+    <div class="relative overflow-x-auto shadow-md">
       <table class="w-full text-sm text-left rtl:text-right text-gray-600">
         <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
           <tr>
@@ -141,55 +183,79 @@ onMounted(async () => {
             </th>
             <td class="px-6 py-4">{{ boardCell.visibility }}</td>
           </tr>
+          <tr v-if="store.boardList.personalBoards?.length == 0">
+            <td colspan="5" class="text-center italic py-4">
+              🕊️ No Board
+              <span
+                class="font-semibold hover:underline hover:cursor-pointer"
+                onclick="createBoardModal.showModal()"
+                >Create New Board
+              </span>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
 
     <div name="Collab_Board" v-if="collabLength > 0">
-    <h1>Callabs Board</h1>
-    <div class="relative overflow-x-auto shadow-md sm:rounded-lg" >
-      <table class="w-full text-sm text-left rtl:text-right text-gray-600">
-        <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
-          <tr>
-            <th scope="col" class="py-3">
-              <div class="flex items-center gap-1 justify-center">
-                <GlobeAsiaAustraliaIcon class="size-6" />No
-              </div>
-            </th>
-            <th scope="col" class="py-3">
-              <div class="flex items-center gap-1"><ClipboardIcon class="size-6" />BoardName</div>
-            </th>
-            <th scope="col" class="py-3">
-              <div class="flex items-center gap-1"><EyeIcon class="size-6" />Owner</div>
-            </th>
-            <th scope="col" class="py-3">
-              <div class="flex items-center gap-1">
-                <PencilSquareIcon class="size-6" />Access right
-              </div>
-            </th>
-            <th scope="col" class="py-3">
-              <div class="flex items-center gap-1"><FaceSmileIcon class="size-6" />Action</div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(boardCell, index) in store.boardList.collabBoards"
-            @click="handleClick(boardCell.id, boardCell.name)"
-            class="itbkk-item hover:cursor-pointer hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 border-bottom"
-          >
-            <td class="px-6 py-4 font-extrabold text-center">{{ index + 1 }}</td>
-            <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
-              {{ boardCell.name }}
-            </th>
-            <td class="px-6 py-4">{{ boardCell.owner.name }}</td>
-            <td class="px-6 py-4">{{ boardCell.access_right }}</td>
-            <td class="px-6 py-4"> Leave </td>
-          </tr>
-        </tbody>
-      </table>
+      <h1>Callabs Board</h1>
+      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left rtl:text-right text-gray-600">
+          <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
+            <tr>
+              <th scope="col" class="py-3">
+                <div class="flex items-center gap-1 justify-center">
+                  <GlobeAsiaAustraliaIcon class="size-6" />No
+                </div>
+              </th>
+              <th scope="col" class="py-3">
+                <div class="flex items-center gap-1"><ClipboardIcon class="size-6" />BoardName</div>
+              </th>
+              <th scope="col" class="py-3">
+                <div class="flex items-center gap-1"><EyeIcon class="size-6" />Owner</div>
+              </th>
+              <th scope="col" class="py-3">
+                <div class="flex items-center gap-1">
+                  <PencilSquareIcon class="size-6" />Access right
+                </div>
+              </th>
+              <th scope="col" class="py-3">
+                <div class="flex items-center gap-1"><FaceSmileIcon class="size-6" />Action</div>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr
+              v-for="(boardCell, index) in store.boardList.collabBoards"
+              class="itbkk-item hover:cursor-pointer hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 border-bottom"
+            >
+              <td
+                class="px-6 py-4 font-extrabold text-center"
+                @click="handleClick(boardCell.id, boardCell.name)"
+              >
+                {{ index + 1 }}
+              </td>
+              <th
+                scope="row"
+                class="px-6 py-4 font-medium whitespace-nowrap"
+                @click="handleClick(boardCell.id, boardCell.name)"
+              >
+                {{ boardCell.name }}
+              </th>
+              <td class="px-6 py-4" @click="handleClick(boardCell.id, boardCell.name)">
+                {{ boardCell.owner.name }}
+              </td>
+              <td class="px-6 py-4" @click="handleClick(boardCell.id, boardCell.name)">
+                {{ boardCell.access_right }}
+              </td>
+              <td class="px-6 py-4">
+                <span class="btn" @click="handleLeaveClick(boardCell)">Leave</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-  </div>
 
     <dialog id="createBoardModal" class="modal">
       <div class="modal-box">
@@ -210,6 +276,21 @@ onMounted(async () => {
               @click="boardPost()"
             >
               Save
+            </button>
+            <button class="itbkk-button-cancel btn btn-outline">Close</button>
+          </form>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog id="leaveCollabModal" class="modal">
+      <div class="modal-box">
+        <h3 class="text-lg font-bold">Leave Board</h3>
+        <p class="py-4">Do you want to leave this "{{ currentItem?.name }}" board ?</p>
+        <div class="modal-action">
+          <form method="dialog">
+            <button class="itbkk-button-ok btn mr-2 btn-outline" @click="leaveCollab()">
+              Confirm
             </button>
             <button class="itbkk-button-cancel btn btn-outline">Close</button>
           </form>
@@ -238,6 +319,6 @@ onMounted(async () => {
 }
 
 .border-bottom:not(:last-child) {
-    border-bottom: 1px solid rgba(196, 200, 209, 0.5);
-  }
+  border-bottom: 1px solid rgba(196, 200, 209, 0.5);
+}
 </style>

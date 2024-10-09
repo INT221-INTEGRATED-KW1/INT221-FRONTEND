@@ -19,10 +19,12 @@ const store = useTaskStore()
 async function loadCollab() {
   const result = await getMethod('collabs')
   if (result.resCode == '403') {
-    router.push({name: 'forbidden'})
-  }else {
-    store.collabList = result.data
+    return router.push({ name: 'forbidden' })
   }
+  if (result.resCode == '404') {
+    return router.push({ name: 'notFound' })
+  }
+  store.collabList = result.data
 }
 
 const boardUser = localStorage.getItem('username')
@@ -158,6 +160,16 @@ const temp = {
             </td>
             <td class="px-6 py-4">
               <span class="btn" @click="removeCollabhandle(collab)">remove</span>
+            </td>
+          </tr>
+          <tr v-if="!store.collabList.length">
+            <td colspan="5" class="text-center italic py-4">
+              🕊️ No collaborator
+              <span
+                class="font-semibold hover:underline hover:cursor-pointer"
+                @click="router.push({ name: 'addCollab' })"
+                >Add New Collab
+              </span>
             </td>
           </tr>
         </tbody>

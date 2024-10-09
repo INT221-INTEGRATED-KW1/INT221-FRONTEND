@@ -23,10 +23,25 @@ async function removeCollabHandler() {
       msg: 'Remove collaborator complete',
       color: 'green'
     })
-  } else {
+  }
+  let contextText = ''
+  switch (result.resCode) {
+    case 403:
+      contextText = 'You do not have permission to remove collaborator.'
+      break
+    case 404:
+      contextText = ` ${props.currentItem.name} is not a collaborator.`
+      const index = store.collabList.findIndex((list) => list.oid == props.currentItem.oid)
+      store.collabList.splice(index, 1)
+      break
+    default:
+      contextText = 'There is a problem. Please try again later.'
+  }
+  if (![200].includes(result.resCode)) {
     store.ToastMessage.push({
-      msg: result.data.message,
-      color: 'red'
+      msg: contextText,
+      color: 'red',
+      erroricon: true
     })
   }
 

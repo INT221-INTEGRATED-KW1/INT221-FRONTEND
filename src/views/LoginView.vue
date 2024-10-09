@@ -38,7 +38,8 @@ async function loginFetch() {
       const decodeData = JwtDecode(data.access_token)
       localStorage.setItem('token', data.access_token)
       localStorage.setItem('username', decodeData.name)
-      localStorage.setItem('refresh_token', data.refresh_token)
+      localStorage.setItem('oid', decodeData.oid)
+      localStorage.setItem('refresh_token', data.refresh_token)      
       router.push({name: 'board'})
     }
   } catch (error) {

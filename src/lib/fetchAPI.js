@@ -115,8 +115,7 @@ async function deleteMethod(taskId, database) {
   )
   const data = await response.json()
   if (!response.ok) {
-    if (response.status == '401') router.push({ name: 'login' })
-    if (response.status == '403') router.push({ name: 'forbidden' })
+    if (response.status == '401') router.push({ name: 'login' })    
   }
   return { resCode: response.status, data }
   // } catch (error) {
@@ -195,7 +194,7 @@ async function patchMethod(subfix, Detail, detailId) {
     )
     if (!response.ok) {
       if (response.status == '401') router.push({ name: 'login' })
-      if (response.status == '403') router.push({ name: 'forbidden' })
+      
     }
     const data = await response.json()
     return { resCode: response.status, data }

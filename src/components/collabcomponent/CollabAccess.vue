@@ -21,9 +21,18 @@ async function changeAccessHandler() {
       color: 'green'
     })
   } else {
+    let contextText = ''
+    switch (result.resCode) {
+      case 403:
+        contextText = 'You do not have permission to change collaborator access right.'
+        break
+      default:
+        contextText = 'There is a problem. Please try again later.'
+    }
     store.ToastMessage.push({
-      msg: result.data.message,
-      color: 'red'
+      msg: contextText,
+      color: 'red',
+      erroricon: true
     })
   }
 

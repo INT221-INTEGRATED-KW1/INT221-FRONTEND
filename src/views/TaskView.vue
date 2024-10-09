@@ -50,6 +50,7 @@ async function delTask(id) {
 
   result = await deleteMethod(id, 'tasks')
   store.taskList.splice(store.findTaskIndexById(id), 1)
+  if (result.resCode == '403') return router.push({ name: 'forbidden' })
   if (result.resCode != '200') {
     store.ErrorMessage = `An error has occurred, the task does not exist.`
     store.isError = true
@@ -106,7 +107,7 @@ async function fetchUserInfo() {
 const isPublic = ref()
 async function loadBoard() {
   const result = await boardFetch()
-  if (result.status == "401") {
+  if (result.status == '401') {
     router.push({ name: 'login' })
   } else {
     store.boardList = result.data.personalBoards
@@ -189,7 +190,9 @@ async function updatePrivacy() {
       msg: `The board invisibility is now updated to : ${result.data.visibility}`,
       color: 'orange'
     })
-  } else if (result.resCode == '401') {
+  }
+  if (result.resCode == '403') router.push({ name: 'forbidden' })
+  if (result.resCode == '401') {
     router.push({ name: 'login' })
   }
 
@@ -228,7 +231,7 @@ function playandre() {
       </button>
       <button
         v-else
-        @click="router.push({name: 'login'})"
+        @click="router.push({ name: 'login' })"
         class="itbkk-fullname btn px-4 h-9 min-h-9 hover:underline"
       >
         Sign in
@@ -352,7 +355,7 @@ function playandre() {
 
         <button
           @click="router.push({ name: 'status' })"
-          class="itbkk-manage-status btn px-3 h-9 min-h-9 shadow-inner bg-yellow-300 hover:bg-yellow-400  border-none"
+          class="itbkk-manage-status btn px-3 h-9 min-h-9 shadow-inner bg-yellow-300 hover:bg-yellow-400 border-none"
         >
           <span :class="thead"
             ><Squares2X2Icon class="size-6" />

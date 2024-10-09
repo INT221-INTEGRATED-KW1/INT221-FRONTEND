@@ -4,7 +4,7 @@ import router from '@/router/router'
 import { useRoute } from 'vue-router'
 import { EnvelopeIcon, LockClosedIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
 import { ref } from 'vue'
-import { addMethod } from '@/lib/fetchAPI'
+import { addMethod, getMethod } from '@/lib/fetchAPI'
 const store = useTaskStore()
 const route = useRoute()
 const newCollab = ref({
@@ -12,6 +12,18 @@ const newCollab = ref({
   access_right: 'READ'
 })
 
+async function loadCollab() {
+  const result = await getMethod('collabs')
+  if (result.resCode == '403') {
+    return router.push({ name: 'forbidden' })
+  }
+  if (result.resCode == '404') {
+    return router.push({ name: 'notFound' })
+  }
+  store.collabList = result.data
+}
+
+const modalAlertText = ref('')
 async function addCollabHandler() {
   const result = await addMethod(newCollab.value, 'collabs')
   if (result.resCode == '201') {
@@ -21,13 +33,39 @@ async function addCollabHandler() {
       color: 'green'
     })
   } else {
-    store.ToastMessage.push({
-      msg: result.data.message,
-      color: 'red'
-    })
+    let contextText = ''
+    switch (result.resCode) {
+      case 400:
+        contextText = 'In put type is not READ or WRITE'
+        break
+      case 403:
+        contextText = 'You do not have permission to add board collaborator.'
+        break
+      case 404:
+        modalAlertText.value = '🙅‍♂️ The user does not exists.'
+        break
+      case 409:
+        modalAlertText.value = '🙅‍♂️ The user is already the collaborator of this board.'
+        loadCollab()
+        break
+      default:
+        contextText = 'There is a problem. Please try again later.'
+    }
+    console.log(result.resCode + ' : ' + contextText)
+    if (![404, 409].includes(result.resCode)) {
+      store.ToastMessage.push({
+        msg: contextText,
+        color: 'red',
+        erroricon: true
+      })
+    } else {
+      setTimeout(() => {
+        modalAlertText.value = ''
+      }, 5000)
+    }
   }
 
-  router.push({ name: 'collab' })
+  if (![404, 409].includes(result.resCode)) router.push({ name: 'collab' })
 }
 </script>
 
@@ -48,6 +86,13 @@ async function addCollabHandler() {
         <h1 class="w-full font-bold text-xl">Add collaborator</h1>
         <p class="italic text-gray-500">Happiness is multiplies when you share it.</p>
       </div>
+
+      <span
+        v-show="modalAlertText"
+        class="bg-red-100 text-red-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded text-center"
+        >{{ modalAlertText }}</span
+      >
+
       <div class="flex gap-2 flex-col sm:flex-row">
         <div class="">
           <label for="collab-email" class="block mb-2 text-sm font-medium text-gray-900"

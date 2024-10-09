@@ -21,6 +21,7 @@ async function confirmLimit() {
     result = await patchMethod('maximum-status', obj)
     if (result.resCode == '200') {
       store.limitSwitch = result.data.statusLimit
+      if (result.resCode == '403') router.push({ name: 'forbidden' })
       if (!result.data.statuses || result.data.statuses.length == 0) {
         goBack()
         store.ToastMessage = {
