@@ -14,11 +14,7 @@ import {
   FaceSmileIcon,
   SquaresPlusIcon,
   RocketLaunchIcon,
-  ListBulletIcon,
-  PencilSquareIcon,
-  TrashIcon,
-  PresentationChartBarIcon,
-  ChatBubbleBottomCenterTextIcon
+  ListBulletIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import ToastMessage from '../components/ToastMessage.vue'
@@ -76,7 +72,7 @@ const fullName = ref(localStorage.getItem('username'))
   >
     <div class="fixed top-4 right-4 flex flex-col gap-2">
       <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-lime-400 border-none">
-        {{ fullName ?? 'Guest User' }}
+        {{ fullName ?? "Guest User"}}
       </button>
       <button
         v-if="store.isLogin"
@@ -87,7 +83,7 @@ const fullName = ref(localStorage.getItem('username'))
       </button>
       <button
         v-else
-        @click="router.push({ name: 'login' })"
+        @click="router.push({name: 'login'})"
         class="itbkk-fullname btn px-4 h-9 min-h-9 hover:underline"
       >
         Sign in
@@ -124,74 +120,80 @@ const fullName = ref(localStorage.getItem('username'))
         </button>
       </div>
     </div>
-
-    <div class="relative overflow-x-auto shadow-md">
-      <table class="w-full text-sm text-left rtl:text-right text-gray-600">
-        <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
+    <div
+      name="data"
+      class="w-full flex flex-col justify-center items-center px-6 bg-white rounded-2xl"
+    >
+      <table class="table rounded-3xl w-10/12">
+        <thead class="border-b-[1px] border-opacity-10 bg-gray-600 bg-opacity-20">
           <tr>
-            <th scope="col" class="px-6 py-3 ">
-              <span class="flex gap-1 items-center"
-                ><ClipboardDocumentListIcon class="size-6" />id</span
+            <td class="w-1/12 border-r-[1px] border-opacity-10 text-center">
+              <span :class="thead" class="flex justify-center"> <p>Id</p></span>
+            </td>
+            <td class="w-3/12 border-r-[1px] border-opacity-10">
+              <span :class="thead"
+                ><ClipboardDocumentListIcon class="size-6" />
+                <p>Name</p></span
               >
-            </th>
-            <th scope="col" class="px-6 py-3 ">
-              <span class="flex gap-1 items-center"><UserCircleIcon class="size-6" />name</span>
-            </th>
-            <th scope="col" class="px-6 py-3 ">
-              <span class="flex gap-1 items-center"
-                ><ChatBubbleBottomCenterTextIcon class="size-6" />Description</span
+            </td>
+            <td class="w-4/12 border-r-[1px] border-opacity-10">
+              <span :class="thead"
+                ><UserCircleIcon class="size-6" />
+                <p>Description</p></span
               >
-            </th>
-            <th scope="col" class="px-6 py-3 ">
-              <span class="flex gap-1 items-center"><FireIcon class="size-6" />Status</span>
-            </th>
-            <th scope="col" class="px-6 py-3 ">
-              <span class="flex gap-1 items-center"><PresentationChartBarIcon class="size-6" />usage</span>
-            </th>
-            <th scope="col" class="px-6 py-3"><span class="flex gap-1 items-center"><FireIcon class="size-6" />Action</span></th>
+            </td>
+            <td class="w-2/12 border-r-[1px] border-opacity-10">
+              <span :class="thead"
+                ><FireIcon class="size-6" />
+                <p>Status</p></span
+              >
+            </td>
+            <td class="w-1/12 border-r-[1px] border-opacity-10">
+              <span :class="thead">
+                <FaceSmileIcon class="size-6" />
+                <p>Usage</p></span
+              >
+            </td>
+            <td class="w-1/12 border-r-[1px] border-opacity-10">
+              <span :class="thead"
+                ><RocketLaunchIcon class="size-6" />
+                <p>Action</p></span
+              >
+            </td>
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="(status, index) in store.statusList"
-            :key="status.id"
-            class="itbkk-item hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 border-bottom"
-          >
-            <td class="text-center px-6 py-4 ">{{ index + 1 }}</td>
-            <td class="itbkk-status-name px-6 py-4 font-medium max-w-[18rem] min-w-52 break-words ">{{ status.name }}</td>
+          <tr v-for="(status, index) in store.statusList" :key="status.id" class="itbkk-item">
+            <td class="text-center">{{ index + 1 }}</td>
+            <td class="itbkk-status-name">{{ status.name }}</td>
             <td
-              class="itbkk-status-description px-6 py-4 font-medium max-w-[18rem] min-w-52 break-words "
+              class="itbkk-status-description"
               :class="{ 'italic text-gray-500': !status.description }"
             >
               {{ status.description ?? 'No description is provided.' }}
             </td>
-            <td class="px-6 py-4 max-w-[18rem] min-w-20  break-words">
-              <div
-                class="rounded-md px-[8px] py-[2px] w-fit max-w-[8rem] min-w-auto"
-                :class="[colorStatus(status.color)]"
-              >
+            <td>
+              <div class="rounded-md px-[8px] py-[2px] w-fit" :class="[colorStatus(status.color)]">
                 {{ status.name }}
               </div>
             </td>
 
             <td class="text-center">{{ status.noOfTasks }}</td>
             <td
-              v-if="status.name != 'No Status' && status.name != 'Done'"              
+              v-if="status.name != 'No Status' && status.name != 'Done'"
+              class="dropdown dropdown-bottom dropdown-end flex justify-center"
             >
-              <div class="flex gap-2 justify-center">
-                <span
+              <div class="flex flex-row gap-2">
+                <a
                   @click="router.push({ name: 'editStatus', params: { id: status.id } })"
-                  class="itbkk-button-edit"
-                  ><PencilSquareIcon class="size-6 hover:scale-110 hover:text-orange-400" />
-                </span>
-                <span
-                  @click="navToDeleteStatus(status)"
-                  class="itbkk-button-delete hover:scale-110 hover:text-red-500"
-                  ><TrashIcon class="size-6" />
-                </span>
+                  class="itbkk-button-edit btn btn-sm"
+                  >Edit</a
+                >
+                <a @click="navToDeleteStatus(status)" class="itbkk-button-delete btn btn-sm"
+                  >Delete</a
+                >
               </div>
             </td>
-
             <td v-else class="text-gray-500 italic text-center">default</td>
           </tr>
           <tr v-if="store.statusList.length == 0">

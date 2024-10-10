@@ -22,9 +22,7 @@ import {
   CloudIcon,
   EyeSlashIcon,
   EyeIcon,
-  UsersIcon,
-  PencilSquareIcon,
-  TrashIcon
+  UsersIcon
 } from '@heroicons/vue/24/outline'
 import { useTaskStore } from '@/store/store'
 import ToastMessage from '@/components/ToastMessage.vue'
@@ -100,7 +98,6 @@ async function fetchUserInfo() {
       store.taskList = taskRes.data
       store.statusList = statusRes.data
       taskListDisplay.value = store.taskList
-      console.log(taskListDisplay.value)
     }
   } catch (error) {
     console.error('Error fetching :', error.message)
@@ -219,7 +216,7 @@ function playandre() {
 
 <template>
   <div
-    class="w-full h-auto min-h-screen sm:p-24 p-12 flex flex-col gap-4 font-sans text-slate-900 bg-white"
+    class="w-full h-auto min-h-screen p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white"
   >
     <div class="fixed top-4 right-4 flex flex-col gap-2">
       <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-lime-400 border-none">
@@ -247,10 +244,8 @@ function playandre() {
       <p class="text-base font-medium">Do something better than do nothing .</p>
       <p class="text-xs">{{ boardName }}</p>
     </div>
-    
     <div class="css-selector w-full h-1"></div>
-
-    <div name="optionlist" class="w-full items-center flex">
+    <div name="optionlist" class="w-full px-6 flex flex-row gap-0 items-center">
       <div class="w-3/4 pr-20 h-auto flex justify-start gap-2">
         <div class="dropdown dropdown-bottom">
           <div tabindex="0" role="button" class="itbkk-status-filter btn m-1 hover:shadow-inner">
@@ -395,96 +390,123 @@ function playandre() {
         </div>
       </div>
     </div>
-    <div class="relative overflow-x-auto shadow-md">
-      <table class="w-full text-sm text-left rtl:text-right text-gray-600">
-        <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
+    <div
+      name="data"
+      class="w-full flex flex-col justify-center items-center px-6 bg-white rounded-2xl"
+    >
+      <table class="table rounded-3xl w-auto">
+        <thead class="border-b-[1px] border-opacity-10 bg-gray-600 bg-opacity-20">
           <tr>
-            <th scope="col" class="px-6 py-3 border-r-[1px]">
-              <div class="flex items-center justify-between">
-                <span class="flex gap-1 items-center"
-                  ><ClipboardDocumentListIcon class="size-6" />Title</span
-                >
-                <div
-                  class="btn h-9 min-h-9 px-2 justify-center bg-slate-400 bg-opacity-50 hover:shadow-inner text-white border-none"
-                  @click="sortMethod(taskListDisplay, 'title')"
-                >
-                  <ArrowsUpDownIcon class="size-6 text-gray-700" />
+            <td class="w-3/5 border-r-[1px] border-opacity-10">
+              <span class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <CloudIcon class="size-6" />
+                  <p>Title</p>
                 </div>
-              </div>
-            </th>
-            <th scope="col" class="px-6 py-3 border-r-[1px]">
-              <div class="flex items-center justify-between">
-                <span class="flex gap-1 items-center"
-                  ><UserCircleIcon class="size-6" />Assignees</span
-                >
-                <div
-                  class="btn h-9 min-h-9 px-2 justify-center bg-slate-400 bg-opacity-50 hover:shadow-inner text-white border-none"
-                  @click="sortMethod(taskListDisplay, 'assignees')"
-                >
-                  <ArrowsUpDownIcon class="size-6 text-gray-700" />
+                <div class="flex gap-2 justify-center items-center">
+                  <div
+                    class="btn p-0 px-2 justify-center bg-opacity-80 hover:shadow-inner text-white"
+                    @click="sortMethod(taskListDisplay, 'title')"
+                  >
+                    <ArrowsUpDownIcon class="size-6 text-gray-700" />
+                  </div>
                 </div>
-              </div>
-            </th>
-            <th scope="col" class="px-6 py-3 border-r-[1px]">
-              <div class="flex items-center justify-between">
-                <span class="flex gap-1 items-center"><FireIcon class="size-6" />Status</span>
+              </span>
+            </td>
+            <td class="w-1/5 border-r-[1px] border-opacity-10">
+              <span class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <UserCircleIcon class="size-6" />
+                  <p>Assignees</p>
+                </div>
+                <div class="flex gap-2 justify-center items-center">
+                  <div
+                    class="btn p-0 px-2 justify-center bg-opacity-80 hover:shadow-inner text-white"
+                    @click="sortMethod(taskListDisplay, 'assignees')"
+                  >
+                    <ArrowsUpDownIcon class="size-6 text-gray-700" />
+                  </div>
+                </div>
+              </span>
+            </td>
+            <td class="w-1/5">
+              <span class="flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                  <FireIcon class="size-6" />
+                  <p>Status</p>
+                </div>
+              </span>
+            </td>
+            <td>
+              <div class="flex gap-2 justify-center items-center">
                 <div
-                  class="btn h-9 min-h-9 px-2 ml-9 justify-center bg-slate-400 bg-opacity-50 hover:shadow-inner text-white border-none"
+                  class="itbkk-status-sort btn p-0 px-2 justify-center bg-opacity-80 hover:shadow-inner text-white"
                   @click="sortMethod(taskListDisplay, 'status', 'name')"
                 >
                   <ArrowsUpDownIcon class="size-6 text-gray-700" />
                 </div>
               </div>
-            </th>
-            <th scope="col" class="px-6 py-3 text-center">Action</th>
+            </td>
           </tr>
         </thead>
         <tbody>
           <tr
-            v-for="(task, index) in taskListDisplay"
-            class="itbkk-item hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 border-bottom"
+            v-for="task in taskListDisplay"
+            :key="task.id"
+            class="hover:cursor-pointer hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 itbkk-item"
           >
             <td
-              class="px-6 py-4 font-medium max-w-[18rem] min-w-52 break-words border-r-[1px]"
+              class="itbkk-title border-r-[1px] border-opacity-10 whitespace-normal"
               :class="{ 'itbkk-title': !route.params.id }"
               @click="router.push({ name: 'taskDetail', params: { id: task.id } })"
             >
               {{ task.title }}
             </td>
             <td
-              class="px-6 py-4 font-medium max-w-[14rem] min-w-[8rem] break-words border-r-[1px]"
               :class="{
                 'italic text-gray-500': !task.assignees,
                 'itbkk-assignees': !route.params.id
               }"
+              class="border-r-[1px] whitespace-normal"
             >
               {{ !task.assignees ? 'Unassigned' : task.assignees }}
             </td>
-            <td class="px-6 py-4 max-w-[10rem] min-w-20 break-words border-r-[1px]">
-              <span
-                class="rounded-md px-[8px] py-[2px] max-w-[8rem] min-w-auto"
+            <td class="itbkk-status w-1/6">
+              <div
+                class="rounded-md px-[8px] py-[2px] w-fit"
                 :class="[matchColor(task.status.name), { 'itbkk-status': !route.params.id }]"
-                >{{ task.status.name }}</span
               >
+                {{ task.status.name }}
+              </div>
             </td>
-            <td class="">
-              <div class="flex gap-2 justify-center"><span
-                @click="router.push({ name: 'editTask', params: { id: task.id } })"
-                class="itbkk-button-edit"
-                ><PencilSquareIcon class="size-6 hover:scale-110 hover:text-orange-400"/> </span
+            <td class="dropdown dropdown-bottom dropdown-end">
+              <div tabindex="0" role="button" class="m-1">
+                <EllipsisVerticalIcon class="itbkk-button-action size-6 hover:scale-150" />
+              </div>
+              <ul
+                tabindex="0"
+                class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
               >
-              <span @click="showDeleteModal(task.id)" class="itbkk-button-delete hover:scale-110 hover:text-red-500"><TrashIcon class="size-6"/> </span></div>
-              
+                <li class="">
+                  <a
+                    @click="router.push({ name: 'editTask', params: { id: task.id } })"
+                    class="itbkk-button-edit"
+                    >Edit</a
+                  >
+                </li>
+                <li class="text-red-500 hover:bg-red-300 bg-red-300 rounded-lg">
+                  <a @click="showDeleteModal(task.id)" class="itbkk-button-delete">Delete</a>
+                </li>
+              </ul>
             </td>
           </tr>
-          <tr v-if="taskListDisplay?.length == 0">
-            <td colspan="5" class="text-center italic py-4">
-              🕊️ No task
-              <span
-                class="font-semibold hover:underline hover:cursor-pointer"
-                @click="router.push({ name: 'addTask' })"
-                >Create New Task
-              </span>
+
+          <tr v-if="taskListDisplay.length == 0">
+            <td
+              colspan="4"
+              class="text-center font-momo italic font-semibold text-opacity-70 whitespace-normal"
+            >
+              No task
             </td>
           </tr>
         </tbody>
@@ -564,10 +586,6 @@ function playandre() {
 </template>
 
 <style>
-.border-bottom:not(:last-child) {
-  border-bottom: 1px solid rgba(196, 200, 209, 0.5);
-}
-
 .v-enter-active,
 .v-leave-active {
   transition: opacity 0.5s ease;
