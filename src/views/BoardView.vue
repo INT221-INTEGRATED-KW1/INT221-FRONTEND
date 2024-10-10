@@ -25,7 +25,7 @@ const boardName = ref('Name')
 const boardInfo = ref({})
 const boardUser = localStorage.getItem('username')
 const collabLength = ref(0)
-
+const isLoading = ref(true)
 async function loadBoard() {
   const result = await boardFetch()
   if (result.status === 401) {
@@ -108,6 +108,7 @@ function handleLeaveClick(item) {
 
 onMounted(async () => {
   await loadBoard()
+  isLoading.value = false
 })
 </script>
 
@@ -172,17 +173,17 @@ onMounted(async () => {
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody v-if="!isLoading">
           <tr
             v-for="(boardCell, index) in store.boardList.personalBoards"
             @click="handleClick(boardCell.id, boardCell.name)"
             class="itbkk-item hover:cursor-pointer hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 border-bottom"
           >
             <td class="px-6 py-4 font-extrabold text-center">{{ index + 1 }}</td>
-            <th scope="row" class="px-6 py-4 font-medium whitespace-nowrap">
+            <td scope="row" class="px-6 py-4 max-w-[18rem] min-w-52 break-words font-medium">
               {{ boardCell.name }}
-            </th>
-            <td class="px-6 py-4">{{ boardCell.visibility }}</td>
+            </td>
+            <td class="px-6 py-4 uppercase">{{ boardCell.visibility.toLowerCase() == "private" ?  '🕵 private': '🌏 public'}}</td>
           </tr>
           <tr v-if="store.boardList.personalBoards?.length == 0">
             <td colspan="5" class="text-center italic py-4">
@@ -200,7 +201,7 @@ onMounted(async () => {
 
     <div name="Collab_Board" v-if="collabLength > 0">
       <h1 class="text-gray-600 text-xl font-bold pb-2">Callabs Board</h1>
-      <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+      <div class="relative overflow-x-auto shadow-md">
         <table class="w-full text-sm text-left rtl:text-right text-gray-600">
           <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
             <tr>
