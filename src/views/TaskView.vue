@@ -219,7 +219,7 @@ function playandre() {
 
 <template>
   <div
-    class="w-full h-auto min-h-screen p-24 flex flex-col gap-4 font-sans text-slate-900 bg-white"
+    class="w-full h-auto min-h-screen sm:p-24 p-12 flex flex-col gap-4 font-sans text-slate-900 bg-white"
   >
     <div class="fixed top-4 right-4 flex flex-col gap-2">
       <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-lime-400 border-none">
@@ -247,8 +247,10 @@ function playandre() {
       <p class="text-base font-medium">Do something better than do nothing .</p>
       <p class="text-xs">{{ boardName }}</p>
     </div>
+    
     <div class="css-selector w-full h-1"></div>
-    <div name="optionlist" class="w-full px-6 flex flex-row gap-0 items-center">
+
+    <div name="optionlist" class="w-full items-center flex">
       <div class="w-3/4 pr-20 h-auto flex justify-start gap-2">
         <div class="dropdown dropdown-bottom">
           <div tabindex="0" role="button" class="itbkk-status-filter btn m-1 hover:shadow-inner">
@@ -434,7 +436,7 @@ function playandre() {
                 </div>
               </div>
             </th>
-            <th scope="col" class="px-6 py-3">Action</th>
+            <th scope="col" class="px-6 py-3 text-center">Action</th>
           </tr>
         </thead>
         <tbody>
@@ -458,9 +460,9 @@ function playandre() {
             >
               {{ !task.assignees ? 'Unassigned' : task.assignees }}
             </td>
-            <td class="px-6 py-4 max-w-[18rem] min-w-20 border-r-[1px]">
+            <td class="px-6 py-4 max-w-[10rem] min-w-20 break-words border-r-[1px]">
               <span
-                class="rounded-md px-[8px] py-[2px] w-fit"
+                class="rounded-md px-[8px] py-[2px] max-w-[8rem] min-w-auto"
                 :class="[matchColor(task.status.name), { 'itbkk-status': !route.params.id }]"
                 >{{ task.status.name }}</span
               >

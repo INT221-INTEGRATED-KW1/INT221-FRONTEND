@@ -18,38 +18,13 @@ const initializeApp = async () => {
 
 onMounted(async () => {
   initializeApp()
-  //   try {
-  //     store.taskList.splice(0, store.taskList.length)
-  //     const taskRes = await getMethod('tasks', store.userBoardId)
-  //     store.taskList.push(...taskRes.data)
-  //   } catch (error) {
-  //     console.error('Error fetching :', error.message)
-  //   }
-
-  // if (store.statusList.length == 0) {
-  //   try {
-  //     const statusRes = await getMethod('statuses', store.userBoardId)
-  //     store.statusList.splice(0, store.taskList.length)
-  //     store.statusList.push(...statusRes.data)
-  //   } catch (error) {
-  //     console.error('Fail to get status', error)
-  //   }
-  // }
-
-  // try {
-  //   const limitresult = await getMethod('statusesLimit')
-  //   store.limitSwitch = limitresult.data[0].statusLimit
-  //   store.limitInfo = limitresult.data[0].statuses
-  // } catch (error) {
-  //   console.error('Error fetching :', error.message)
-  // }
 })
 </script>
 
 <template>
   <div
     v-if="store.isLoading"
-    class="fixed top-0 left-0 w-full h-full flex justify-center items-center bg-white z-40"
+    class=""
   >
     <div class="loader"></div>
   </div>
