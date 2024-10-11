@@ -29,7 +29,7 @@ async function loadBoard() {
   if (result.status === 401) {
     router.push({ name: 'login' })
   }
-  store.boardList = result.data
+  store.boardList = await result.data
 }
 
 async function boardPost() {
@@ -196,7 +196,7 @@ onMounted(async () => {
       </table>
     </div>
 
-    <div name="Collab_Board" v-if="store.collabList">
+    <div name="Collab_Board" v-if="!isLoading && store.boardList.collabBoards.length">
       <h1 class="text-gray-600 text-xl font-bold pb-2">Callabs Board</h1>
       <div class="relative overflow-x-auto shadow-md">
         <table class="w-full text-sm text-left rtl:text-right text-gray-600">

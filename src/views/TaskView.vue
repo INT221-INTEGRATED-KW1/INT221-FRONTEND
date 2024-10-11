@@ -98,7 +98,7 @@ async function fetchUserInfo() {
       }
     } else {
       store.taskList = taskRes.data
-      store.statusList = statusRes.data
+      store.statusList = statusRes.data      
       taskListDisplay.value = store.taskList
     }
   } catch (error) {
@@ -211,7 +211,7 @@ function cancelPrivacy() {
 
 function playandre() {
   const audio = new Audio('/public/soundtest.mp3')
-  console.log(audio)
+  // console.log(audio)
   audio.play()
   setTimeout(() => {
     router.go()
