@@ -22,17 +22,14 @@ const url = `${SERVER_URL}/${VERSION}`
 
 const store = useTaskStore()
 const boardName = ref('Name')
-const boardInfo = ref({})
 const boardUser = localStorage.getItem('username')
-const collabLength = ref(0)
 const isLoading = ref(true)
 async function loadBoard() {
   const result = await boardFetch()
   if (result.status === 401) {
     router.push({ name: 'login' })
   }
-  store.boardList = result.data
-  collabLength.value = result.data.collabBoards.length
+  store.boardList = await result.data
 }
 
 async function boardPost() {
@@ -91,7 +88,7 @@ async function leaveCollab() {
       })
       console.log('b')
   }
-  console.log(store.boardList.collabBoards);
+  // console.log(store.boardList.collabBoards);
   
 }
 
@@ -185,7 +182,7 @@ onMounted(async () => {
             </td>
             <td class="px-6 py-4 uppercase">{{ boardCell.visibility.toLowerCase() == "private" ?  '🕵 private': '🌏 public'}}</td>
           </tr>
-          <tr v-if="store.boardList.personalBoards?.length == 0">
+          <tr v-if="!store.boardList.personalBoards.length">
             <td colspan="5" class="text-center italic py-4">
               🕊️ No Board
               <span
@@ -199,7 +196,7 @@ onMounted(async () => {
       </table>
     </div>
 
-    <div name="Collab_Board" v-if="collabLength > 0">
+    <div name="Collab_Board" v-if="!isLoading && store.boardList.collabBoards.length">
       <h1 class="text-gray-600 text-xl font-bold pb-2">Callabs Board</h1>
       <div class="relative overflow-x-auto shadow-md">
         <table class="w-full text-sm text-left rtl:text-right text-gray-600">
@@ -226,7 +223,7 @@ onMounted(async () => {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody v-if="!isLoading">
             <tr
               v-for="(boardCell, index) in store.boardList.collabBoards"
               class="itbkk-item hover:cursor-pointer hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 border-bottom"

@@ -3,7 +3,7 @@ import { addMethod } from '@/lib/fetchAPI'
 import { colorStatus } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
-import { ref, watch, watchEffect } from 'vue'
+import { onMounted, ref, watch, watchEffect } from 'vue'
 const TaskDetail = ref({
   title: '',
   assignees: '',
@@ -36,10 +36,14 @@ async function addNewTask() {
   if (!TaskDetail.value.title) {
     return (isInValid.value = true)
   } else {
+    console.log(store.statusList)
+    const DEFAULT_STATUS = store.statusList.find((status) => status.name == 'No Status')
+    console.log(DEFAULT_STATUS.id)
+
     Object.assign(TaskDetail.value, {
       title: TaskDetail.value.title.trim(),
       assignees: !TaskDetail.value.assignees ? null : TaskDetail.value.assignees,
-      status: TaskDetail.value.status ?? 1,
+      status: TaskDetail.value.status ?? DEFAULT_STATUS.id,
       description: !TaskDetail.value.description ? null : TaskDetail.value.description
     })
     const result = await addMethod(TaskDetail.value, 'tasks')
