@@ -38,9 +38,9 @@ export const useTaskStore = defineStore('task', () => {
     const findBoard = collabList.value?.find((item) => item.id == boardId)
     
     isOwnerBoard.value = findBoard ? false : true
-    isEditable.value = !isOwnerBoard.value || findBoard?.access_right == "READ"  ? false : true
-    // console.log(`is owner - ${isOwnerBoard.value}`);
-    // console.log(`is editable- ${isEditable.value}`);
+    isEditable.value = findBoard?.access_right == "READ" ? false : true
+    console.log(`is owner - ${isOwnerBoard.value}`);
+    console.log(`is editable- ${isEditable.value}`);
   }
   
   return {

@@ -66,7 +66,7 @@ const temp = {
 
     <div class="fixed top-4 right-4 flex flex-col gap-2">
       <button class="itbkk-fullname btn px-4 h-9 min-h-9 shadow-inner bg-lime-400 border-none">
-        {{ boardUser ?? 'A' }}
+        {{ boardUser ?? 'Guest User' }}
       </button>
       <button
         v-if="store.isLogin"
@@ -112,7 +112,7 @@ const temp = {
     </div>
 
     <div class="relative overflow-x-auto shadow-md">
-      <table class="w-full text-sm text-left rtl:text-right text-gray-600">
+      <table class="w-full text-sm text-left rtl:text-right text-gray-600" v-if="store.collabList">
         <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
           <tr>
             <th scope="col" class="px-6 py-3">

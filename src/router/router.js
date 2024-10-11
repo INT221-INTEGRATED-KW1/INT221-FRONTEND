@@ -36,6 +36,7 @@ const routes = [
     component: BoardView,
     meta: { requiresAuth: true }
   },
+  { path: '/board/:uid', redirect: { name: 'task' } },
   {
     path: '/board/:uid/task',
     name: 'task',
@@ -102,7 +103,7 @@ const routes = [
         name: 'changeCollabAccess',
         component: CollabAccess
       },
-      {       
+      {
         path: 'remove',
         name: 'removeCollab',
         component: CollabRemove
@@ -140,7 +141,7 @@ function isTokenValid(token) {
 // router.beforeEach(async (to, from, next) => {
 //   const token = localStorage.getItem('token')
 //   const isAuthenticated = isTokenValid(token)
-  
+
 //   if (to.matched.some((record) => record.meta.requiresAuth)) {
 //     if (isAuthenticated) {
 //       next() // Redirect to login if not authenticated
