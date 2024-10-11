@@ -64,7 +64,7 @@ function cancelHandler() {
       name="modal"
       class="fixed w-auto h-auto p-8 bg-white flex flex-col gap-4 rounded-xl slide-in-fwd-center justify-center"
     >
-      <h1 class="w-full font-bold text-xl">Remove collaborator</h1>
+      <h1 class="w-full font-bold text-xl">Change access collaborator</h1>
       <!-- <p class="italic text-gray-500">Happiness is multiplies when you share it.</p> -->
 
       <p>
@@ -77,13 +77,13 @@ function cancelHandler() {
           class="itbkk-button-cancel btn bg-green-300 hover:bg-green-400 hover:shadow-inner px-4 border-none"
           @click="changeAccessHandler()"
         >
-          Remove
+          Change
         </button>
         <button
           class="itbkk-button-cancel btn bg-slate-300 hover:bg-slate-400 hover:shadow-inner px-4 border-none"
           @click="cancelHandler()"
         >
-          Back
+          Cancle
         </button>
       </div>
     </div>
