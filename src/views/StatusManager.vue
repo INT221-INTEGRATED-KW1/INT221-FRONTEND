@@ -58,16 +58,14 @@ watch(
 const thead = ref(
   'h-full flex flex-row items-center gap-[4px] text-sm font-semibold text-black opacity-80'
 )
-
-console.log()
+const fullName = ref(localStorage.getItem('username'))
 
 onMounted(async () => {
   if (!store.statusList.length) {
     loadInfo()
   }
+  fullName.value == null ? '' : store.checkIsOwnerBoard()
 })
-
-const fullName = ref(localStorage.getItem('username'))
 </script>
 
 <template>
@@ -115,13 +113,22 @@ const fullName = ref(localStorage.getItem('username'))
         <div></div>
       </div>
       <div class="w-1/2 h-auto flex justify-end gap-4">
-        <button
-          @click="router.push({ name: 'addStatus' })"
-          class="itbkk-button-add btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
+        <span
+          :title="
+            !store.isEditable
+              ? 'You need to be board owner or has write access to perform this action.'
+              : ''
+          "
         >
-          <SquaresPlusIcon class="size-6" />
-          Add Status
-        </button>
+          <button
+            @click="router.push({ name: 'addStatus' })"
+            :disabled="!store.isEditable"
+            class="itbkk-button-add btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
+          >
+            <SquaresPlusIcon class="size-6" />
+            Add Status
+          </button>
+        </span>
       </div>
     </div>
 
@@ -129,26 +136,30 @@ const fullName = ref(localStorage.getItem('username'))
       <table class="w-full text-sm text-left rtl:text-right text-gray-600">
         <thead class="text-sm uppercase bg-gray-400 text-gray-600 bg-opacity-20">
           <tr>
-            <th scope="col" class="px-6 py-3 ">
+            <th scope="col" class="px-6 py-3">
               <span class="flex gap-1 items-center"
                 ><ClipboardDocumentListIcon class="size-6" />id</span
               >
             </th>
-            <th scope="col" class="px-6 py-3 ">
+            <th scope="col" class="px-6 py-3">
               <span class="flex gap-1 items-center"><UserCircleIcon class="size-6" />name</span>
             </th>
-            <th scope="col" class="px-6 py-3 ">
+            <th scope="col" class="px-6 py-3">
               <span class="flex gap-1 items-center"
                 ><ChatBubbleBottomCenterTextIcon class="size-6" />Description</span
               >
             </th>
-            <th scope="col" class="px-6 py-3 ">
+            <th scope="col" class="px-6 py-3">
               <span class="flex gap-1 items-center"><FireIcon class="size-6" />Status</span>
             </th>
-            <th scope="col" class="px-6 py-3 ">
-              <span class="flex gap-1 items-center"><PresentationChartBarIcon class="size-6" />usage</span>
+            <th scope="col" class="px-6 py-3">
+              <span class="flex gap-1 items-center"
+                ><PresentationChartBarIcon class="size-6" />usage</span
+              >
             </th>
-            <th scope="col" class="px-6 py-3"><span class="flex gap-1 items-center"><FireIcon class="size-6" />Action</span></th>
+            <th scope="col" class="px-6 py-3">
+              <span class="flex gap-1 items-center"><FireIcon class="size-6" />Action</span>
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -157,15 +168,17 @@ const fullName = ref(localStorage.getItem('username'))
             :key="status.id"
             class="itbkk-item hover:bg-gray-300 hover:bg-opacity-20 transition duration-75 border-bottom"
           >
-            <td class="text-center px-6 py-4 ">{{ index + 1 }}</td>
-            <td class="itbkk-status-name px-6 py-4 font-medium max-w-[18rem] min-w-52 break-words ">{{ status.name }}</td>
+            <td class="text-center px-6 py-4">{{ index + 1 }}</td>
+            <td class="itbkk-status-name px-6 py-4 font-medium max-w-[18rem] min-w-52 break-words">
+              {{ status.name }}
+            </td>
             <td
-              class="itbkk-status-description px-6 py-4 font-medium max-w-[18rem] min-w-52 break-words "
+              class="itbkk-status-description px-6 py-4 font-medium max-w-[18rem] min-w-52 break-words"
               :class="{ 'italic text-gray-500': !status.description }"
             >
               {{ status.description ?? 'No description is provided.' }}
             </td>
-            <td class="px-6 py-4 max-w-[18rem] min-w-20  break-words">
+            <td class="px-6 py-4 max-w-[18rem] min-w-20 break-words">
               <div
                 class="rounded-md px-[8px] py-[2px] w-fit max-w-[8rem] min-w-auto"
                 :class="[colorStatus(status.color)]"
@@ -175,17 +188,25 @@ const fullName = ref(localStorage.getItem('username'))
             </td>
 
             <td class="text-center">{{ status.noOfTasks }}</td>
-            <td
-              v-if="status.name != 'No Status' && status.name != 'Done'"              
-            >
+            <td v-if="status.name != 'No Status' && status.name != 'Done'">
               <div class="flex gap-2 justify-center">
                 <span
                   @click="router.push({ name: 'editStatus', params: { id: status.id } })"
                   class="itbkk-button-edit"
+                  :title="
+                    !store.isEditable
+                      ? 'You need to be board owner or has write access to perform this action.'
+                      : ''
+                  "
                   ><PencilSquareIcon class="size-6 hover:scale-110 hover:text-orange-400" />
                 </span>
                 <span
                   @click="navToDeleteStatus(status)"
+                  :title="
+                    !store.isEditable
+                      ? 'You need to be board owner or has write access to perform this action.'
+                      : ''
+                  "
                   class="itbkk-button-delete hover:scale-110 hover:text-red-500"
                   ><TrashIcon class="size-6" />
                 </span>

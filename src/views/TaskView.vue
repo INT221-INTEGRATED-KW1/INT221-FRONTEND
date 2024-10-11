@@ -100,7 +100,6 @@ async function fetchUserInfo() {
       store.taskList = taskRes.data
       store.statusList = statusRes.data
       taskListDisplay.value = store.taskList
-      console.log(taskListDisplay.value)
     }
   } catch (error) {
     console.error('Error fetching :', error.message)
@@ -114,8 +113,9 @@ async function loadBoard() {
     router.push({ name: 'login' })
   } else {
     store.boardList = result.data.personalBoards
-    const boardIndex = store.boardList.findIndex((board) => board.id == boardId)
-    isPublic.value = store.boardList[boardIndex].visibility == 'public' ? true : false
+    store.collabList = result.data.collabBoards
+    const boardIndex = store.boardList?.findIndex((board) => board.id == boardId)
+    isPublic.value = store.boardList[boardIndex]?.visibility == 'public' ? true : false
   }
 }
 
@@ -170,6 +170,8 @@ onMounted(async () => {
   localStorage.setItem('uid', boardId)
   await fetchUserInfo()
   await loadBoard()
+  store.checkIsOwnerBoard()
+  console.log(store.isOwnerBoard)
 })
 
 const msg = ref('')
@@ -247,11 +249,11 @@ function playandre() {
       <p class="text-base font-medium">Do something better than do nothing .</p>
       <p class="text-xs">{{ boardName }}</p>
     </div>
-    
+
     <div class="css-selector w-full h-1"></div>
 
     <div name="optionlist" class="w-full items-center flex">
-      <div class="w-3/4 pr-20 h-auto flex justify-start gap-2">
+      <div class="w-1/2 h-auto flex justify-start gap-2">
         <div class="dropdown dropdown-bottom">
           <div tabindex="0" role="button" class="itbkk-status-filter btn m-1 hover:shadow-inner">
             <SwatchIcon class="size-6 h-9" />
@@ -334,13 +336,18 @@ function playandre() {
           </div>
         </div>
       </div>
-      <div class="w-1/4 h-auto flex justify-end gap-4">
+      <div class="w-1/2 h-auto flex justify-end gap-4">
         <div class="form-control">
-          <label class="label cursor-pointer">
-            <span class="label-text mr-2"
-              ><EyeIcon class="size-6" v-if="isPublic" /><EyeSlashIcon v-else class="size-6"
-            /></span>
+          <label
+            class="label cursor-pointer"
+            :title="!store.isOwnerBoard ? 'You need to be board owner to perform this action.' : ''"
+          >
+            <span class="label-text mr-2">
+              <EyeIcon class="size-6" v-if="isPublic" />
+              <EyeSlashIcon v-else class="size-6" />
+            </span>
             <input
+              :disabled="!store.isOwnerBoard"
               type="checkbox"
               v-model="isPublic"
               @click="privacyModalHandler()"
@@ -350,13 +357,22 @@ function playandre() {
           </label>
         </div>
 
-        <button
-          @click="router.push({ name: 'addTask' })"
-          class="itbkk-button-add btn px-3 h-9 min-h-9 shadow-inner bg-green-300 hover:bg-green-400 border-none"
+        <div
+          :title="
+            !store.isEditable
+              ? 'You need to be board owner or has write access to perform this action.'
+              : ''
+          "
         >
-          <PlusIcon class="size-6"></PlusIcon>
-          Add
-        </button>
+          <button
+            @click="router.push({ name: 'addTask' })"
+            class="itbkk-button-add btn px-3 h-9 min-h-9 shadow-inner bg-green-300 hover:bg-green-400 border-none"
+            :disabled="!store.isEditable"
+          >
+            <PlusIcon class="size-6"></PlusIcon>
+            Add
+          </button>
+        </div>
 
         <button
           @click="router.push({ name: 'status' })"
@@ -459,22 +475,38 @@ function playandre() {
               }"
             >
               {{ !task.assignees ? 'Unassigned' : task.assignees }}
-            </td>
-            <td class="px-6 py-4 max-w-[10rem] min-w-20 break-words border-r-[1px]">
+            </td>            
+
+            <td class="px-6 py-4 max-w-[18rem] min-w-20 break-words">
               <span
-                class="rounded-md px-[8px] py-[2px] max-w-[8rem] min-w-auto"
+                class="rounded-md px-[8px] py-[2px] w-fit max-w-[8rem] min-w-auto"
                 :class="[matchColor(task.status.name), { 'itbkk-status': !route.params.id }]"
                 >{{ task.status.name }}</span
               >
             </td>
             <td class="">
-              <div class="flex gap-2 justify-center"><span
-                @click="router.push({ name: 'editTask', params: { id: task.id } })"
-                class="itbkk-button-edit"
-                ><PencilSquareIcon class="size-6 hover:scale-110 hover:text-orange-400"/> </span
-              >
-              <span @click="showDeleteModal(task.id)" class="itbkk-button-delete hover:scale-110 hover:text-red-500"><TrashIcon class="size-6"/> </span></div>
-              
+              <div class="flex gap-2 justify-center">
+                <span
+                  @click="router.push({ name: 'editTask', params: { id: task.id } })"
+                  :title="
+                    !store.isEditable
+                      ? 'You need to be board owner or has write access to perform this action.'
+                      : ''
+                  "
+                  class="itbkk-button-edit"
+                  ><PencilSquareIcon class="size-6 hover:scale-110 hover:text-orange-400" />
+                </span>
+                <span
+                  @click="showDeleteModal(task.id)"
+                  class="itbkk-button-delete hover:scale-110 hover:text-red-500"
+                  :title="
+                    !store.isEditable
+                      ? 'You need to be board owner or has write access to perform this action.'
+                      : ''
+                  "
+                  ><TrashIcon class="size-6" />
+                </span>
+              </div>
             </td>
           </tr>
           <tr v-if="taskListDisplay?.length == 0">

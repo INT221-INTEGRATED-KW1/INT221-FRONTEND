@@ -1,3 +1,4 @@
+import router from '@/router/router'
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
 
@@ -23,12 +24,25 @@ export const useTaskStore = defineStore('task', () => {
     const index = taskList.value.findIndex((task) => task.id == id)
     return index
   }
+
   function findIndexById(data, id) {
     console.log(id)
     const index = data.findIndex((item) => item.id == id)
     return index
   }
-
+  
+  const isOwnerBoard = ref(false)
+  const isEditable = ref(false)
+  function checkIsOwnerBoard() {
+    const boardId = router.currentRoute.value.params.uid
+    const findBoard = collabList.value?.find((item) => item.id == boardId)
+    
+    isOwnerBoard.value = findBoard ? false : true
+    isEditable.value = !isOwnerBoard.value || findBoard?.access_right == "READ"  ? false : true
+    // console.log(`is owner - ${isOwnerBoard.value}`);
+    // console.log(`is editable- ${isEditable.value}`);
+  }
+  
   return {
     taskList,
     statusList,
@@ -46,6 +60,9 @@ export const useTaskStore = defineStore('task', () => {
     maxTask,
     limitSwitch,
     limitInfo,
-    isLogin
+    isLogin,
+    isOwnerBoard,
+    checkIsOwnerBoard,
+    isEditable
   }
 })

@@ -248,7 +248,7 @@ onMounted(async () => {
                 {{ boardCell.owner.name }}
               </td>
               <td class="px-6 py-4" @click="handleClick(boardCell.id, boardCell.name)">
-                {{ boardCell.access_right }}
+                {{ boardCell.access_right == "READ" ? "📖 Read" : "📝 Write" }}
               </td>
               <td class="px-6 py-4">
                 <span class="btn" @click="handleLeaveClick(boardCell)">Leave</span>
