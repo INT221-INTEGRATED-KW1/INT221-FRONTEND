@@ -98,7 +98,7 @@ async function fetchUserInfo() {
       }
     } else {
       store.taskList = taskRes.data
-      store.statusList = statusRes.data      
+      store.statusList = statusRes.data
       taskListDisplay.value = store.taskList
     }
   } catch (error) {
@@ -114,8 +114,14 @@ async function loadBoard() {
   } else {
     store.boardList = result.data.personalBoards
     store.collabList = result.data.collabBoards
-    const boardIndex = store.boardList?.findIndex((board) => board.id == boardId)
-    isPublic.value = store.boardList[boardIndex]?.visibility == 'public' ? true : false
+    if (store.isOwnerBoard) {
+      const boardIndex = store.boardList?.findIndex((board) => board.id == boardId)
+      isPublic.value = store.boardList[boardIndex]?.visibility == 'public' ? true : false
+    } else {
+      const boardIndex = store.collabList?.findIndex((board) => board.id == boardId)
+      isPublic.value = store.collabList[boardIndex]?.visibility == 'public' ? true : false
+    }
+    console.log(isPublic.value)
   }
 }
 
@@ -475,7 +481,7 @@ function playandre() {
               }"
             >
               {{ !task.assignees ? 'Unassigned' : task.assignees }}
-            </td>            
+            </td>
 
             <td class="px-6 py-4 max-w-[18rem] min-w-20 break-words">
               <span
