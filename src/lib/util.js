@@ -122,6 +122,8 @@ function signOut() {
   router.push({name: 'login'})
 }
 
+
+
 export {
   formatStatus,
   formatStatusReverse,
