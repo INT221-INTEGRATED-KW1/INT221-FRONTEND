@@ -31,6 +31,7 @@ const boardUser = localStorage.getItem('username')
 
 onMounted(async () => {
   await loadCollab()
+  store.checkIsOwnerBoard()
   isLoading.value = false
 })
 
@@ -148,7 +149,7 @@ const temp = {
             <td class="px-6 py-4">{{ collab.email }}</td>
             <td class="px-6 py-4">
               <select
-                id="collab-access"
+                id="collab-access" 
                 v-model="collab.accessRight"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                 @change="changeAccessHandler(collab)"

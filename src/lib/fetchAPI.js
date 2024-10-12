@@ -98,7 +98,6 @@ async function addMethod(detail, database) {
 
 async function deleteMethod(taskId, database) {
   await validateToken()
-  // try {
   const response = await fetch(
     `${url}/boards/${localStorage.getItem('uid')}/${database}/${taskId}`,
     {
@@ -114,13 +113,10 @@ async function deleteMethod(taskId, database) {
     }
   )
   const data = await response.json()
-  if (!response.ok) {
-    if (response.status == '401') router.push({ name: 'login' })    
+  if (response.status == 401) {
+    return router.push({ name: 'login' })
   }
   return { resCode: response.status, data }
-  // } catch (error) {
-  //   throw error
-  // }
 }
 
 async function deleteTranMethod(taskId, database, newId) {
@@ -194,7 +190,6 @@ async function patchMethod(subfix, Detail, detailId) {
     )
     if (!response.ok) {
       if (response.status == '401') router.push({ name: 'login' })
-      
     }
     const data = await response.json()
     return { resCode: response.status, data }

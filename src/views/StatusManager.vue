@@ -122,7 +122,6 @@ onMounted(async () => {
         >
           <button
             @click="router.push({ name: 'addStatus' })"
-            :disabled="!store.isEditable"
             class="itbkk-button-add btn px-4 h-9 min-h-9 bg-yellow-300 hover:bg-yellow-400 hover:border-yellow-400 border-none"
           >
             <SquaresPlusIcon class="size-6" />

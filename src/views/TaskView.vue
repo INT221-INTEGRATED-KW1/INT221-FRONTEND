@@ -121,7 +121,7 @@ async function loadBoard() {
       const boardIndex = store.collabList?.findIndex((board) => board.id == boardId)
       isPublic.value = store.collabList[boardIndex]?.visibility == 'public' ? true : false
     }
-    console.log(isPublic.value)
+    // console.log(isPublic.value)
   }
 }
 
@@ -177,7 +177,7 @@ onMounted(async () => {
   await fetchUserInfo()
   await loadBoard()
   store.checkIsOwnerBoard()
-  console.log(store.isOwnerBoard)
+  // console.log(store.isOwnerBoard)
 })
 
 const msg = ref('')
@@ -373,7 +373,6 @@ function playandre() {
           <button
             @click="router.push({ name: 'addTask' })"
             class="itbkk-button-add btn px-3 h-9 min-h-9 shadow-inner bg-green-300 hover:bg-green-400 border-none"
-            :disabled="!store.isEditable"
           >
             <PlusIcon class="size-6"></PlusIcon>
             Add
