@@ -133,15 +133,15 @@ async function addCollabHandler() {
         <button
           class="itbkk-button-cancel btn bg-green-300 hover:bg-green-400 hover:shadow-inner px-4 border-none"
           @click="addCollabHandler()"
-          :disabled="!newCollab.email"
+          :disabled="!newCollab.email || !store.isOwnerBoard"
         >
-          Let's add
+          Add
         </button>
         <button
           class="itbkk-button-cancel btn bg-slate-300 hover:bg-slate-400 hover:shadow-inner px-4 border-none"
           @click="router.push({ name: 'collab' })"
         >
-          Back
+          Cancel
         </button>
       </div>
     </div>
