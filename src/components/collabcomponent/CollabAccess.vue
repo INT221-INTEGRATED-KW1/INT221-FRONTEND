@@ -21,10 +21,16 @@ async function changeAccessHandler() {
       color: 'green'
     })
   } else {
+    const findCollabIndex = store.collabList.findIndex(
+      (collab) => collab.oid == props.currentItem.oid
+    )
     let contextText = ''
     switch (result.resCode) {
       case 403:
         contextText = 'You do not have permission to change collaborator access right.'
+        store.collabList[findCollabIndex].accessRight == 'WRITE'
+          ? (store.collabList[findCollabIndex].accessRight = 'READ')
+          : (store.collabList[findCollabIndex].accessRight = 'WRITE')
         break
       default:
         contextText = 'There is a problem. Please try again later.'
