@@ -148,11 +148,12 @@ const temp = {
             </th>
             <td class="px-6 py-4">{{ collab.email }}</td>
             <td class="px-6 py-4">
-              <select
+              <select 
                 id="collab-access" 
                 v-model="collab.accessRight"
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5"
                 @change="changeAccessHandler(collab)"
+                :disabled="!store.isEditable"
               >
                 <option disabled>select access type</option>
                 <option value="READ" selected>📖 Read</option>
@@ -160,7 +161,7 @@ const temp = {
               </select>
             </td>
             <td class="px-6 py-4">
-              <span class="btn" @click="removeCollabhandle(collab)">remove</span>
+              <button :disabled="!store.isEditable" class="btn" @click="removeCollabhandle(collab)">remove</button>
             </td>
           </tr>
           <tr v-if="!store.collabList.length">
