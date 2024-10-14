@@ -1,5 +1,5 @@
 <script setup>
-import { getMethod } from '@/lib/fetchAPI'
+import { boardFetch, getMethod } from '@/lib/fetchAPI'
 import { signOut } from '@/lib/util'
 import router from '@/router/router'
 import { useTaskStore } from '@/store/store'
@@ -16,6 +16,17 @@ import ToastMessage from '@/components/ToastMessage.vue'
 
 const isLoading = ref(true)
 const store = useTaskStore()
+
+async function loadBoard() {
+  const result = await boardFetch()
+  if (result.status == '401') {
+    router.push({ name: 'login' })
+  } else {
+    store.boardList = result.data.personalBoards
+    // console.log(isPublic.value)
+  }
+}
+
 async function loadCollab() {
   const result = await getMethod('collabs')
   if (result.resCode == '403') {
@@ -31,6 +42,7 @@ const boardUser = localStorage.getItem('username')
 
 onMounted(async () => {
   await loadCollab()
+  await loadBoard()
   store.checkIsOwnerBoard()
   isLoading.value = false
 })

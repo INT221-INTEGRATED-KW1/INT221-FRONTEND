@@ -11,7 +11,7 @@ const props = defineProps({
 })
 
 async function changeAccessHandler() {
-  const newAccess = { access_right: props.currentItem.accessRight }
+  const newAccess = { accessRight: props.currentItem.accessRight }
   const result = await patchMethod('collabs', newAccess, props.currentItem.oid)
   if (result.resCode == '200') {
     const resultIndex = store.collabList.findIndex((collab) => collab.oid == result.data.oid)
