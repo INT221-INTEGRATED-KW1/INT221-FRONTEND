@@ -34,16 +34,19 @@ export const useTaskStore = defineStore('task', () => {
   const isOwnerBoard = ref(false)
   const isEditable = ref(false)
   function checkIsOwnerBoard() {
+    console.log(collabList.value);
+    console.log(boardList.value);
+    
     const boardId = router.currentRoute.value.params.uid
     const findCollab = collabList.value?.find((item) => item.id == boardId)
     const findBoard = boardList.value?.find((item) => item.id == boardId)
-    // console.log(findBoard);
-    // console.log(findCollab);
+    console.log(findBoard);
+    console.log(findCollab);
     
     isOwnerBoard.value = findBoard ? true : false
     isEditable.value = findCollab?.access_right == "WRITE" || isOwnerBoard.value ? true : false
-    // console.log(`is owner - ${isOwnerBoard.value}`);
-    // console.log(`is editable- ${isEditable.value}`);
+    console.log(`is owner - ${isOwnerBoard.value}`);
+    console.log(`is editable- ${isEditable.value}`);
   }
   
   return {
